@@ -173,6 +173,35 @@
         }
         .value-card.db .value {
             color: #f39c12;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .warning-box {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border: 3px solid #ff9800;
+            border-left-width: 8px;
+        }
+        .warning-box h4 {
+            color: #e65100;
+            margin: 0 0 15px 0;
+            font-size: 1.2em;
+        }
+        .warning-box p {
+            color: #555;
+            line-height: 1.8;
+            margin: 10px 0;
+        }
+        .warning-box .formula-inline {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            display: inline-block;
+            margin: 5px;
+            border: 1px solid #ff9800;
         }
         .relationship-box {
             background: #fff8f0;
@@ -212,31 +241,47 @@
     </style>
 </head>
 <body>
-    <h1>Amplitude und Leistung</h1>
+    <h1>Feldgrößen und Leistung in dB</h1>
     <div class="description">Der quadratische Zusammenhang: P = A² und die Bedeutung in dB</div>
 
     <div class="container">
         <div class="info-box">
-            <h3>Wichtiger Zusammenhang</h3>
-            <p>Die Leistung ist proportional zum Quadrat der Amplitude</p>
-            <p>Bewege den Schieberegler und beobachte die nicht-lineare Beziehung</p>
+            <h3>WICHTIGER UNTERSCHIED</h3>
+            <p><strong>Feldgrößen</strong> (Spannung U, Strom I, Druck p): Linear proportional zur Amplitude → <strong>20·log₁₀</strong></p>
+            <p><strong>Leistungsgrößen</strong> (P = U²/R, P = I²·R): Proportional zum Quadrat → <strong>10·log₁₀</strong></p>
+            <p>Die Leistung ist proportional zum Quadrat der Feldgröße: P ∝ A²</p>
+            <p>Bewege den Schieberegler und beobachte den Faktor 2 Unterschied in dB!</p>
         </div>
 
         <div class="equation-box">
             <div class="equation">P = A² (Leistung ist Amplitude zum Quadrat)</div>
-            <div class="equation" style="margin-top: 15px;">L<sub>P</sub>(dB) = 2 · L<sub>A</sub>(dB)</div>
+            <div class="equation" style="margin-top: 15px;">10·log₁₀(A²) = 2 · [10·log₁₀(A)] = 2 · [½ · 20·log₁₀(A)]</div>
+            <div class="equation" style="margin-top: 10px; font-size: 0.9em;">⟹ Leistungs-dB = 2 × Feldgrößen-dB</div>
+        </div>
+
+        <div class="warning-box">
+            <h4>ENTSCHEIDEND: Wann 20·log und wann 10·log?</h4>
+            <p><strong>Feldgrößen</strong> (Spannung, Strom, Schalldruck, etc.):</p>
+            <p class="formula-inline">L<sub>dB</sub> = 20·log₁₀(A/A₀)</p>
+            <p><strong>Leistungsgrößen</strong> (elektrische Leistung, Schallintensität, etc.):</p>
+            <p class="formula-inline">L<sub>dB</sub> = 10·log₁₀(P/P₀)</p>
+            <p><strong>Warum?</strong> Weil P ∝ A², daher: 10·log₁₀(A²) = 20·log₁₀(A)</p>
+            <p style="background: white; padding: 10px; border-radius: 4px; margin-top: 10px; border-left: 4px solid #e65100;">
+                <strong>Merke:</strong> Beide Formeln beschreiben dasselbe physikalische Verhältnis!
+                20·log für Feldgrößen ist mathematisch äquivalent zu 10·log für deren Leistung.
+            </p>
         </div>
 
         <div class="controls">
             <div class="control-group">
-                <label>Amplitude A: <span class="value-display" id="amp-value">1.00</span></label>
+                <label>Feldgröße A (z.B. Spannung): <span class="value-display" id="amp-value">1.00</span></label>
                 <input type="range" id="amplitude" min="0.1" max="3" step="0.01" value="1">
             </div>
         </div>
 
         <div class="values-display">
             <div class="value-card amplitude">
-                <div class="label">Amplitude (linear)</div>
+                <div class="label">Feldgröße A (linear)</div>
                 <div class="value" id="display-amp">1.00</div>
             </div>
             <div class="value-card power">
@@ -244,28 +289,30 @@
                 <div class="value" id="display-power">1.00</div>
             </div>
             <div class="value-card db">
-                <div class="label">Differenz dB</div>
-                <div class="value" id="display-db-diff">0.0 dB</div>
+                <div class="label">Pegel in dB (Referenz: A₀=1)</div>
+                <div class="value" id="display-db-diff">Feldgröße: 0.0 dB<br>Leistung: 0.0 dB</div>
             </div>
         </div>
 
         <div class="canvas-row">
             <div class="canvas-container">
-                <div class="canvas-label">Amplitude vs. Zeit (A · sin(ωt))</div>
+                <div class="canvas-label">Feldgröße vs. Zeit (A · sin(ωt))</div>
                 <canvas id="amplitude-canvas" width="450" height="300"></canvas>
             </div>
             <div class="canvas-container">
-                <div class="canvas-label">Leistung vs. Zeit (A² · sin²(ωt))</div>
+                <div class="canvas-label">Leistung vs. Zeit (P = A² · sin²(ωt))</div>
                 <canvas id="power-canvas" width="450" height="300"></canvas>
             </div>
         </div>
 
         <div class="relationship-box">
-            <h4>🔍 Kernpunkte</h4>
+            <h4>Kernpunkte zum Verstehen</h4>
             <ul>
-                <li><strong>Quadratischer Zusammenhang:</strong> Verdopplung der Amplitude → Vervierfachung der Leistung</li>
-                <li><strong>In dB:</strong> +6 dB Amplitude entspricht +12 dB Leistung</li>
-                <li><strong>Grund:</strong> L<sub>P</sub>(dB) = 10 · log₁₀(A²) = 2 · [10 · log₁₀(A)] = 2 · L<sub>A</sub>(dB)</li>
+                <li><strong>Quadratischer Zusammenhang:</strong> Verdopplung der Feldgröße (×2) → Vervierfachung der Leistung (×4)</li>
+                <li><strong>In dB ausgedrückt:</strong> +6 dB Feldgröße (20·log₁₀(2)) entspricht +12 dB Leistung (10·log₁₀(4))</li>
+                <li><strong>Mathematischer Grund:</strong> 10·log₁₀(A²) = 10·log₁₀(A) + 10·log₁₀(A) = 2·[10·log₁₀(A)]</li>
+                <li><strong>Praktische Regel:</strong> Leistungs-dB ist immer das Doppelte von Feldgrößen-dB (bei gleicher Referenz)</li>
+                <li><strong>WICHTIG:</strong> 20·log₁₀ für Feldgrößen ≡ 10·log₁₀ für deren Leistung (da P ∝ A²)</li>
             </ul>
         </div>
 
@@ -291,13 +338,21 @@
 
         function updateDisplay() {
             const power = amplitude * amplitude;
-            const ampDB = 20 * Math.log10(amplitude);
-            const powDB = 10 * Math.log10(power);
-            const dbDiff = powDB - ampDB;
+            const A0 = 1.0; // Referenz-Amplitude
+            const P0 = A0 * A0; // Referenz-Leistung (= 1.0)
+
+            // WICHTIG: Für Feldgrößen (Spannung, Strom, etc.): 20·log₁₀
+            const ampDB = 20 * Math.log10(amplitude / A0);
+
+            // WICHTIG: Für Leistung: 10·log₁₀
+            const powDB = 10 * Math.log10(power / P0);
+
+            // Alternativ (zeigt den Zusammenhang): powDB = 2 * ampDB
+            // weil 10·log₁₀(A²) = 2·(10·log₁₀(A)) = 2·(½·20·log₁₀(A))
 
             document.getElementById('display-amp').textContent = amplitude.toFixed(3);
             document.getElementById('display-power').textContent = power.toFixed(3);
-            document.getElementById('display-db-diff').textContent = `${ampDB.toFixed(1)} → ${powDB.toFixed(1)} dB`;
+            document.getElementById('display-db-diff').innerHTML = `<strong>Feldgröße:</strong> ${ampDB.toFixed(1)} dB<br><strong>Leistung:</strong> ${powDB.toFixed(1)} dB`;
         }
 
         function drawSignal(ctx, isAmplitude) {

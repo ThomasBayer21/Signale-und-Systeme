@@ -206,17 +206,27 @@
             <p>Klicke auf die Schnellreferenz-Karten, um häufig verwendete dB-Werte einzutragen</p>
         </div>
 
+        <div style="background: #fff3cd; padding: 20px; border-radius: 6px; margin: 20px 0; border-left: 6px solid #ff9800;">
+            <h4 style="color: #e65100; margin: 0 0 10px 0;">WICHTIG: Unterschied beachten!</h4>
+            <p style="color: #555; margin: 5px 0;"><strong>Links (Feldgrößen):</strong> Für Spannung, Strom, Schalldruck → 20·log₁₀</p>
+            <p style="color: #555; margin: 5px 0;"><strong>Rechts (Leistung):</strong> Für elektrische/akustische Leistung → 10·log₁₀</p>
+            <p style="color: #555; margin: 10px 0 0 0; font-size: 0.95em;"><em>Beide beschreiben das gleiche physikalische Verhältnis, da P ∝ A²</em></p>
+        </div>
+
         <div class="calculator-grid">
             <!-- Amplitude Calculator -->
             <div class="calc-section amplitude">
-                <h3>Amplituden-Berechnung</h3>
+                <h3>Feldgrößen-Berechnung</h3>
+                <p style="text-align: center; color: #666; font-size: 0.9em; margin: -10px 0 10px 0;">
+                    (Spannung, Strom, Schalldruck, etc.)
+                </p>
 
                 <div class="formula-box">
                     L<sub>dB</sub> = 20 · log<sub>10</sub>(A / A<sub>0</sub>)
                 </div>
 
                 <div class="input-group">
-                    <label>Amplitude A:</label>
+                    <label>Feldgröße A (z.B. Spannung in V):</label>
                     <input type="number" id="amp-linear" placeholder="z.B. 2.0" step="any">
                 </div>
 
@@ -226,17 +236,17 @@
                 </div>
 
                 <div class="input-group">
-                    <label>Pegel in dB:</label>
+                    <label>Pegel in dB (20·log₁₀):</label>
                     <input type="number" id="amp-db" placeholder="z.B. 6.0" step="any">
                 </div>
 
                 <div class="result-box">
-                    <div class="label">Amplitudenverhältnis</div>
+                    <div class="label">Verhältnis A/A₀</div>
                     <div class="value" id="amp-ratio">1.00</div>
                 </div>
 
                 <div class="result-box">
-                    <div class="label">Entsprechende Leistung</div>
+                    <div class="label">Entsprechende Leistung (A/A₀)²</div>
                     <div class="value" id="amp-power">1.00</div>
                 </div>
             </div>
@@ -244,13 +254,16 @@
             <!-- Power Calculator -->
             <div class="calc-section power">
                 <h3>Leistungs-Berechnung</h3>
+                <p style="text-align: center; color: #666; font-size: 0.9em; margin: -10px 0 10px 0;">
+                    (elektrische Leistung, Schallintensität, etc.)
+                </p>
 
                 <div class="formula-box">
                     L<sub>dB</sub> = 10 · log<sub>10</sub>(P / P<sub>0</sub>)
                 </div>
 
                 <div class="input-group">
-                    <label>Leistung P:</label>
+                    <label>Leistung P (z.B. Leistung in W):</label>
                     <input type="number" id="pow-linear" placeholder="z.B. 4.0" step="any">
                 </div>
 
@@ -260,119 +273,127 @@
                 </div>
 
                 <div class="input-group">
-                    <label>Pegel in dB:</label>
+                    <label>Pegel in dB (10·log₁₀):</label>
                     <input type="number" id="pow-db" placeholder="z.B. 6.0" step="any">
                 </div>
 
                 <div class="result-box">
-                    <div class="label">Leistungsverhältnis</div>
+                    <div class="label">Verhältnis P/P₀</div>
                     <div class="value" id="pow-ratio">1.00</div>
                 </div>
 
                 <div class="result-box">
-                    <div class="label">Entsprechende Amplitude</div>
+                    <div class="label">Entsprechende Feldgröße √(P/P₀)</div>
                     <div class="value" id="pow-amplitude">1.00</div>
                 </div>
             </div>
         </div>
 
         <div class="important-points">
-            <h4>⚠️ Wichtige Punkte (klicken zum Eintragen)</h4>
+            <h4>Schnellreferenz (klicken zum Eintragen)</h4>
+            <p style="color: #666; font-size: 0.9em; margin: 0 0 15px 0;">
+                <strong>Beachte:</strong> Gleicher dB-Wert bedeutet unterschiedliche Verhältnisse für Feldgrößen vs. Leistung!
+            </p>
             <div class="ref-grid">
                 <div class="ref-card" onclick="setDB(20)">
                     <div class="db-value">+20 dB</div>
-                    <div class="description">Amplitude ×10<br>Leistung ×100</div>
+                    <div class="description"><strong>Feldgröße:</strong> ×10<br><strong>Leistung:</strong> ×100</div>
                 </div>
                 <div class="ref-card" onclick="setDB(6)">
                     <div class="db-value">+6 dB</div>
-                    <div class="description">Amplitude ×2<br>Leistung ×4</div>
+                    <div class="description"><strong>Feldgröße:</strong> ×2<br><strong>Leistung:</strong> ×4</div>
                 </div>
                 <div class="ref-card" onclick="setDB(3)">
                     <div class="db-value">+3 dB</div>
-                    <div class="description">Amplitude ×1.41<br>Leistung ×2</div>
+                    <div class="description"><strong>Feldgröße:</strong> ×1.41<br><strong>Leistung:</strong> ×2</div>
                 </div>
                 <div class="ref-card" onclick="setDB(0)">
                     <div class="db-value">0 dB</div>
-                    <div class="description">Referenz<br>Keine Änderung</div>
+                    <div class="description"><strong>Referenz</strong><br>Keine Änderung</div>
                 </div>
                 <div class="ref-card" onclick="setDB(-3)">
                     <div class="db-value">-3 dB</div>
-                    <div class="description">Amplitude ×0.707<br>Leistung ÷2</div>
+                    <div class="description"><strong>Feldgröße:</strong> ×0.707<br><strong>Leistung:</strong> ÷2</div>
                 </div>
                 <div class="ref-card" onclick="setDB(-6)">
                     <div class="db-value">-6 dB</div>
-                    <div class="description">Amplitude ÷2<br>Leistung ÷4</div>
+                    <div class="description"><strong>Feldgröße:</strong> ÷2<br><strong>Leistung:</strong> ÷4</div>
                 </div>
                 <div class="ref-card" onclick="setDB(-20)">
                     <div class="db-value">-20 dB</div>
-                    <div class="description">Amplitude ÷10<br>Leistung ÷100</div>
+                    <div class="description"><strong>Feldgröße:</strong> ÷10<br><strong>Leistung:</strong> ÷100</div>
                 </div>
                 <div class="ref-card" onclick="setDB(-40)">
                     <div class="db-value">-40 dB</div>
-                    <div class="description">Amplitude ÷100<br>Leistung ÷10000</div>
+                    <div class="description"><strong>Feldgröße:</strong> ÷100<br><strong>Leistung:</strong> ÷10000</div>
                 </div>
             </div>
         </div>
 
         <div class="quick-ref">
-            <h3>Merksätze</h3>
+            <h3>Merksätze (sehr wichtig!)</h3>
             <ul>
-                <li><strong>Verdopplung der Amplitude:</strong> +6 dB (genau: 6.02 dB)</li>
-                <li><strong>Verdopplung der Leistung:</strong> +3 dB (genau: 3.01 dB)</li>
-                <li><strong>Verzehnfachung der Amplitude:</strong> +20 dB (genau)</li>
-                <li><strong>Verzehnfachung der Leistung:</strong> +10 dB (genau)</li>
-                <li><strong>-3 dB Punkt:</strong> 70.7% Amplitude, 50% Leistung (Grenzfrequenz)</li>
-                <li><strong>Addition:</strong> dB-Werte werden addiert: +6dB + 6dB = +12dB</li>
+                <li><strong>Verdopplung Feldgröße (×2):</strong> +6 dB (genau: 6.02 dB) mit 20·log₁₀</li>
+                <li><strong>Verdopplung Leistung (×2):</strong> +3 dB (genau: 3.01 dB) mit 10·log₁₀</li>
+                <li><strong>Verzehnfachung Feldgröße (×10):</strong> +20 dB (genau) mit 20·log₁₀</li>
+                <li><strong>Verzehnfachung Leistung (×10):</strong> +10 dB (genau) mit 10·log₁₀</li>
+                <li><strong>-3 dB Punkt:</strong> 70.7% Feldgröße (×0.707), 50% Leistung (÷2) (Grenzfrequenz)</li>
+                <li><strong>Addition in dB:</strong> Multiplikation im Linearen: +6dB + 6dB = +12dB entspricht ×2 × ×2 = ×4</li>
+                <li><strong>KERNPUNKT:</strong> Gleicher dB-Wert = verschiedene Verhältnisse! +6dB ist ×2 für Feldgrößen, aber ×4 für Leistung</li>
             </ul>
         </div>
 
         <div class="important-points">
-            <h4>📐 Wichtige Rechenregeln</h4>
+            <h4>Wichtige Rechenregeln in dB</h4>
             <ul>
                 <li><strong>Multiplikation → Addition:</strong> A₁ · A₂ entspricht L₁(dB) + L₂(dB)
-                    <br><span style="margin-left: 20px; color: #7f8c8d;">Beispiel: 2×2 = 4 ⟹ 6dB + 6dB = 12dB</span>
+                    <br><span style="margin-left: 20px; color: #7f8c8d;">Beispiel (Feldgröße): 2×2 = 4 ⟹ 6dB + 6dB = 12dB</span>
                 </li>
                 <li><strong>Division → Subtraktion:</strong> A₁ / A₂ entspricht L₁(dB) - L₂(dB)
-                    <br><span style="margin-left: 20px; color: #7f8c8d;">Beispiel: 10/2 = 5 ⟹ 20dB - 6dB = 14dB</span>
+                    <br><span style="margin-left: 20px; color: #7f8c8d;">Beispiel (Feldgröße): 10/2 = 5 ⟹ 20dB - 6dB = 14dB</span>
                 </li>
                 <li><strong>Potenzierung → Multiplikation:</strong> A<sup>n</sup> entspricht n · L(dB)
-                    <br><span style="margin-left: 20px; color: #7f8c8d;">Beispiel: 2³ = 8 ⟹ 3 × 6dB = 18dB</span>
+                    <br><span style="margin-left: 20px; color: #7f8c8d;">Beispiel (Feldgröße): 2³ = 8 ⟹ 3 × 6dB = 18dB</span>
                 </li>
                 <li><strong>Wurzel → Division:</strong> ⁿ√A entspricht L(dB) / n
-                    <br><span style="margin-left: 20px; color: #7f8c8d;">Beispiel: √4 = 2 ⟹ 12dB / 2 = 6dB</span>
+                    <br><span style="margin-left: 20px; color: #7f8c8d;">Beispiel (Leistung): √4 = 2 ⟹ 6dB / 2 = 3dB (10·log₁₀)</span>
                 </li>
-                <li><strong>Amplitude zu Leistung:</strong> L<sub>P</sub>(dB) = 2 · L<sub>A</sub>(dB)
-                    <br><span style="margin-left: 20px; color: #7f8c8d;">Beispiel: 6dB Amplitude = 12dB Leistung (da P ∝ A²)</span>
+                <li><strong>Feldgröße zu Leistung:</strong> L<sub>P</sub>(dB, 10·log) = 2 · L<sub>A</sub>(dB, 20·log)
+                    <br><span style="margin-left: 20px; color: #7f8c8d;">Beispiel: 6dB Feldgröße (×2) = 6dB Leistung (×4, weil P ∝ A²)</span>
+                    <br><span style="margin-left: 20px; color: #e74c3c;">ABER: 20·log₁₀(2) = 6dB ≠ 10·log₁₀(2) = 3dB - verschiedene Formeln!</span>
                 </li>
-                <li><strong>Leistung zu Amplitude:</strong> L<sub>A</sub>(dB) = L<sub>P</sub>(dB) / 2
-                    <br><span style="margin-left: 20px; color: #7f8c8d;">Beispiel: 12dB Leistung = 6dB Amplitude</span>
+                <li><strong>Leistung zu Feldgröße:</strong> L<sub>A</sub>(dB, 20·log) = L<sub>P</sub>(dB, 10·log)
+                    <br><span style="margin-left: 20px; color: #7f8c8d;">Beispiel: 6dB Leistung (×4) = 6dB Feldgröße (×2)</span>
                 </li>
                 <li><strong>Kettenberechnung:</strong> Gesamtverstärkung = Summe aller Einzel-dB
                     <br><span style="margin-left: 20px; color: #7f8c8d;">Beispiel: Verstärker (+20dB) + Dämpfung (-3dB) + Filter (-6dB) = +11dB</span>
                 </li>
                 <li><strong>Umkehrung (Reziprok):</strong> 1/A entspricht -L(dB)
-                    <br><span style="margin-left: 20px; color: #7f8c8d;">Beispiel: 1/10 = 0.1 ⟹ -20dB</span>
+                    <br><span style="margin-left: 20px; color: #7f8c8d;">Beispiel (Feldgröße): 1/10 = 0.1 ⟹ -20dB (20·log₁₀)</span>
                 </li>
             </ul>
         </div>
 
         <div style="background: #f0f8ff; padding: 20px; border-radius: 6px; margin: 20px 0; border: 2px solid #3498db;">
-            <h4 style="color: #2980b9; margin: 0 0 15px 0;">💡 Schnellrechnen mit dB</h4>
+            <h4 style="color: #2980b9; margin: 0 0 15px 0;">Schnellrechnen mit dB</h4>
             <ul style="margin: 0; padding-left: 25px;">
                 <li style="color: #555; line-height: 1.8; margin: 8px 0;">
-                    <strong style="color: #2980b9;">Verdopplung:</strong> +6 dB Amplitude (≈ +6 dB) oder +3 dB Leistung
+                    <strong style="color: #2980b9;">Verdopplung (×2):</strong> Feldgröße: +6 dB (20·log₁₀) | Leistung: +3 dB (10·log₁₀)
                 </li>
                 <li style="color: #555; line-height: 1.8; margin: 8px 0;">
-                    <strong style="color: #2980b9;">Halbierung:</strong> -6 dB Amplitude oder -3 dB Leistung
+                    <strong style="color: #2980b9;">Halbierung (÷2):</strong> Feldgröße: -6 dB | Leistung: -3 dB
                 </li>
                 <li style="color: #555; line-height: 1.8; margin: 8px 0;">
-                    <strong style="color: #2980b9;">Faktor 10:</strong> +20 dB Amplitude oder +10 dB Leistung
+                    <strong style="color: #2980b9;">Faktor 10 (×10):</strong> Feldgröße: +20 dB | Leistung: +10 dB
                 </li>
                 <li style="color: #555; line-height: 1.8; margin: 8px 0;">
-                    <strong style="color: #2980b9;">Faktor 100:</strong> +40 dB Amplitude oder +20 dB Leistung
+                    <strong style="color: #2980b9;">Faktor 100 (×100):</strong> Feldgröße: +40 dB | Leistung: +20 dB
                 </li>
                 <li style="color: #555; line-height: 1.8; margin: 8px 0;">
-                    <strong style="color: #2980b9;">Praktischer Trick:</strong> 6dB ≈ ×2, also 12dB ≈ ×4, 18dB ≈ ×8, 24dB ≈ ×16
+                    <strong style="color: #2980b9;">Praktischer Trick (Feldgröße):</strong> 6dB ≈ ×2, also 12dB ≈ ×4, 18dB ≈ ×8, 24dB ≈ ×16
+                </li>
+                <li style="color: #555; line-height: 1.8; margin: 8px 0;">
+                    <strong style="color: #2980b9;">Praktischer Trick (Leistung):</strong> 3dB ≈ ×2, also 6dB ≈ ×4, 9dB ≈ ×8, 12dB ≈ ×16
                 </li>
             </ul>
         </div>

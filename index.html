@@ -229,12 +229,21 @@
             </div>
             <div class="visualizations">
                 <a href="01-analoge-welt/signaloperationen/index.html" class="viz-card">
-                    <div class="viz-title">Kontinuierliche Faltung</div>
+                    <div class="viz-title">Kontinuierliche Faltung (Convolution)</div>
                     <div class="viz-description">
                         Die fundamentale Operation zur Beschreibung von analogen LTI-Systemen.
-                        Integral-basierte Faltung: y(t) = ∫ x(τ)·h(t-τ) dτ
+                        Integral-basierte Faltung: y(t) = ∫ x(τ)·h(t-τ) dτ mit Kernel h(t)
                     </div>
                     <div class="viz-count">1 Visualisierung</div>
+                </a>
+
+                <a href="01-analoge-welt/fourier/index.html" class="viz-card">
+                    <div class="viz-title">Fourier-Transformation & Reihe</div>
+                    <div class="viz-description">
+                        Zerlegung analoger Signale in Frequenzkomponenten. Fourier-Reihe für periodische,
+                        Fourier-Transformation für nichtperiodische Signale. Basis für Spektralanalyse.
+                    </div>
+                    <div class="viz-count">2 Visualisierungen</div>
                 </a>
             </div>
         </div>
@@ -261,10 +270,10 @@
                 </a>
 
                 <a href="02-ad-wandlung/quantisierung.html" class="viz-card">
-                    <div class="viz-title">Quantisierung</div>
+                    <div class="viz-title">Quantisierung & Codierung</div>
                     <div class="viz-description">
                         Zuweisung zu 2<sup>n</sup> Pegelstufen. Quantisierungsrauschen,
-                        Signal-to-Noise Ratio und der Trade-off Auflösung vs. Speicherbedarf.
+                        Signal-to-Noise Ratio (SNR = 6n + 1.8 dB) und lineare vs. nichtlineare Quantisierung.
                     </div>
                     <div class="viz-count">1 Visualisierung</div>
                 </a>
@@ -284,16 +293,34 @@
             </div>
             <div class="visualizations">
                 <a href="03-digitale-verarbeitung/diskrete_faltung.html" class="viz-card">
-                    <div class="viz-title">Diskrete Faltung</div>
+                    <div class="viz-title">Diskrete Faltung (Discrete Convolution)</div>
                     <div class="viz-description">
-                        Digitales Äquivalent zur kontinuierlichen Faltung.
+                        Digitales Äquivalent zur kontinuierlichen Faltung mit Kernel h[n].
                         Summenbasierte Faltung: y[n] = Σ x[k]·h[n-k]
                     </div>
                     <div class="viz-count">1 Visualisierung</div>
                 </a>
 
+                <a href="03-digitale-verarbeitung/korrelation.html" class="viz-card">
+                    <div class="viz-title">Korrelation (Correlation)</div>
+                    <div class="viz-description">
+                        Kreuzkorrelation für Ähnlichkeitsbestimmung und Autokorrelation für
+                        Periodizitätserkennung. Energie und Leistung diskreter Signale.
+                    </div>
+                    <div class="viz-count">2 Visualisierungen</div>
+                </a>
+
+                <a href="03-digitale-verarbeitung/z_transformation.html" class="viz-card">
+                    <div class="viz-title">Z-Transformation</div>
+                    <div class="viz-description">
+                        Diskretes Gegenstück zur Laplace-Transformation. Beschreibung von Systemen
+                        durch Pole und Nullstellen im z-Bereich. Basis für Filterentwurf.
+                    </div>
+                    <div class="viz-count">1 Visualisierung</div>
+                </a>
+
                 <a href="03-digitale-verarbeitung/frequenzanalyse/fourier_transformation.html" class="viz-card">
-                    <div class="viz-title">Frequenzanalyse (DFT)</div>
+                    <div class="viz-title">DFT/FFT - Frequenzanalyse</div>
                     <div class="viz-description">
                         Diskrete Fourier-Transformation: Zerlegung digitaler Signale in
                         Frequenzkomponenten. Zeit- und Frequenzbereich verstehen.
@@ -302,16 +329,16 @@
                 </a>
 
                 <a href="03-digitale-verarbeitung/fensterfunktionen.html" class="viz-card">
-                    <div class="viz-title">Fensterfunktionen</div>
+                    <div class="viz-title">Fensterfunktionen (Windowing)</div>
                     <div class="viz-description">
-                        Hanning, Hamming, Blackman, Kaiser: Reduzierung spektraler Verzerrungen
+                        Hanning, Hamming, Blackman, Kaiser: Reduzierung des Leckage-Effekts
                         bei der FFT-Analyse von Signalausschnitten.
                     </div>
                     <div class="viz-count">1 Visualisierung</div>
                 </a>
 
                 <a href="03-digitale-verarbeitung/fir_filter.html" class="viz-card">
-                    <div class="viz-title">FIR-Filter</div>
+                    <div class="viz-title">FIR-Filter (Non-recursive)</div>
                     <div class="viz-description">
                         Finite Impulse Response: Nicht-rekursiv, immer stabil, endlich lang.
                         Lineare Phase möglich. Ideal für phasentreue Anwendungen.
@@ -320,7 +347,7 @@
                 </a>
 
                 <a href="03-digitale-verarbeitung/iir_filter.html" class="viz-card">
-                    <div class="viz-title">IIR-Filter</div>
+                    <div class="viz-title">IIR-Filter (Recursive)</div>
                     <div class="viz-description">
                         Infinite Impulse Response: Rekursiv, potentiell instabil, theoretisch
                         unendlich lang. Effizienter als FIR, aber mit Stabilitätsrisiko.

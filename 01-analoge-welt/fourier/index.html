@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fourier-Analyse - Zeit- und Frequenzbereich</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .tab {
+            padding: 12px 24px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            color: #555;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s;
+        }
+        .tab:hover {
+            background: #e9ecef;
+        }
+        .tab.active {
+            background: #84fab0;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #84fab0;
+        }
+        .info-box h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .panel {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        .panel h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        canvas {
+            display: block;
+            margin: 15px auto;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .control-group {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+        select, input[type="range"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        input[type="range"] {
+            padding: 0;
+        }
+        .value-display {
+            display: inline-block;
+            margin-left: 10px;
+            color: #84fab0;
+            font-weight: 600;
+        }
+        .formula {
+            background: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            text-align: center;
+            color: #2c3e50;
+            font-size: 0.95em;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #84fab0;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .harmonics-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .harmonic-item {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            text-align: center;
+            font-size: 0.85em;
+        }
+        .harmonic-freq {
+            font-weight: 600;
+            color: #84fab0;
+        }
+        .harmonic-amp {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <a href="../../index.html" class="back-link">← Zurück zur Übersicht</a>
+
+    <div class="container">
+        <h1>Fourier-Analyse (Fourier Analysis)</h1>
+        <div class="subtitle">Zerlegung kontinuierlicher Signale in Frequenzkomponenten</div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('series')">Fourier-Reihe (Periodic)</button>
+            <button class="tab" onclick="switchTab('transform')">Fourier-Transformation (Aperiodic)</button>
+        </div>
+
+        <!-- Fourier-Reihe Tab -->
+        <div id="series" class="tab-content active">
+            <div class="info-box">
+                <h3>Fourier-Reihe (Fourier Series)</h3>
+                <p>
+                    Periodische Signale können als unendliche Summe von Sinus- und Kosinus-Funktionen
+                    (Harmonische) dargestellt werden. Die Grundfrequenz f₀ und deren ganzzahlige Vielfache
+                    bilden das Frequenzspektrum.
+                </p>
+                <div class="formula">
+                    x(t) = a₀ + Σ [aₙ·cos(nω₀t) + bₙ·sin(nω₀t)]<br>
+                    mit ω₀ = 2πf₀ = 2π/T
+                </div>
+                <p style="margin-top: 10px; font-size: 0.95em; color: #666;">
+                    <strong>Harmonische:</strong> Ganzzahlige Vielfache der Grundfrequenz (n·f₀)<br>
+                    <strong>Koeffizienten aₙ, bₙ:</strong> Bestimmen Amplitude und Phase jeder Harmonischen
+                </p>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>Signaltyp:</label>
+                    <select id="waveformType">
+                        <option value="square">Rechteck (Square Wave)</option>
+                        <option value="sawtooth">Sägezahn (Sawtooth)</option>
+                        <option value="triangle">Dreieck (Triangle)</option>
+                        <option value="halfwave">Halbwellen-Gleichrichter</option>
+                        <option value="pulse">Puls-Zug</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        Anzahl Harmonische: <span class="value-display" id="harmonicsValue">10</span>
+                    </label>
+                    <input type="range" id="harmonicsCount" min="1" max="50" value="10">
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        Grundfrequenz f₀: <span class="value-display" id="freqValue">1 Hz</span>
+                    </label>
+                    <input type="range" id="frequency" min="0.5" max="5" step="0.5" value="1">
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        Amplitude: <span class="value-display" id="ampValue">1.0</span>
+                    </label>
+                    <input type="range" id="amplitude" min="0.1" max="2" step="0.1" value="1">
+                </div>
+            </div>
+
+            <div class="grid-container">
+                <div class="panel">
+                    <h3>Zeitbereich x(t)</h3>
+                    <canvas id="seriesTimeCanvas" width="550" height="300"></canvas>
+                </div>
+
+                <div class="panel">
+                    <h3>Frequenzbereich (Spektrum)</h3>
+                    <canvas id="seriesFreqCanvas" width="550" height="300"></canvas>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>Annäherung durch einzelne Harmonische</h3>
+                <canvas id="harmonicsCanvas" width="1150" height="300"></canvas>
+            </div>
+
+            <div class="panel">
+                <h3>Harmonische Komponenten</h3>
+                <div id="harmonicsList" class="harmonics-list"></div>
+            </div>
+        </div>
+
+        <!-- Fourier-Transformation Tab -->
+        <div id="transform" class="tab-content">
+            <div class="info-box">
+                <h3>Fourier-Transformation (Fourier Transform)</h3>
+                <p>
+                    Die Fourier-Transformation erweitert das Konzept der Fourier-Reihe auf nichtperiodische
+                    Signale. Sie liefert ein kontinuierliches Frequenzspektrum statt diskreter Harmonischer.
+                </p>
+                <div class="formula">
+                    X(f) = ∫ x(t)·e^(-j2πft) dt<br>
+                    x(t) = ∫ X(f)·e^(j2πft) df
+                </div>
+                <p style="margin-top: 10px; font-size: 0.95em; color: #666;">
+                    <strong>X(f):</strong> Komplexes Frequenzspektrum (Amplitude und Phase)<br>
+                    <strong>Kontinuierlich:</strong> Frequenzkomponenten sind nicht diskret
+                </p>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label>Signaltyp:</label>
+                    <select id="signalType">
+                        <option value="gauss">Gauß-Impuls (Gaussian)</option>
+                        <option value="rect">Rechteck-Impuls (Rect)</option>
+                        <option value="sinc">Sinc-Funktion</option>
+                        <option value="exp">Exponential-Impuls</option>
+                        <option value="chirp">Chirp (Frequenz-Sweep)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        Impulsbreite τ: <span class="value-display" id="widthValue">1.0</span>
+                    </label>
+                    <input type="range" id="pulseWidth" min="0.2" max="3" step="0.1" value="1">
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        Mittenfrequenz fc: <span class="value-display" id="centerFreqValue">2 Hz</span>
+                    </label>
+                    <input type="range" id="centerFreq" min="0" max="10" step="0.5" value="2">
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        Amplitude: <span class="value-display" id="transAmpValue">1.0</span>
+                    </label>
+                    <input type="range" id="transAmplitude" min="0.1" max="2" step="0.1" value="1">
+                </div>
+            </div>
+
+            <div class="grid-container">
+                <div class="panel">
+                    <h3>Zeitbereich x(t)</h3>
+                    <canvas id="transTimeCanvas" width="550" height="300"></canvas>
+                </div>
+
+                <div class="panel">
+                    <h3>Frequenzbereich X(f) - Betrag</h3>
+                    <canvas id="transMagCanvas" width="550" height="300"></canvas>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>Frequenzbereich X(f) - Phase</h3>
+                <canvas id="transPhaseCanvas" width="1150" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'series';
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(tab).classList.add('active');
+
+            if (tab === 'series') drawFourierSeries();
+            else drawFourierTransform();
+        }
+
+        // Fourier-Reihe
+        const waveformSelect = document.getElementById('waveformType');
+        const harmonicsSlider = document.getElementById('harmonicsCount');
+        const freqSlider = document.getElementById('frequency');
+        const ampSlider = document.getElementById('amplitude');
+
+        const seriesTimeCanvas = document.getElementById('seriesTimeCanvas');
+        const seriesFreqCanvas = document.getElementById('seriesFreqCanvas');
+        const harmonicsCanvas = document.getElementById('harmonicsCanvas');
+
+        function getFourierCoefficients(type, n, amplitude) {
+            const coeffs = [];
+
+            switch(type) {
+                case 'square':
+                    // Rechteck: nur ungerade Harmonische, aₙ = 0, bₙ = 4A/(nπ)
+                    for (let k = 1; k <= n; k++) {
+                        if (k % 2 === 1) {
+                            coeffs.push({
+                                n: k,
+                                a: 0,
+                                b: (4 * amplitude) / (k * Math.PI),
+                                amp: (4 * amplitude) / (k * Math.PI)
+                            });
+                        }
+                    }
+                    break;
+
+                case 'sawtooth':
+                    // Sägezahn: aₙ = 0, bₙ = -2A/(nπ)
+                    for (let k = 1; k <= n; k++) {
+                        coeffs.push({
+                            n: k,
+                            a: 0,
+                            b: -2 * amplitude / (k * Math.PI),
+                            amp: 2 * amplitude / (k * Math.PI)
+                        });
+                    }
+                    break;
+
+                case 'triangle':
+                    // Dreieck: nur ungerade Harmonische, bₙ = 8A/(n²π²)
+                    for (let k = 1; k <= n; k++) {
+                        if (k % 2 === 1) {
+                            const sign = ((k - 1) / 2) % 2 === 0 ? 1 : -1;
+                            coeffs.push({
+                                n: k,
+                                a: 0,
+                                b: sign * (8 * amplitude) / (k * k * Math.PI * Math.PI),
+                                amp: (8 * amplitude) / (k * k * Math.PI * Math.PI)
+                            });
+                        }
+                    }
+                    break;
+
+                case 'halfwave':
+                    // Halbwellen-Gleichrichter
+                    coeffs.push({n: 0, a: amplitude / Math.PI, b: 0, amp: amplitude / Math.PI});
+                    coeffs.push({n: 1, a: 0, b: amplitude / 2, amp: amplitude / 2});
+                    for (let k = 2; k <= n; k += 2) {
+                        const a = -2 * amplitude / (Math.PI * (k * k - 1));
+                        coeffs.push({n: k, a: a, b: 0, amp: Math.abs(a)});
+                    }
+                    break;
+
+                case 'pulse':
+                    // Puls-Zug (duty cycle 25%)
+                    const duty = 0.25;
+                    coeffs.push({n: 0, a: duty * amplitude, b: 0, amp: duty * amplitude});
+                    for (let k = 1; k <= n; k++) {
+                        const a = 2 * amplitude * Math.sin(k * Math.PI * duty) / (k * Math.PI);
+                        coeffs.push({n: k, a: a, b: 0, amp: Math.abs(a)});
+                    }
+                    break;
+            }
+
+            return coeffs;
+        }
+
+        function evaluateFourierSeries(t, coeffs, f0) {
+            let sum = 0;
+            const omega0 = 2 * Math.PI * f0;
+
+            for (let coeff of coeffs) {
+                if (coeff.n === 0) {
+                    sum += coeff.a; // DC-Komponente
+                } else {
+                    sum += coeff.a * Math.cos(coeff.n * omega0 * t);
+                    sum += coeff.b * Math.sin(coeff.n * omega0 * t);
+                }
+            }
+
+            return sum;
+        }
+
+        function drawFourierSeries() {
+            const type = waveformSelect.value;
+            const nHarmonics = parseInt(harmonicsSlider.value);
+            const f0 = parseFloat(freqSlider.value);
+            const amp = parseFloat(ampSlider.value);
+
+            const coeffs = getFourierCoefficients(type, nHarmonics, amp);
+
+            drawSeriesTime(coeffs, f0);
+            drawSeriesFrequency(coeffs, f0);
+            drawHarmonicsBreakdown(coeffs, f0);
+            updateHarmonicsList(coeffs, f0);
+        }
+
+        function drawSeriesTime(coeffs, f0) {
+            const canvas = seriesTimeCanvas;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const margin = {top: 30, right: 30, bottom: 40, left: 60};
+            const plotW = w - margin.left - margin.right;
+            const plotH = h - margin.top - margin.bottom;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Hintergrund
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(margin.left, margin.top, plotW, plotH);
+
+            // Titel
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Signal im Zeitbereich', w / 2, 20);
+
+            const period = 1 / f0;
+            const numPeriods = 3;
+            const tMax = numPeriods * period;
+            const samples = 1000;
+
+            // Berechne Signal
+            const signal = [];
+            const maxAmp = Math.max(...coeffs.map(c => Math.abs(c.amp))) * 2;
+
+            for (let i = 0; i < samples; i++) {
+                const t = (i / samples) * tMax;
+                const y = evaluateFourierSeries(t, coeffs, f0);
+                signal.push({t, y});
+            }
+
+            // Gitter
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = margin.top + (plotH * i) / 5;
+                ctx.beginPath();
+                ctx.moveTo(margin.left, y);
+                ctx.lineTo(margin.left + plotW, y);
+                ctx.stroke();
+            }
+
+            // Achsen
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 2;
+            const zeroY = margin.top + plotH / 2;
+            ctx.beginPath();
+            ctx.moveTo(margin.left, margin.top);
+            ctx.lineTo(margin.left, margin.top + plotH);
+            ctx.lineTo(margin.left + plotW, margin.top + plotH);
+            ctx.moveTo(margin.left, zeroY);
+            ctx.lineTo(margin.left + plotW, zeroY);
+            ctx.stroke();
+
+            // Beschriftung
+            ctx.fillStyle = '#666';
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 4; i++) {
+                const val = maxAmp - (2 * maxAmp * i) / 4;
+                const y = margin.top + (plotH * i) / 4;
+                ctx.fillText(val.toFixed(1), margin.left - 5, y + 4);
+            }
+
+            ctx.textAlign = 'center';
+            ctx.fillText('0', margin.left, h - 10);
+            ctx.fillText(tMax.toFixed(1) + ' s', margin.left + plotW, h - 10);
+            ctx.fillText('Zeit t', w / 2, h - 5);
+
+            // Signal zeichnen
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < signal.length; i++) {
+                const x = margin.left + (signal[i].t / tMax) * plotW;
+                const y = zeroY - (signal[i].y / maxAmp) * (plotH / 2);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+
+        function drawSeriesFrequency(coeffs, f0) {
+            const canvas = seriesFreqCanvas;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const margin = {top: 30, right: 30, bottom: 40, left: 60};
+            const plotW = w - margin.left - margin.right;
+            const plotH = h - margin.top - margin.bottom;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Hintergrund
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(margin.left, margin.top, plotW, plotH);
+
+            // Titel
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Amplitudenspektrum', w / 2, 20);
+
+            const maxFreq = Math.max(...coeffs.map(c => c.n)) * f0 * 1.1;
+            const maxAmp = Math.max(...coeffs.map(c => c.amp), 0.1);
+
+            // Gitter
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = margin.top + (plotH * i) / 5;
+                ctx.beginPath();
+                ctx.moveTo(margin.left, y);
+                ctx.lineTo(margin.left + plotW, y);
+                ctx.stroke();
+            }
+
+            // Achsen
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(margin.left, margin.top);
+            ctx.lineTo(margin.left, margin.top + plotH);
+            ctx.lineTo(margin.left + plotW, margin.top + plotH);
+            ctx.stroke();
+
+            // Beschriftung
+            ctx.fillStyle = '#666';
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 5; i++) {
+                const val = maxAmp - (maxAmp * i) / 5;
+                const y = margin.top + (plotH * i) / 5;
+                ctx.fillText(val.toFixed(2), margin.left - 5, y + 4);
+            }
+
+            ctx.textAlign = 'center';
+            ctx.fillText('0', margin.left, h - 10);
+            ctx.fillText(maxFreq.toFixed(0) + ' Hz', margin.left + plotW, h - 10);
+            ctx.fillText('Frequenz f', w / 2, h - 5);
+
+            // Spektrallinien
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 3;
+            for (let coeff of coeffs) {
+                const freq = coeff.n * f0;
+                const x = margin.left + (freq / maxFreq) * plotW;
+                const y1 = margin.top + plotH;
+                const y2 = margin.top + plotH - (coeff.amp / maxAmp) * plotH;
+
+                ctx.beginPath();
+                ctx.moveTo(x, y1);
+                ctx.lineTo(x, y2);
+                ctx.stroke();
+
+                // Punkt am Ende
+                ctx.fillStyle = '#e74c3c';
+                ctx.beginPath();
+                ctx.arc(x, y2, 4, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+
+        function drawHarmonicsBreakdown(coeffs, f0) {
+            const canvas = harmonicsCanvas;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const margin = {top: 30, right: 30, bottom: 40, left: 60};
+            const plotW = w - margin.left - margin.right;
+            const plotH = h - margin.top - margin.bottom;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Hintergrund
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(margin.left, margin.top, plotW, plotH);
+
+            // Titel
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Annäherung mit steigender Harmonischen-Anzahl', w / 2, 20);
+
+            const period = 1 / f0;
+            const tMax = 2 * period;
+            const samples = 500;
+
+            const maxAmp = Math.max(...coeffs.map(c => Math.abs(c.amp))) * 2;
+
+            // Gitter
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = margin.top + (plotH * i) / 5;
+                ctx.beginPath();
+                ctx.moveTo(margin.left, y);
+                ctx.lineTo(margin.left + plotW, y);
+                ctx.stroke();
+            }
+
+            // Achsen
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 2;
+            const zeroY = margin.top + plotH / 2;
+            ctx.beginPath();
+            ctx.moveTo(margin.left, margin.top);
+            ctx.lineTo(margin.left, margin.top + plotH);
+            ctx.lineTo(margin.left + plotW, margin.top + plotH);
+            ctx.moveTo(margin.left, zeroY);
+            ctx.lineTo(margin.left + plotW, zeroY);
+            ctx.stroke();
+
+            // Beschriftung
+            ctx.fillStyle = '#666';
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Zeit t', w / 2, h - 5);
+
+            // Zeichne schrittweise Annäherung
+            const steps = Math.min(5, coeffs.length);
+            const colors = ['#e74c3c', '#f39c12', '#f1c40f', '#2ecc71', '#3498db'];
+
+            for (let step = 0; step < steps; step++) {
+                const nTerms = Math.ceil((step + 1) * coeffs.length / steps);
+                const partialCoeffs = coeffs.slice(0, nTerms);
+
+                ctx.strokeStyle = colors[step % colors.length];
+                ctx.lineWidth = step === steps - 1 ? 2.5 : 1.5;
+                ctx.globalAlpha = step === steps - 1 ? 1 : 0.4;
+
+                ctx.beginPath();
+                for (let i = 0; i < samples; i++) {
+                    const t = (i / samples) * tMax;
+                    const y = evaluateFourierSeries(t, partialCoeffs, f0);
+                    const x = margin.left + (t / tMax) * plotW;
+                    const py = zeroY - (y / maxAmp) * (plotH / 2);
+
+                    if (i === 0) ctx.moveTo(x, py);
+                    else ctx.lineTo(x, py);
+                }
+                ctx.stroke();
+            }
+
+            ctx.globalAlpha = 1;
+
+            // Legende
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'left';
+            let legendX = margin.left + 10;
+            for (let step = 0; step < steps; step++) {
+                const nTerms = Math.ceil((step + 1) * coeffs.length / steps);
+                ctx.fillStyle = colors[step % colors.length];
+                ctx.fillText(`n=${nTerms}`, legendX, margin.top + 10);
+                legendX += 60;
+            }
+        }
+
+        function updateHarmonicsList(coeffs, f0) {
+            const list = document.getElementById('harmonicsList');
+            let html = '';
+
+            for (let coeff of coeffs.slice(0, 20)) {
+                const freq = coeff.n * f0;
+                html += `
+                    <div class="harmonic-item">
+                        <div class="harmonic-freq">${freq.toFixed(1)} Hz</div>
+                        <div class="harmonic-amp">A = ${coeff.amp.toFixed(3)}</div>
+                    </div>
+                `;
+            }
+
+            list.innerHTML = html;
+        }
+
+        // Fourier-Transformation
+        const signalSelect = document.getElementById('signalType');
+        const widthSlider = document.getElementById('pulseWidth');
+        const centerFreqSlider = document.getElementById('centerFreq');
+        const transAmpSlider = document.getElementById('transAmplitude');
+
+        const transTimeCanvas = document.getElementById('transTimeCanvas');
+        const transMagCanvas = document.getElementById('transMagCanvas');
+        const transPhaseCanvas = document.getElementById('transPhaseCanvas');
+
+        function getSignal(type, width, fc, amp) {
+            const samples = 500;
+            const tMax = 10;
+            const signal = [];
+
+            for (let i = 0; i < samples; i++) {
+                const t = (i / samples) * tMax - tMax / 2;
+                let y = 0;
+
+                switch(type) {
+                    case 'gauss':
+                        y = amp * Math.exp(-(t * t) / (2 * width * width));
+                        break;
+
+                    case 'rect':
+                        y = (Math.abs(t) < width / 2) ? amp : 0;
+                        break;
+
+                    case 'sinc':
+                        const x = Math.PI * t / width;
+                        y = x === 0 ? amp : amp * Math.sin(x) / x;
+                        break;
+
+                    case 'exp':
+                        y = (t >= 0) ? amp * Math.exp(-t / width) : 0;
+                        break;
+
+                    case 'chirp':
+                        if (Math.abs(t) < width) {
+                            const chirpRate = 5 / width;
+                            const instFreq = fc + chirpRate * t;
+                            y = amp * Math.cos(2 * Math.PI * instFreq * t);
+                        }
+                        break;
+                }
+
+                signal.push({t, y});
+            }
+
+            return signal;
+        }
+
+        function computeFourierTransform(signal, type, width, amp) {
+            const fSamples = 200;
+            const fMax = 20;
+            const spectrum = [];
+
+            for (let i = 0; i < fSamples; i++) {
+                const f = (i / fSamples) * fMax;
+                let re = 0, im = 0;
+
+                // Analytische Fourier-Transformation für bekannte Funktionen
+                switch(type) {
+                    case 'gauss':
+                        // Gauß → Gauß
+                        re = amp * width * Math.sqrt(2 * Math.PI) * Math.exp(-2 * Math.PI * Math.PI * f * f * width * width);
+                        im = 0;
+                        break;
+
+                    case 'rect':
+                        // Rechteck → Sinc
+                        const x = Math.PI * f * width;
+                        re = x === 0 ? amp * width : amp * width * Math.sin(x) / x;
+                        im = 0;
+                        break;
+
+                    case 'sinc':
+                        // Sinc → Rechteck
+                        re = (Math.abs(f) < 1 / (2 * width)) ? amp * Math.PI * width : 0;
+                        im = 0;
+                        break;
+
+                    case 'exp':
+                        // Exponential
+                        const denom = 1 / (width * width) + 4 * Math.PI * Math.PI * f * f;
+                        re = amp * width / Math.sqrt(denom);
+                        im = -2 * Math.PI * f * amp * width / Math.sqrt(denom);
+                        break;
+
+                    case 'chirp':
+                        // Numerische Integration für Chirp
+                        for (let sig of signal) {
+                            const angle = -2 * Math.PI * f * sig.t;
+                            re += sig.y * Math.cos(angle);
+                            im += sig.y * Math.sin(angle);
+                        }
+                        re *= (signal[1].t - signal[0].t);
+                        im *= (signal[1].t - signal[0].t);
+                        break;
+                }
+
+                const mag = Math.sqrt(re * re + im * im);
+                const phase = Math.atan2(im, re);
+
+                spectrum.push({f, mag, phase});
+            }
+
+            return spectrum;
+        }
+
+        function drawFourierTransform() {
+            const type = signalSelect.value;
+            const width = parseFloat(widthSlider.value);
+            const fc = parseFloat(centerFreqSlider.value);
+            const amp = parseFloat(transAmpSlider.value);
+
+            const signal = getSignal(type, width, fc, amp);
+            const spectrum = computeFourierTransform(signal, type, width, amp);
+
+            drawTransformTime(signal);
+            drawTransformMagnitude(spectrum);
+            drawTransformPhase(spectrum);
+        }
+
+        function drawTransformTime(signal) {
+            const canvas = transTimeCanvas;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const margin = {top: 30, right: 30, bottom: 40, left: 60};
+            const plotW = w - margin.left - margin.right;
+            const plotH = h - margin.top - margin.bottom;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Hintergrund
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(margin.left, margin.top, plotW, plotH);
+
+            // Titel
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Signal x(t)', w / 2, 20);
+
+            const tMin = signal[0].t;
+            const tMax = signal[signal.length - 1].t;
+            const maxAmp = Math.max(...signal.map(s => Math.abs(s.y)), 0.1);
+
+            // Gitter
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = margin.top + (plotH * i) / 5;
+                ctx.beginPath();
+                ctx.moveTo(margin.left, y);
+                ctx.lineTo(margin.left + plotW, y);
+                ctx.stroke();
+            }
+
+            // Achsen
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 2;
+            const zeroY = margin.top + plotH / 2;
+            ctx.beginPath();
+            ctx.moveTo(margin.left, margin.top);
+            ctx.lineTo(margin.left, margin.top + plotH);
+            ctx.lineTo(margin.left + plotW, margin.top + plotH);
+            ctx.moveTo(margin.left, zeroY);
+            ctx.lineTo(margin.left + plotW, zeroY);
+            ctx.stroke();
+
+            // Beschriftung
+            ctx.fillStyle = '#666';
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 4; i++) {
+                const val = maxAmp - (2 * maxAmp * i) / 4;
+                const y = margin.top + (plotH * i) / 4;
+                ctx.fillText(val.toFixed(1), margin.left - 5, y + 4);
+            }
+
+            ctx.textAlign = 'center';
+            ctx.fillText(tMin.toFixed(0), margin.left, h - 10);
+            ctx.fillText(tMax.toFixed(0), margin.left + plotW, h - 10);
+            ctx.fillText('Zeit t [s]', w / 2, h - 5);
+
+            // Signal
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < signal.length; i++) {
+                const x = margin.left + ((signal[i].t - tMin) / (tMax - tMin)) * plotW;
+                const y = zeroY - (signal[i].y / maxAmp) * (plotH / 2);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+
+        function drawTransformMagnitude(spectrum) {
+            const canvas = transMagCanvas;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const margin = {top: 30, right: 30, bottom: 40, left: 60};
+            const plotW = w - margin.left - margin.right;
+            const plotH = h - margin.top - margin.bottom;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Hintergrund
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(margin.left, margin.top, plotW, plotH);
+
+            // Titel
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Betragsspektrum |X(f)|', w / 2, 20);
+
+            const fMax = spectrum[spectrum.length - 1].f;
+            const maxMag = Math.max(...spectrum.map(s => s.mag), 0.1);
+
+            // Gitter
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = margin.top + (plotH * i) / 5;
+                ctx.beginPath();
+                ctx.moveTo(margin.left, y);
+                ctx.lineTo(margin.left + plotW, y);
+                ctx.stroke();
+            }
+
+            // Achsen
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(margin.left, margin.top);
+            ctx.lineTo(margin.left, margin.top + plotH);
+            ctx.lineTo(margin.left + plotW, margin.top + plotH);
+            ctx.stroke();
+
+            // Beschriftung
+            ctx.fillStyle = '#666';
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 5; i++) {
+                const val = maxMag - (maxMag * i) / 5;
+                const y = margin.top + (plotH * i) / 5;
+                ctx.fillText(val.toFixed(1), margin.left - 5, y + 4);
+            }
+
+            ctx.textAlign = 'center';
+            ctx.fillText('0', margin.left, h - 10);
+            ctx.fillText(fMax.toFixed(0) + ' Hz', margin.left + plotW, h - 10);
+            ctx.fillText('Frequenz f', w / 2, h - 5);
+
+            // Spektrum
+            ctx.fillStyle = 'rgba(231, 76, 60, 0.3)';
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            const x0 = margin.left;
+            const y0 = margin.top + plotH;
+            ctx.moveTo(x0, y0);
+            for (let i = 0; i < spectrum.length; i++) {
+                const x = margin.left + (spectrum[i].f / fMax) * plotW;
+                const y = margin.top + plotH - (spectrum[i].mag / maxMag) * plotH;
+                ctx.lineTo(x, y);
+            }
+            ctx.lineTo(margin.left + plotW, y0);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        function drawTransformPhase(spectrum) {
+            const canvas = transPhaseCanvas;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const margin = {top: 30, right: 30, bottom: 40, left: 60};
+            const plotW = w - margin.left - margin.right;
+            const plotH = h - margin.top - margin.bottom;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Hintergrund
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(margin.left, margin.top, plotW, plotH);
+
+            // Titel
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Phasenspektrum ∠X(f)', w / 2, 20);
+
+            const fMax = spectrum[spectrum.length - 1].f;
+
+            // Gitter
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = margin.top + (plotH * i) / 4;
+                ctx.beginPath();
+                ctx.moveTo(margin.left, y);
+                ctx.lineTo(margin.left + plotW, y);
+                ctx.stroke();
+            }
+
+            // Achsen
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 2;
+            const zeroY = margin.top + plotH / 2;
+            ctx.beginPath();
+            ctx.moveTo(margin.left, margin.top);
+            ctx.lineTo(margin.left, margin.top + plotH);
+            ctx.lineTo(margin.left + plotW, margin.top + plotH);
+            ctx.moveTo(margin.left, zeroY);
+            ctx.lineTo(margin.left + plotW, zeroY);
+            ctx.stroke();
+
+            // Beschriftung
+            ctx.fillStyle = '#666';
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'right';
+            const labels = ['π', 'π/2', '0', '-π/2', '-π'];
+            for (let i = 0; i <= 4; i++) {
+                const y = margin.top + (plotH * i) / 4;
+                ctx.fillText(labels[i], margin.left - 5, y + 4);
+            }
+
+            ctx.textAlign = 'center';
+            ctx.fillText('0', margin.left, h - 10);
+            ctx.fillText(fMax.toFixed(0) + ' Hz', margin.left + plotW, h - 10);
+            ctx.fillText('Frequenz f', w / 2, h - 5);
+
+            // Phase
+            ctx.strokeStyle = '#f39c12';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < spectrum.length; i++) {
+                const x = margin.left + (spectrum[i].f / fMax) * plotW;
+                const normalized = (spectrum[i].phase + Math.PI) / (2 * Math.PI);
+                const y = margin.top + plotH * (1 - normalized);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+
+        // Event Listeners - Fourier Series
+        waveformSelect.addEventListener('change', drawFourierSeries);
+        harmonicsSlider.addEventListener('input', (e) => {
+            document.getElementById('harmonicsValue').textContent = e.target.value;
+            drawFourierSeries();
+        });
+        freqSlider.addEventListener('input', (e) => {
+            document.getElementById('freqValue').textContent = e.target.value + ' Hz';
+            drawFourierSeries();
+        });
+        ampSlider.addEventListener('input', (e) => {
+            document.getElementById('ampValue').textContent = e.target.value;
+            drawFourierSeries();
+        });
+
+        // Event Listeners - Fourier Transform
+        signalSelect.addEventListener('change', drawFourierTransform);
+        widthSlider.addEventListener('input', (e) => {
+            document.getElementById('widthValue').textContent = e.target.value;
+            drawFourierTransform();
+        });
+        centerFreqSlider.addEventListener('input', (e) => {
+            document.getElementById('centerFreqValue').textContent = e.target.value + ' Hz';
+            drawFourierTransform();
+        });
+        transAmpSlider.addEventListener('input', (e) => {
+            document.getElementById('transAmpValue').textContent = e.target.value;
+            drawFourierTransform();
+        });
+
+        // Initial draw
+        drawFourierSeries();
+    </script>
+</body>
+</html>

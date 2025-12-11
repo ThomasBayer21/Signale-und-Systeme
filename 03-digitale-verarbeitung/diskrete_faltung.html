@@ -362,8 +362,8 @@
         <div class="subtitle">Die fundamentale Operation für digitale LTI-Systeme</div>
 
         <div class="info-box">
-            <h3>Was ist die diskrete Faltung?</h3>
-            <p>Die diskrete Faltung ist das digitale Äquivalent zur kontinuierlichen Faltung. Sie beschreibt vollständig, wie ein digitales LTI-System auf ein Eingangssignal reagiert. Die Animation zeigt alle Signale übereinander, um den Faltungsprozess bei jedem Zeitpunkt n zu visualisieren.</p>
+            <h3>Was ist die diskrete Faltung (Discrete Convolution)?</h3>
+            <p>Die diskrete Faltung ist das digitale Äquivalent zur kontinuierlichen Faltung. Sie beschreibt vollständig, wie ein digitales LTI-System auf ein Eingangssignal reagiert. Die Impulsantwort h[n] wird auch als <strong>Kernel</strong> oder <strong>Filter-Kernel</strong> bezeichnet. Die Animation zeigt alle Signale übereinander, um den Faltungsprozess bei jedem Zeitpunkt n zu visualisieren.</p>
         </div>
 
         <div class="formula">
@@ -391,19 +391,19 @@
             </div>
 
             <div class="control-group">
-                <h3>Impulsantwort h[n]</h3>
+                <h3>Impulsantwort h[n] (Kernel)</h3>
                 <div class="control-item">
-                    <label>Systemtyp:</label>
+                    <label>Systemtyp / Kernel:</label>
                     <select id="systemType">
-                        <option value="impulse">δ[n] - Ideales System</option>
-                        <option value="average" selected>Mittelwertfilter</option>
-                        <option value="diff">Differenzierer</option>
-                        <option value="lowpass">Einfacher Tiefpass</option>
-                        <option value="exp">Exponentialabfall</option>
+                        <option value="impulse">δ[n] - Ideales System (Identity)</option>
+                        <option value="average" selected>Mittelwertfilter (Box Kernel)</option>
+                        <option value="diff">Differenzierer (Gradient)</option>
+                        <option value="lowpass">Einfacher Tiefpass (Smoothing)</option>
+                        <option value="exp">Exponentialabfall (Decay)</option>
                     </select>
                 </div>
                 <div class="control-item">
-                    <label>Systemlänge: <span class="slider-value" id="systemLengthValue">4</span> Samples</label>
+                    <label>Kernel-Länge: <span class="slider-value" id="systemLengthValue">4</span> Samples</label>
                     <input type="range" id="systemLength" min="2" max="6" value="4" step="1">
                 </div>
             </div>
@@ -412,15 +412,15 @@
         <div class="legend">
             <div class="legend-item">
                 <div class="legend-color" style="background: #3498db;"></div>
-                <span class="legend-label">x[n] - Eingangssignal</span>
+                <span class="legend-label">x[n] - Eingangssignal (Input)</span>
             </div>
             <div class="legend-item">
                 <div class="legend-color" style="background: #e67e22;"></div>
-                <span class="legend-label">h[n-k] - gespiegelt & verschoben</span>
+                <span class="legend-label">h[n-k] - Kernel gespiegelt & verschoben (Flipped & Shifted)</span>
             </div>
             <div class="legend-item">
                 <div class="legend-color" style="background: #9b59b6;"></div>
-                <span class="legend-label">x[k]·h[n-k] - Produkt</span>
+                <span class="legend-label">x[k]·h[n-k] - Produkt (Element-wise Multiplication)</span>
             </div>
         </div>
 
@@ -473,11 +473,11 @@
 
         <div class="info-box">
             <h3>Interpretation der diskreten Faltung</h3>
-            <p><strong>Eingangssignal x[n]:</strong> Das zu verarbeitende digitale Signal (blaue Balken)</p>
-            <p><strong>Impulsantwort h[n-k]:</strong> Gespiegelt und verschoben (orange Balken) - charakterisiert das System</p>
-            <p><strong>Produkt x[k]·h[n-k]:</strong> Punktweise Multiplikation (lila Balken) - die Summe ergibt y[n]</p>
-            <p><strong>Ausgangssignal y[n]:</strong> Das Faltungsergebnis, wächst mit jedem Zeitschritt</p>
-            <p><strong>Praktische Anwendung:</strong> Digitale Filter (Audio, Bild), Echounterdrückung, Signalglättung, Kantenerkennung</p>
+            <p><strong>Eingangssignal x[n] (Input Signal):</strong> Das zu verarbeitende digitale Signal (blaue Balken)</p>
+            <p><strong>Impulsantwort h[n] (Kernel / Filter Kernel):</strong> Charakterisiert das System vollständig. Wird gespiegelt zu h[-k] und verschoben zu h[n-k] (orange Balken)</p>
+            <p><strong>Produkt x[k]·h[n-k] (Element-wise Product):</strong> Punktweise Multiplikation (lila Balken) - die Summe aller Produkte ergibt y[n]</p>
+            <p><strong>Ausgangssignal y[n] (Output Signal):</strong> Das Faltungsergebnis (Convolution Result), wächst mit jedem Zeitschritt</p>
+            <p><strong>Praktische Anwendungen:</strong> Digitale Bildfilter (Gaußfilter, Sobel, Laplace), Audio-Effekte (Reverb, Echo), Signalglättung (Moving Average), Kantenerkennung (Edge Detection)</p>
         </div>
     </div>
 

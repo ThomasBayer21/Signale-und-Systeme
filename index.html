@@ -8,7 +8,7 @@
         * { box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 900px;
+            max-width: 1200px;
             margin: 40px auto;
             padding: 20px;
             background: linear-gradient(135deg, #e4e4ec 0%, #d0d0dc 100%);
@@ -18,14 +18,14 @@
             text-align: center;
             color: #2c3e50;
             margin-bottom: 15px;
-            font-size: 2.2em;
-            font-weight: 600;
+            font-size: 2.5em;
+            font-weight: 700;
         }
         .subtitle {
             text-align: center;
             color: #7f8c8d;
             margin-bottom: 40px;
-            font-size: 1.1em;
+            font-size: 1.2em;
         }
         .container {
             background: white;
@@ -35,71 +35,136 @@
         }
         .intro {
             background: #f8f9fa;
-            padding: 20px;
+            padding: 25px;
             border-radius: 10px;
-            margin-bottom: 35px;
+            margin-bottom: 40px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            line-height: 1.6;
+            line-height: 1.8;
             color: #555;
+            text-align: center;
+            font-size: 1.05em;
         }
+
+        /* Schritt-Container */
+        .step-section {
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left: 6px solid #3498db;
+        }
+
+        .step-header.step-0 { border-left-color: #b8c8d4; background: linear-gradient(135deg, #e8f4f8 0%, #d8e8f0 100%); }
+        .step-header.step-1 { border-left-color: #c4d8bc; background: linear-gradient(135deg, #e8f4e8 0%, #d8e8d8 100%); }
+        .step-header.step-2 { border-left-color: #d4b8c8; background: linear-gradient(135deg, #f4e8f0 0%, #e8d8e4 100%); }
+        .step-header.step-3 { border-left-color: #3498db; background: linear-gradient(135deg, #e8f0f8 0%, #d8e4f0 100%); }
+        .step-header.step-4 { border-left-color: #c8d4b8; background: linear-gradient(135deg, #f0f4e8 0%, #e4e8d8 100%); }
+
+        .step-number {
+            font-size: 3em;
+            font-weight: 700;
+            color: #3498db;
+            opacity: 0.3;
+            min-width: 60px;
+        }
+
+        .step-header.step-0 .step-number { color: #b8c8d4; }
+        .step-header.step-1 .step-number { color: #c4d8bc; }
+        .step-header.step-2 .step-number { color: #d4b8c8; }
+        .step-header.step-3 .step-number { color: #3498db; }
+        .step-header.step-4 .step-number { color: #c8d4b8; }
+
+        .step-info h2 {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .step-info p {
+            color: #7f8c8d;
+            font-size: 1.05em;
+            margin: 0;
+        }
+
+        /* Pfeil zwischen Schritten */
+        .step-arrow {
+            text-align: center;
+            font-size: 2em;
+            color: #bdc3c7;
+            margin: 20px 0;
+        }
+
         .visualizations {
             display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
+            padding-left: 0;
         }
+
         .viz-card {
             background: #fafafa;
-            padding: 25px;
-            border-radius: 6px;
-            border-left: 4px solid #3498db;
-            transition: transform 0.2s, box-shadow 0.2s;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
             text-decoration: none;
             color: inherit;
             display: block;
+            position: relative;
+            overflow: hidden;
         }
+
+        .viz-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: #3498db;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
         .viz-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border-color: #3498db;
         }
-        .viz-card.systems {
-            border-left-color: #d4c8b8;
+
+        .viz-card:hover::before {
+            transform: scaleY(1);
         }
-        .viz-card.elementary {
-            border-left-color: #c4d8bc;
-        }
-        .viz-card.decibel {
-            border-left-color: #e0c8b8;
-        }
-        .viz-card.frequency {
-            border-left-color: #d4cce0;
-        }
-        .viz-card.operations {
-            border-left-color: #bcd8d4;
-        }
-        .viz-card.dsp {
-            border-left-color: #bcd4d4;
-        }
+
         .viz-title {
-            font-size: 1.3em;
+            font-size: 1.15em;
             font-weight: 600;
             color: #2c3e50;
             margin-bottom: 10px;
         }
-        .viz-subtitle {
-            font-size: 0.95em;
-            color: #7f8c8d;
-            margin-bottom: 12px;
-            font-style: italic;
-        }
+
         .viz-description {
             color: #555;
             line-height: 1.6;
-            font-size: 0.95em;
+            font-size: 0.9em;
         }
+
         .viz-count {
             margin-top: 12px;
-            font-size: 0.9em;
-            color: #7f8c8d;
-            font-weight: 500;
+            font-size: 0.85em;
+            color: #95a5a6;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
@@ -109,78 +174,183 @@
 
     <div class="container">
         <div class="intro">
-            Diese Sammlung bietet interaktive Visualisierungen zu den
-            fundamentalen Konzepten der Signalverarbeitung und Systemtheorie. Alle Darstellungen
-            sind direkt im Browser nutzbar und ermöglichen durch Parameteränderungen ein
-            tieferes Verständnis der mathematischen Zusammenhänge.
+            <strong>Der Weg eines Signals:</strong> Eine Einführung in die Digitale Signalverarbeitung<br>
+            Von der analogen Welt über die Digitalisierung, digitale Verarbeitung bis zur Rückwandlung
         </div>
 
-        <div class="visualizations">
-            <a href="systemklassifikation/index.html" class="viz-card systems">
-                <div class="viz-title">Systemklassifikation</div>
-                <div class="viz-subtitle">Eigenschaften und Verhalten von Systemen</div>
-                <div class="viz-description">
-                    Erforsche die fundamentalen Eigenschaften linearer und zeitinvarianter Systeme.
-                    Verstehe das Überlagerungsprinzip, die Zeitinvarianz, Kausalität und
-                    dispersive Effekte durch interaktive Demonstrationen.
+        <!-- Schritt 0: Grundlagen -->
+        <div class="step-section">
+            <div class="step-header step-0">
+                <div class="step-number">0</div>
+                <div class="step-info">
+                    <h2>Grundlagen</h2>
+                    <p>Fundamentale Bausteine der Signalverarbeitung</p>
                 </div>
-                <div class="viz-count">4 Visualisierungen</div>
-            </a>
+            </div>
+            <div class="visualizations">
+                <a href="01-analoge-welt/elementarfunktionen/index.html" class="viz-card">
+                    <div class="viz-title">Elementare Signale</div>
+                    <div class="viz-description">
+                        Die grundlegenden Signaltypen und mathematischen Funktionen: Sprung, Rechteck, Dreieck,
+                        Sinc, Dirac-Impuls, Exponential, Cosinus und komplexe Drehzeiger.
+                    </div>
+                    <div class="viz-count">8 Visualisierungen</div>
+                </a>
 
-            <a href="elementarfunktionen/index.html" class="viz-card elementary">
-                <div class="viz-title">Elementarfunktionen</div>
-                <div class="viz-subtitle">Bausteine der Signalverarbeitung</div>
-                <div class="viz-description">
-                    Lerne die grundlegenden Signale kennen: Sprungfunktion, Rechteck, Dreieck,
-                    Sinc, Dirac-Impuls, Exponentialfunktion, cosinusförmige Signale und komplexe Drehzeiger.
-                    Diese Funktionen sind die Basis für die Analyse und Synthese komplexer Signale.
-                </div>
-                <div class="viz-count">8 Visualisierungen</div>
-            </a>
+                <a href="01-analoge-welt/systemklassifikation/index.html" class="viz-card">
+                    <div class="viz-title">Systemklassifikation</div>
+                    <div class="viz-description">
+                        Eigenschaften linearer und zeitinvarianter Systeme: Überlagerungsprinzip,
+                        Zeitinvarianz, Kausalität und dispersive Effekte. Gilt für analoge und digitale Systeme.
+                    </div>
+                    <div class="viz-count">4 Visualisierungen</div>
+                </a>
 
-            <a href="dezibel/index.html" class="viz-card decibel">
-                <div class="viz-title">Dezibel und Logarithmische Skalen</div>
-                <div class="viz-subtitle">Logarithmische Darstellung</div>
-                <div class="viz-description">
-                    Verstehe die Dezibel-Skala und ihre Bedeutung in der Signalverarbeitung.
-                    Umfasst interaktiven Umrechner, Visualisierungen des Amplitude-Leistung-Zusammenhangs,
-                    logarithmische Eigenschaften und Rechenregeln für die praktische Anwendung.
-                </div>
-                <div class="viz-count">4 Visualisierungen</div>
-            </a>
+                <a href="01-analoge-welt/dezibel/index.html" class="viz-card">
+                    <div class="viz-title">Dezibel-Skala</div>
+                    <div class="viz-description">
+                        Logarithmische Messung von Signalpegeln und Leistung mit Umrechner
+                        und Rechenregeln. Universelle Maßeinheit für analog und digital.
+                    </div>
+                    <div class="viz-count">4 Visualisierungen</div>
+                </a>
+            </div>
+        </div>
 
-            <a href="frequenzanalyse/index.html" class="viz-card frequency">
-                <div class="viz-title">Frequenzanalyse</div>
-                <div class="viz-subtitle">Zeit- und Frequenzbereich</div>
-                <div class="viz-description">
-                    Erkunde die Fourier-Transformation und die Zerlegung von Signalen in ihre
-                    Frequenzkomponenten. Verstehe die fundamentale Beziehung zwischen Zeit- und
-                    Frequenzdarstellung und wie komplexe Signale aus Sinuswellen zusammengesetzt werden.
-                </div>
-                <div class="viz-count">1 Visualisierung</div>
-            </a>
+        <div class="step-arrow">↓</div>
 
-            <a href="signaloperationen/index.html" class="viz-card operations">
-                <div class="viz-title">Signaloperationen</div>
-                <div class="viz-subtitle">Faltung und Transformation</div>
-                <div class="viz-description">
-                    Lerne die wichtigsten Operationen zur Signalverarbeitung kennen. Die Faltung
-                    ist fundamental für das Verständnis von Systemantworten und Filterung.
-                    Visualisiere den Faltungsprozess Schritt für Schritt.
+        <div class="step-section">
+            <div class="step-header step-1">
+                <div class="step-number">1</div>
+                <div class="step-info">
+                    <h2>Die Analoge Welt</h2>
+                    <p>Kontinuierliche Signale und Systeme</p>
                 </div>
-                <div class="viz-count">1 Visualisierung</div>
-            </a>
+            </div>
+            <div class="visualizations">
+                <a href="01-analoge-welt/signaloperationen/index.html" class="viz-card">
+                    <div class="viz-title">Kontinuierliche Faltung</div>
+                    <div class="viz-description">
+                        Die fundamentale Operation zur Beschreibung von analogen LTI-Systemen.
+                        Integral-basierte Faltung: y(t) = ∫ x(τ)·h(t-τ) dτ
+                    </div>
+                    <div class="viz-count">1 Visualisierung</div>
+                </a>
+            </div>
+        </div>
 
-            <a href="digitale-signalverarbeitung/index.html" class="viz-card dsp">
-                <div class="viz-title">Digitale Signalverarbeitung</div>
-                <div class="viz-subtitle">Abtastung und Rekonstruktion</div>
-                <div class="viz-description">
-                    Verstehe den Übergang von analogen zu digitalen Signalen. Erkunde das
-                    Nyquist-Shannon-Abtasttheorem, ideale und praktische Rekonstruktionsverfahren,
-                    und beobachte Aliasing-Effekte bei Unterabtastung.
+        <div class="step-arrow">↓</div>
+
+        <!-- Schritt 2: A/D-Wandlung -->
+        <div class="step-section">
+            <div class="step-header step-2">
+                <div class="step-number">2</div>
+                <div class="step-info">
+                    <h2>A/D-Wandlung</h2>
+                    <p>Der digitale Übergang - Abtastung und Quantisierung</p>
                 </div>
-                <div class="viz-count">1 Visualisierung</div>
-            </a>
+            </div>
+            <div class="visualizations">
+                <a href="02-ad-wandlung/digitale-signalverarbeitung/abtastung_rekonstruktion.html" class="viz-card">
+                    <div class="viz-title">Abtastung & Abtasttheorem</div>
+                    <div class="viz-description">
+                        Nyquist-Shannon-Theorem (f<sub>s</sub> > 2·f<sub>max</sub>), Aliasing-Effekte
+                        bei Unterabtastung und die Bedeutung der Abtastrate.
+                    </div>
+                    <div class="viz-count">1 Visualisierung</div>
+                </a>
+
+                <a href="02-ad-wandlung/quantisierung.html" class="viz-card">
+                    <div class="viz-title">Quantisierung</div>
+                    <div class="viz-description">
+                        Zuweisung zu 2<sup>n</sup> Pegelstufen. Quantisierungsrauschen,
+                        Signal-to-Noise Ratio und der Trade-off Auflösung vs. Speicherbedarf.
+                    </div>
+                    <div class="viz-count">1 Visualisierung</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="step-arrow">↓</div>
+
+        <!-- Schritt 3: Digitale Verarbeitung -->
+        <div class="step-section">
+            <div class="step-header step-3">
+                <div class="step-number">3</div>
+                <div class="step-info">
+                    <h2>Digitale Verarbeitung</h2>
+                    <p>Das Herzstück - Filterung, Frequenzanalyse und Transformation</p>
+                </div>
+            </div>
+            <div class="visualizations">
+                <a href="03-digitale-verarbeitung/diskrete_faltung.html" class="viz-card">
+                    <div class="viz-title">Diskrete Faltung</div>
+                    <div class="viz-description">
+                        Digitales Äquivalent zur kontinuierlichen Faltung.
+                        Summenbasierte Faltung: y[n] = Σ x[k]·h[n-k]
+                    </div>
+                    <div class="viz-count">1 Visualisierung</div>
+                </a>
+
+                <a href="03-digitale-verarbeitung/frequenzanalyse/fourier_transformation.html" class="viz-card">
+                    <div class="viz-title">Frequenzanalyse (DFT)</div>
+                    <div class="viz-description">
+                        Diskrete Fourier-Transformation: Zerlegung digitaler Signale in
+                        Frequenzkomponenten. Zeit- und Frequenzbereich verstehen.
+                    </div>
+                    <div class="viz-count">1 Visualisierung</div>
+                </a>
+
+                <a href="03-digitale-verarbeitung/fensterfunktionen.html" class="viz-card">
+                    <div class="viz-title">Fensterfunktionen</div>
+                    <div class="viz-description">
+                        Hanning, Hamming, Blackman, Kaiser: Reduzierung spektraler Verzerrungen
+                        bei der FFT-Analyse von Signalausschnitten.
+                    </div>
+                    <div class="viz-count">1 Visualisierung</div>
+                </a>
+
+                <a href="03-digitale-verarbeitung/fir_filter.html" class="viz-card">
+                    <div class="viz-title">FIR-Filter</div>
+                    <div class="viz-description">
+                        Finite Impulse Response: Nicht-rekursiv, immer stabil, endlich lang.
+                        Lineare Phase möglich. Ideal für phasentreue Anwendungen.
+                    </div>
+                    <div class="viz-count">1 Visualisierung</div>
+                </a>
+
+                <a href="03-digitale-verarbeitung/iir_filter.html" class="viz-card">
+                    <div class="viz-title">IIR-Filter</div>
+                    <div class="viz-description">
+                        Infinite Impulse Response: Rekursiv, potentiell instabil, theoretisch
+                        unendlich lang. Effizienter als FIR, aber mit Stabilitätsrisiko.
+                    </div>
+                    <div class="viz-count">1 Visualisierung</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="step-arrow">↓</div>
+
+        <!-- Schritt 4: D/A-Wandlung -->
+        <div class="step-section">
+            <div class="step-header step-4">
+                <div class="step-number">4</div>
+                <div class="step-info">
+                    <h2>D/A-Wandlung</h2>
+                    <p>Zurück zur Realität - Rekonstruktion des Analogsignals</p>
+                </div>
+            </div>
+            <div class="visualizations">
+                <a href="02-ad-wandlung/digitale-signalverarbeitung/abtastung_rekonstruktion.html" class="viz-card">
+                    <div class="viz-title">Rekonstruktion</div>
+                    <div class="viz-description">
+                        Vom diskreten zum kontinuierlichen Signal: Ideale vs. praktische
+                        Rekonstruktion, Tiefpassfilter und Glättung.
+                    </div>
+                    <div class="viz-count">1 Visualisierung</div>
+                </a>
+            </div>
         </div>
     </div>
 </body>

@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diskrete Faltung - Digitale Signalverarbeitung</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #d8e8f4 0%, #c0d8ec 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+        }
+
+        .info-box h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .formula {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.5em;
+            font-family: 'Georgia', serif;
+            color: #2c3e50;
+            margin: 15px 0;
+            border: 1px solid #d0e8f0;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .control-group {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .control-group h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .control-item {
+            margin-bottom: 15px;
+        }
+
+        .control-item:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.95em;
+            background: white;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .slider-value {
+            display: inline-block;
+            min-width: 30px;
+            text-align: right;
+            font-weight: 600;
+            color: #3498db;
+            margin-left: 10px;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+
+        .legend-label {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .visualization-area {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .canvas-wrapper {
+            background: #fafafa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .output-panel {
+            background: #fafafa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .output-panel h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .play-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            background: #2980b9;
+        }
+
+        button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .timeline-control {
+            flex: 1;
+            max-width: 500px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timeline-label {
+            color: #555;
+            font-weight: 500;
+            white-space: nowrap;
+            font-size: 0.9em;
+        }
+
+        #timeline {
+            flex: 1;
+        }
+
+        .result-box {
+            background: #27ae60;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .result-box .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .result-box .value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .steps-box {
+            background: #fff9e6;
+            border-left: 4px solid #f39c12;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .steps-box h4 {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .step-item {
+            background: white;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #f0e6cc;
+            transition: all 0.3s;
+        }
+
+        .step-item.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+            transform: scale(1.02);
+        }
+
+        .step-item strong {
+            display: block;
+            margin-bottom: 3px;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← Zurück zur Digitalen Verarbeitung</a>
+
+    <div class="container">
+        <h1>Diskrete Faltung</h1>
+        <div class="subtitle">Die fundamentale Operation für digitale LTI-Systeme</div>
+
+        <div class="info-box">
+            <h3>Was ist die diskrete Faltung?</h3>
+            <p>Die diskrete Faltung ist das digitale Äquivalent zur kontinuierlichen Faltung. Sie beschreibt vollständig, wie ein digitales LTI-System auf ein Eingangssignal reagiert. Die Animation zeigt alle Signale übereinander, um den Faltungsprozess bei jedem Zeitpunkt n zu visualisieren.</p>
+        </div>
+
+        <div class="formula">
+            y[n] = Σ<sub>k=-∞</sub><sup>∞</sup> x[k] · h[n-k]
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <h3>Eingangssignal x[n]</h3>
+                <div class="control-item">
+                    <label>Signaltyp:</label>
+                    <select id="signalType">
+                        <option value="impulse">δ[n] - Dirac-Impuls</option>
+                        <option value="step">u[n] - Sprungfunktion</option>
+                        <option value="rect" selected>Rechteckpuls</option>
+                        <option value="triangle">Dreieckpuls</option>
+                        <option value="exp">Exponentialfolge</option>
+                        <option value="sin">Sinusfolge</option>
+                    </select>
+                </div>
+                <div class="control-item">
+                    <label>Signallänge: <span class="slider-value" id="signalLengthValue">7</span> Samples</label>
+                    <input type="range" id="signalLength" min="4" max="10" value="7" step="1">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Impulsantwort h[n]</h3>
+                <div class="control-item">
+                    <label>Systemtyp:</label>
+                    <select id="systemType">
+                        <option value="impulse">δ[n] - Ideales System</option>
+                        <option value="average" selected>Mittelwertfilter</option>
+                        <option value="diff">Differenzierer</option>
+                        <option value="lowpass">Einfacher Tiefpass</option>
+                        <option value="exp">Exponentialabfall</option>
+                    </select>
+                </div>
+                <div class="control-item">
+                    <label>Systemlänge: <span class="slider-value" id="systemLengthValue">4</span> Samples</label>
+                    <input type="range" id="systemLength" min="2" max="6" value="4" step="1">
+                </div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #3498db;"></div>
+                <span class="legend-label">x[n] - Eingangssignal</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #e67e22;"></div>
+                <span class="legend-label">h[n-k] - gespiegelt & verschoben</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #9b59b6;"></div>
+                <span class="legend-label">x[k]·h[n-k] - Produkt</span>
+            </div>
+        </div>
+
+        <div class="visualization-area">
+            <div class="canvas-wrapper">
+                <canvas id="convolutionCanvas" width="1100" height="500"></canvas>
+            </div>
+            <div class="output-panel">
+                <h3>Ausgangssignal y[n]</h3>
+                <div class="result-box">
+                    <div class="label">Aktueller Wert y[<span id="currentNDisplay">0</span>]:</div>
+                    <div class="value" id="currentYValue">0.000</div>
+                </div>
+                <canvas id="outputCanvas" width="300" height="400"></canvas>
+            </div>
+        </div>
+
+        <div class="play-controls">
+            <button id="playBtn">▶ Animation starten</button>
+            <button id="pauseBtn" disabled>⏸ Pause</button>
+            <button id="resetBtn">↻ Zurücksetzen</button>
+            <div class="timeline-control">
+                <span class="timeline-label">Zeitpunkt n:</span>
+                <input type="range" id="timeline" min="0" max="10" value="0" step="1">
+                <span class="slider-value" id="timelineValue">0</span>
+            </div>
+        </div>
+
+        <div class="steps-box">
+            <h4>Faltungsschritte für aktuellen Zeitpunkt n:</h4>
+            <div class="steps-grid">
+                <div class="step-item" id="step1">
+                    <strong>1. Spiegeln</strong>
+                    h[k] → h[-k]
+                </div>
+                <div class="step-item" id="step2">
+                    <strong>2. Verschieben</strong>
+                    h[-k] → h[n-k]
+                </div>
+                <div class="step-item" id="step3">
+                    <strong>3. Multiplizieren</strong>
+                    x[k] · h[n-k]
+                </div>
+                <div class="step-item" id="step4">
+                    <strong>4. Summieren</strong>
+                    y[n] = Σ Produkte
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>Interpretation der diskreten Faltung</h3>
+            <p><strong>Eingangssignal x[n]:</strong> Das zu verarbeitende digitale Signal (blaue Balken)</p>
+            <p><strong>Impulsantwort h[n-k]:</strong> Gespiegelt und verschoben (orange Balken) - charakterisiert das System</p>
+            <p><strong>Produkt x[k]·h[n-k]:</strong> Punktweise Multiplikation (lila Balken) - die Summe ergibt y[n]</p>
+            <p><strong>Ausgangssignal y[n]:</strong> Das Faltungsergebnis, wächst mit jedem Zeitschritt</p>
+            <p><strong>Praktische Anwendung:</strong> Digitale Filter (Audio, Bild), Echounterdrückung, Signalglättung, Kantenerkennung</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('convolutionCanvas');
+        const ctx = canvas.getContext('2d');
+        const outputCanvas = document.getElementById('outputCanvas');
+        const outCtx = outputCanvas.getContext('2d');
+
+        let currentN = 0;
+        let animationRunning = false;
+        let animationId = null;
+        let x = [];
+        let h = [];
+        let convLength = 0;
+
+        const signalTypeSelect = document.getElementById('signalType');
+        const systemTypeSelect = document.getElementById('systemType');
+        const signalLengthSlider = document.getElementById('signalLength');
+        const systemLengthSlider = document.getElementById('systemLength');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const timeline = document.getElementById('timeline');
+        const timelineValue = document.getElementById('timelineValue');
+
+        function generateSignal(type, length) {
+            const signal = [];
+            switch(type) {
+                case 'impulse':
+                    for(let i = 0; i < length; i++) {
+                        signal.push(i === Math.floor(length/2) ? 1 : 0);
+                    }
+                    break;
+                case 'step':
+                    for(let i = 0; i < length; i++) {
+                        signal.push(i >= Math.floor(length/2) ? 1 : 0);
+                    }
+                    break;
+                case 'rect':
+                    const start = Math.floor(length * 0.25);
+                    const end = Math.floor(length * 0.75);
+                    for(let i = 0; i < length; i++) {
+                        signal.push(i >= start && i < end ? 1 : 0);
+                    }
+                    break;
+                case 'triangle':
+                    const mid = Math.floor(length / 2);
+                    for(let i = 0; i < length; i++) {
+                        if(i <= mid) {
+                            signal.push(i / mid);
+                        } else {
+                            signal.push((length - 1 - i) / (length - 1 - mid));
+                        }
+                    }
+                    break;
+                case 'exp':
+                    const alpha = 0.65;
+                    for(let i = 0; i < length; i++) {
+                        signal.push(Math.pow(alpha, i));
+                    }
+                    break;
+                case 'sin':
+                    for(let i = 0; i < length; i++) {
+                        signal.push(0.5 + 0.5 * Math.sin(2 * Math.PI * i / (length * 0.4)));
+                    }
+                    break;
+            }
+            return signal;
+        }
+
+        function generateSystem(type, length) {
+            const system = [];
+            switch(type) {
+                case 'impulse':
+                    for(let i = 0; i < length; i++) {
+                        system.push(i === 0 ? 1 : 0);
+                    }
+                    break;
+                case 'average':
+                    for(let i = 0; i < length; i++) {
+                        system.push(1.0 / length);
+                    }
+                    break;
+                case 'diff':
+                    system.push(1);
+                    system.push(-1);
+                    for(let i = 2; i < length; i++) {
+                        system.push(0);
+                    }
+                    break;
+                case 'lowpass':
+                    system.push(0.25);
+                    system.push(0.5);
+                    system.push(0.25);
+                    for(let i = 3; i < length; i++) {
+                        system.push(0);
+                    }
+                    break;
+                case 'exp':
+                    const beta = 0.5;
+                    let sum = 0;
+                    for(let i = 0; i < length; i++) {
+                        const val = Math.pow(beta, i);
+                        system.push(val);
+                        sum += val;
+                    }
+                    for(let i = 0; i < length; i++) {
+                        system[i] /= sum;
+                    }
+                    break;
+            }
+            return system;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Berechne h[n-k]
+            const hShifted = new Array(x.length).fill(0);
+            for(let k = 0; k < x.length; k++) {
+                const hIndex = currentN - k;
+                if(hIndex >= 0 && hIndex < h.length) {
+                    hShifted[k] = h[hIndex];
+                }
+            }
+
+            // Berechne Produkt
+            const product = new Array(x.length).fill(0);
+            let sum = 0;
+            for(let k = 0; k < x.length; k++) {
+                product[k] = x[k] * hShifted[k];
+                sum += product[k];
+            }
+
+            // Hauptvisualisierung: Alle Signale übereinander
+            const margin = 60;
+            const plotWidth = canvas.width - 2 * margin;
+            const plotHeight = canvas.height - 2 * margin;
+            const centerY = canvas.height / 2;
+
+            // Titel
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 16px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Faltung bei n = ${currentN}`, canvas.width / 2, 25);
+
+            const barWidth = Math.min(50, (plotWidth - 100) / x.length);
+            const spacing = (plotWidth - 100) / x.length;
+            const startX = margin + 50;
+
+            // Grid
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            for(let i = -4; i <= 4; i++) {
+                const y = centerY + i * 30;
+                ctx.beginPath();
+                ctx.moveTo(startX - 20, y);
+                ctx.lineTo(startX + x.length * spacing, y);
+                ctx.stroke();
+            }
+
+            // Hauptachse
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(startX - 20, centerY);
+            ctx.lineTo(startX + x.length * spacing, centerY);
+            ctx.stroke();
+
+            // Y-Achse
+            ctx.beginPath();
+            ctx.moveTo(startX - 20, margin);
+            ctx.lineTo(startX - 20, canvas.height - margin);
+            ctx.stroke();
+
+            // Skalierung
+            const maxVal = Math.max(
+                ...x.map(Math.abs),
+                ...hShifted.map(Math.abs),
+                ...product.map(Math.abs),
+                0.5
+            );
+            const scale = 120 / maxVal;
+
+            // Zeichne alle drei Signale übereinander
+            for(let i = 0; i < x.length; i++) {
+                const xPos = startX + i * spacing;
+
+                // x[n] - Eingangssignal (blau, unten)
+                const xHeight = Math.abs(x[i]) * scale;
+                const xY = x[i] >= 0 ? centerY - xHeight : centerY;
+                ctx.globalAlpha = 0.6;
+                ctx.fillStyle = '#3498db';
+                ctx.fillRect(xPos - barWidth/3, xY, barWidth * 0.3, xHeight);
+                ctx.globalAlpha = 1;
+                ctx.strokeStyle = '#2980b9';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(xPos - barWidth/3, xY, barWidth * 0.3, xHeight);
+
+                // h[n-k] - gespiegelt & verschoben (orange, mitte)
+                if(Math.abs(hShifted[i]) > 0.001) {
+                    const hHeight = Math.abs(hShifted[i]) * scale;
+                    const hY = hShifted[i] >= 0 ? centerY - hHeight : centerY;
+                    ctx.globalAlpha = 0.6;
+                    ctx.fillStyle = '#e67e22';
+                    ctx.fillRect(xPos, hY, barWidth * 0.3, hHeight);
+                    ctx.globalAlpha = 1;
+                    ctx.strokeStyle = '#d35400';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(xPos, hY, barWidth * 0.3, hHeight);
+                }
+
+                // Produkt (lila, oben)
+                if(Math.abs(product[i]) > 0.001) {
+                    const pHeight = Math.abs(product[i]) * scale;
+                    const pY = product[i] >= 0 ? centerY - pHeight : centerY;
+                    ctx.globalAlpha = 0.8;
+                    ctx.fillStyle = '#9b59b6';
+                    ctx.fillRect(xPos + barWidth/3, pY, barWidth * 0.3, pHeight);
+                    ctx.globalAlpha = 1;
+                    ctx.strokeStyle = '#8e44ad';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(xPos + barWidth/3, pY, barWidth * 0.3, pHeight);
+                }
+
+                // Index
+                ctx.fillStyle = '#555';
+                ctx.font = 'bold 12px Segoe UI';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${i}`, xPos + barWidth/6, centerY + 25);
+
+                // Werte anzeigen
+                ctx.font = '10px Segoe UI';
+                if(Math.abs(x[i]) > 0.001) {
+                    ctx.fillStyle = '#3498db';
+                    ctx.fillText(x[i].toFixed(2), xPos - barWidth/6, centerY + 40);
+                }
+                if(Math.abs(hShifted[i]) > 0.001) {
+                    ctx.fillStyle = '#e67e22';
+                    ctx.fillText(hShifted[i].toFixed(2), xPos + barWidth/6, centerY + 55);
+                }
+                if(Math.abs(product[i]) > 0.001) {
+                    ctx.fillStyle = '#9b59b6';
+                    const pY = product[i] >= 0 ? centerY - Math.abs(product[i]) * scale - 10 : centerY + Math.abs(product[i]) * scale + 15;
+                    ctx.fillText(product[i].toFixed(2), xPos + barWidth/2, pY);
+                }
+            }
+
+            // Y-Achsen Beschriftung
+            ctx.fillStyle = '#666';
+            ctx.font = '11px Segoe UI';
+            ctx.textAlign = 'right';
+            ctx.fillText(maxVal.toFixed(2), startX - 25, margin + 5);
+            ctx.fillText('0', startX - 25, centerY + 4);
+            ctx.fillText((-maxVal).toFixed(2), startX - 25, canvas.height - margin + 5);
+
+            // Summe anzeigen
+            ctx.fillStyle = '#27ae60';
+            ctx.font = 'bold 18px Segoe UI';
+            ctx.textAlign = 'left';
+            ctx.fillText(`Σ = ${sum.toFixed(3)}`, startX + x.length * spacing + 30, centerY);
+
+            // Update aktueller Wert
+            document.getElementById('currentNDisplay').textContent = currentN;
+            document.getElementById('currentYValue').textContent = sum.toFixed(3);
+
+            // Zeichne Ausgangssignal
+            drawOutputSignal();
+            updateStepIndicators();
+        }
+
+        function drawOutputSignal() {
+            outCtx.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+
+            // Berechne y[n] bis zum aktuellen Zeitpunkt
+            convLength = x.length + h.length - 1;
+            const y = new Array(convLength).fill(0);
+
+            for(let n = 0; n <= currentN && n < convLength; n++) {
+                for(let k = 0; k < x.length; k++) {
+                    const hIndex = n - k;
+                    if(hIndex >= 0 && hIndex < h.length) {
+                        y[n] += x[k] * h[hIndex];
+                    }
+                }
+            }
+
+            const margin = 40;
+            const plotHeight = outputCanvas.height - 2 * margin;
+            const barWidth = 20;
+            const spacing = Math.min(30, (outputCanvas.width - 2 * margin) / convLength);
+            const startX = (outputCanvas.width - convLength * spacing) / 2;
+            const baseY = outputCanvas.height - margin;
+
+            // Grid
+            outCtx.strokeStyle = '#e0e0e0';
+            outCtx.lineWidth = 1;
+            for(let i = 0; i <= 4; i++) {
+                const yPos = margin + (plotHeight * i) / 4;
+                outCtx.beginPath();
+                outCtx.moveTo(margin - 10, yPos);
+                outCtx.lineTo(outputCanvas.width - 20, yPos);
+                outCtx.stroke();
+            }
+
+            // Achse
+            outCtx.strokeStyle = '#666';
+            outCtx.lineWidth = 2;
+            outCtx.beginPath();
+            outCtx.moveTo(margin - 10, baseY);
+            outCtx.lineTo(outputCanvas.width - 20, baseY);
+            outCtx.stroke();
+
+            const maxVal = Math.max(...y.map(Math.abs), 0.1);
+            const scale = (plotHeight - 20) / maxVal;
+
+            // Zeichne y[n]
+            for(let i = 0; i < convLength; i++) {
+                if(i > currentN) break;
+
+                const x = startX + i * spacing;
+                const barHeight = Math.abs(y[i]) * scale;
+
+                outCtx.fillStyle = (i === currentN) ? '#f39c12' : '#27ae60';
+                outCtx.fillRect(x, baseY - barHeight, barWidth, barHeight);
+
+                outCtx.strokeStyle = '#229954';
+                outCtx.lineWidth = 1;
+                outCtx.strokeRect(x, baseY - barHeight, barWidth, barHeight);
+
+                // Index
+                outCtx.fillStyle = '#555';
+                outCtx.font = '10px Segoe UI';
+                outCtx.textAlign = 'center';
+                outCtx.fillText(i.toString(), x + barWidth/2, baseY + 15);
+
+                // Wert
+                if(Math.abs(y[i]) > 0.001) {
+                    outCtx.fillStyle = '#333';
+                    outCtx.font = 'bold 9px Segoe UI';
+                    outCtx.fillText(y[i].toFixed(2), x + barWidth/2, baseY - barHeight - 5);
+                }
+            }
+
+            // Y-Achse Beschriftung
+            outCtx.fillStyle = '#666';
+            outCtx.font = '10px Segoe UI';
+            outCtx.textAlign = 'right';
+            outCtx.fillText(maxVal.toFixed(1), margin - 12, margin + 5);
+            outCtx.fillText('0', margin - 12, baseY + 4);
+        }
+
+        function updateStepIndicators() {
+            document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
+            if(animationRunning) {
+                const step = (Date.now() / 500) % 4;
+                const stepId = `step${Math.floor(step) + 1}`;
+                document.getElementById(stepId)?.classList.add('active');
+            }
+        }
+
+        function animate() {
+            if(!animationRunning) return;
+
+            if(currentN < convLength - 1) {
+                currentN++;
+                timeline.value = currentN;
+                timelineValue.textContent = currentN;
+                draw();
+                animationId = setTimeout(animate, 1000);
+            } else {
+                stopAnimation();
+            }
+        }
+
+        function startAnimation() {
+            animationRunning = true;
+            playBtn.disabled = true;
+            pauseBtn.disabled = false;
+            animate();
+        }
+
+        function stopAnimation() {
+            animationRunning = false;
+            playBtn.disabled = false;
+            pauseBtn.disabled = true;
+            if(animationId) {
+                clearTimeout(animationId);
+                animationId = null;
+            }
+        }
+
+        function reset() {
+            stopAnimation();
+            currentN = 0;
+            timeline.value = 0;
+            timelineValue.textContent = 0;
+            updateSignals();
+        }
+
+        function updateSignals() {
+            x = generateSignal(signalTypeSelect.value, parseInt(signalLengthSlider.value));
+            h = generateSystem(systemTypeSelect.value, parseInt(systemLengthSlider.value));
+            convLength = x.length + h.length - 1;
+            timeline.max = convLength - 1;
+            draw();
+        }
+
+        playBtn.addEventListener('click', startAnimation);
+        pauseBtn.addEventListener('click', stopAnimation);
+        resetBtn.addEventListener('click', reset);
+
+        timeline.addEventListener('input', (e) => {
+            stopAnimation();
+            currentN = parseInt(e.target.value);
+            timelineValue.textContent = currentN;
+            draw();
+        });
+
+        signalTypeSelect.addEventListener('change', () => {
+            stopAnimation();
+            currentN = 0;
+            timeline.value = 0;
+            timelineValue.textContent = 0;
+            updateSignals();
+        });
+
+        systemTypeSelect.addEventListener('change', () => {
+            stopAnimation();
+            currentN = 0;
+            timeline.value = 0;
+            timelineValue.textContent = 0;
+            updateSignals();
+        });
+
+        signalLengthSlider.addEventListener('input', (e) => {
+            document.getElementById('signalLengthValue').textContent = e.target.value;
+            stopAnimation();
+            currentN = 0;
+            timeline.value = 0;
+            timelineValue.textContent = 0;
+            updateSignals();
+        });
+
+        systemLengthSlider.addEventListener('input', (e) => {
+            document.getElementById('systemLengthValue').textContent = e.target.value;
+            stopAnimation();
+            currentN = 0;
+            timeline.value = 0;
+            timelineValue.textContent = 0;
+            updateSignals();
+        });
+
+        document.getElementById('signalLengthValue').textContent = signalLengthSlider.value;
+        document.getElementById('systemLengthValue').textContent = systemLengthSlider.value;
+        updateSignals();
+
+        setInterval(() => {
+            if(animationRunning) {
+                updateStepIndicators();
+            }
+        }, 500);
+    </script>
+</body>
+</html>

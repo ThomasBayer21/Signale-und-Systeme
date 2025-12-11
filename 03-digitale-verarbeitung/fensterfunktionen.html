@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fensterfunktionen - Spektrale Verzerrungen reduzieren</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #d4cce0 0%, #c4bcd0 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .info-box {
+            background: #f4f0f8;
+            border-left: 4px solid #9b59b6;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+        }
+
+        .info-box h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #9b59b6;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #9b59b6;
+            cursor: pointer;
+            border: none;
+        }
+
+        .value-display {
+            min-width: 80px;
+            text-align: right;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .canvas-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .canvas-wrapper {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .canvas-wrapper.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .canvas-wrapper h2 {
+            color: #444;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            background: white;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .window-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .window-card {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .window-card:hover {
+            background: #e9ecef;
+        }
+
+        .window-card.active {
+            border-color: #9b59b6;
+            background: #f4f0f8;
+        }
+
+        .window-card h4 {
+            color: #333;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .window-card .spec {
+            font-size: 0.75em;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fensterfunktionen</h1>
+        <div class="subtitle">Spektrale Verzerrungen bei der Analyse von Signalausschnitten reduzieren</div>
+
+        <div class="info-box">
+            <h3>Warum Fensterfunktionen?</h3>
+            <p>
+                Bei der Fourier-Transformation endlicher Signalausschnitte entstehen durch die
+                abrupte Begrenzung spektrale Verzerrungen (Leckeffekt / Spectral Leakage).
+                Fensterfunktionen glätten die Ränder und reduzieren diese Artefakte.
+            </p>
+            <p><strong>Anwendungen:</strong></p>
+            <ul>
+                <li><strong>FFT/DFT:</strong> Reduzierung von Leckeffekten bei der Spektralanalyse</li>
+                <li><strong>FIR-Filter-Design:</strong> Glättung der Impulsantwort</li>
+                <li><strong>Signalanalyse:</strong> Verbesserung der Frequenzauflösung</li>
+            </ul>
+            <p><strong>Trade-off:</strong> Bessere Dämpfung der Nebenkeulen ↔ Breitere Hauptkeule (schlechtere Frequenzauflösung)</p>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>Wähle Fensterfunktion:</label>
+                <div class="window-comparison">
+                    <div class="window-card active" data-window="rectangular">
+                        <h4>Rechteck</h4>
+                        <div class="spec">Hauptkeule: Schmal<br>Nebenkeulen: -13 dB</div>
+                    </div>
+                    <div class="window-card" data-window="hanning">
+                        <h4>Hanning</h4>
+                        <div class="spec">Hauptkeule: Mittel<br>Nebenkeulen: -31 dB</div>
+                    </div>
+                    <div class="window-card" data-window="hamming">
+                        <h4>Hamming</h4>
+                        <div class="spec">Hauptkeule: Mittel<br>Nebenkeulen: -43 dB</div>
+                    </div>
+                    <div class="window-card" data-window="blackman">
+                        <h4>Blackman</h4>
+                        <div class="spec">Hauptkeule: Breit<br>Nebenkeulen: -58 dB</div>
+                    </div>
+                    <div class="window-card" data-window="kaiser">
+                        <h4>Kaiser</h4>
+                        <div class="spec">Hauptkeule: Variabel<br>Nebenkeulen: Variabel</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Fensterlänge (Anzahl Samples):</label>
+                <div class="slider-container">
+                    <input type="range" id="lengthSlider" min="32" max="512" value="128" step="16">
+                    <span class="value-display" id="lengthValue">128</span>
+                </div>
+            </div>
+
+            <div class="control-group" id="kaiserGroup" style="display: none;">
+                <label>Kaiser-Parameter β (Trade-off Auflösung/Dämpfung):</label>
+                <div class="slider-container">
+                    <input type="range" id="kaiserBetaSlider" min="0" max="10" value="5" step="0.5">
+                    <span class="value-display" id="kaiserBetaValue">5.0</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Signalfrequenz (für Demo):</label>
+                <div class="slider-container">
+                    <input type="range" id="signalFreqSlider" min="5" max="50" value="20" step="1">
+                    <span class="value-display" id="signalFreqValue">20 Hz</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-grid">
+            <div class="canvas-wrapper">
+                <h2>Fensterfunktion im Zeitbereich</h2>
+                <canvas id="windowCanvas" width="700" height="350"></canvas>
+            </div>
+
+            <div class="canvas-wrapper">
+                <h2>Frequenzgang (logarithmisch)</h2>
+                <canvas id="spectrumCanvas" width="700" height="350"></canvas>
+            </div>
+
+            <div class="canvas-wrapper full-width">
+                <h2>Effekt auf Signalanalyse (gefenstert vs. ungefenstert)</h2>
+                <canvas id="comparisonCanvas" width="1400" height="400"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const windowCanvas = document.getElementById('windowCanvas');
+        const spectrumCanvas = document.getElementById('spectrumCanvas');
+        const comparisonCanvas = document.getElementById('comparisonCanvas');
+        const windowCtx = windowCanvas.getContext('2d');
+        const spectrumCtx = spectrumCanvas.getContext('2d');
+        const comparisonCtx = comparisonCanvas.getContext('2d');
+
+        const lengthSlider = document.getElementById('lengthSlider');
+        const kaiserBetaSlider = document.getElementById('kaiserBetaSlider');
+        const signalFreqSlider = document.getElementById('signalFreqSlider');
+        const kaiserGroup = document.getElementById('kaiserGroup');
+
+        let windowType = 'rectangular';
+        let windowLength = parseInt(lengthSlider.value);
+        let kaiserBeta = parseFloat(kaiserBetaSlider.value);
+        let signalFreq = parseInt(signalFreqSlider.value);
+
+        document.querySelectorAll('.window-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                document.querySelectorAll('.window-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                windowType = card.dataset.window;
+
+                if (windowType === 'kaiser') {
+                    kaiserGroup.style.display = 'block';
+                } else {
+                    kaiserGroup.style.display = 'none';
+                }
+
+                draw();
+            });
+        });
+
+        lengthSlider.addEventListener('input', (e) => {
+            windowLength = parseInt(e.target.value);
+            document.getElementById('lengthValue').textContent = windowLength;
+            draw();
+        });
+
+        kaiserBetaSlider.addEventListener('input', (e) => {
+            kaiserBeta = parseFloat(e.target.value);
+            document.getElementById('kaiserBetaValue').textContent = kaiserBeta.toFixed(1);
+            draw();
+        });
+
+        signalFreqSlider.addEventListener('input', (e) => {
+            signalFreq = parseInt(e.target.value);
+            document.getElementById('signalFreqValue').textContent = `${signalFreq} Hz`;
+            draw();
+        });
+
+        function besselI0(x) {
+            let sum = 1.0;
+            let term = 1.0;
+            for (let k = 1; k <= 50; k++) {
+                term *= (x / 2) / k;
+                sum += term * term;
+            }
+            return sum;
+        }
+
+        function generateWindow(type, N, beta = 5) {
+            const window = new Array(N);
+
+            for (let n = 0; n < N; n++) {
+                switch(type) {
+                    case 'rectangular':
+                        window[n] = 1.0;
+                        break;
+                    case 'hanning':
+                        window[n] = 0.5 - 0.5 * Math.cos(2 * Math.PI * n / (N - 1));
+                        break;
+                    case 'hamming':
+                        window[n] = 0.54 - 0.46 * Math.cos(2 * Math.PI * n / (N - 1));
+                        break;
+                    case 'blackman':
+                        window[n] = 0.42 - 0.5 * Math.cos(2 * Math.PI * n / (N - 1)) +
+                                   0.08 * Math.cos(4 * Math.PI * n / (N - 1));
+                        break;
+                    case 'kaiser':
+                        const alpha = (N - 1) / 2;
+                        const arg = beta * Math.sqrt(1 - Math.pow((n - alpha) / alpha, 2));
+                        window[n] = besselI0(arg) / besselI0(beta);
+                        break;
+                }
+            }
+
+            return window;
+        }
+
+        function computeFFT(signal) {
+            const N = signal.length;
+            const spectrum = new Array(N / 2);
+
+            for (let k = 0; k < N / 2; k++) {
+                let real = 0, imag = 0;
+                for (let n = 0; n < N; n++) {
+                    const angle = -2 * Math.PI * k * n / N;
+                    real += signal[n] * Math.cos(angle);
+                    imag += signal[n] * Math.sin(angle);
+                }
+                spectrum[k] = Math.sqrt(real * real + imag * imag) / N;
+            }
+
+            return spectrum;
+        }
+
+        function drawWindow(window) {
+            const width = windowCanvas.width;
+            const height = windowCanvas.height;
+            const margin = 50;
+            const plotWidth = width - 2 * margin;
+            const plotHeight = height - 2 * margin;
+
+            windowCtx.clearRect(0, 0, width, height);
+            windowCtx.fillStyle = '#ffffff';
+            windowCtx.fillRect(0, 0, width, height);
+
+            // Koordinatensystem
+            windowCtx.strokeStyle = '#333';
+            windowCtx.lineWidth = 2;
+            windowCtx.beginPath();
+            windowCtx.moveTo(margin, margin);
+            windowCtx.lineTo(margin, height - margin);
+            windowCtx.lineTo(width - margin, height - margin);
+            windowCtx.stroke();
+
+            // Fensterfunktion
+            windowCtx.strokeStyle = '#9b59b6';
+            windowCtx.lineWidth = 2.5;
+            windowCtx.fillStyle = 'rgba(155, 89, 182, 0.1)';
+            windowCtx.beginPath();
+            windowCtx.moveTo(margin, height - margin);
+
+            for (let n = 0; n < window.length; n++) {
+                const x = margin + (n / (window.length - 1)) * plotWidth;
+                const y = height - margin - window[n] * (plotHeight * 0.9);
+                windowCtx.lineTo(x, y);
+            }
+
+            windowCtx.lineTo(width - margin, height - margin);
+            windowCtx.closePath();
+            windowCtx.fill();
+            windowCtx.stroke();
+
+            // Beschriftung
+            windowCtx.fillStyle = '#333';
+            windowCtx.font = 'bold 14px Arial';
+            windowCtx.textAlign = 'center';
+            windowCtx.fillText('Sample n', width / 2, height - 10);
+
+            windowCtx.save();
+            windowCtx.translate(15, height / 2);
+            windowCtx.rotate(-Math.PI / 2);
+            windowCtx.fillText('Amplitude', 0, 0);
+            windowCtx.restore();
+
+            // Achsenwerte
+            windowCtx.fillStyle = '#666';
+            windowCtx.font = '12px Arial';
+            windowCtx.textAlign = 'right';
+            for (let i = 0; i <= 4; i++) {
+                const value = i / 4;
+                const y = height - margin - value * (plotHeight * 0.9);
+                windowCtx.fillText(value.toFixed(1), margin - 10, y + 4);
+            }
+        }
+
+        function drawSpectrum(window) {
+            const width = spectrumCanvas.width;
+            const height = spectrumCanvas.height;
+            const margin = 50;
+            const plotWidth = width - 2 * margin;
+            const plotHeight = height - 2 * margin;
+
+            spectrumCtx.clearRect(0, 0, width, height);
+            spectrumCtx.fillStyle = '#ffffff';
+            spectrumCtx.fillRect(0, 0, width, height);
+
+            // Koordinatensystem
+            spectrumCtx.strokeStyle = '#333';
+            spectrumCtx.lineWidth = 2;
+            spectrumCtx.beginPath();
+            spectrumCtx.moveTo(margin, margin);
+            spectrumCtx.lineTo(margin, height - margin);
+            spectrumCtx.lineTo(width - margin, height - margin);
+            spectrumCtx.stroke();
+
+            // FFT des Fensters (Zero-Padding für bessere Auflösung)
+            const fftSize = 2048;
+            const paddedWindow = new Array(fftSize).fill(0);
+            for (let i = 0; i < window.length; i++) {
+                paddedWindow[i] = window[i];
+            }
+
+            const spectrum = computeFFT(paddedWindow);
+
+            // Normalisiere und konvertiere zu dB
+            const maxSpec = Math.max(...spectrum);
+            const spectrumDB = spectrum.map(s => 20 * Math.log10(s / maxSpec));
+
+            // Zeichne Spektrum
+            spectrumCtx.strokeStyle = '#e74c3c';
+            spectrumCtx.lineWidth = 2;
+            spectrumCtx.beginPath();
+
+            const plotRange = 120; // dB
+            const minDB = -plotRange;
+
+            for (let i = 0; i < spectrum.length / 4; i++) { // Nur ersten Teil
+                const x = margin + (i / (spectrum.length / 4)) * plotWidth;
+                const db = Math.max(spectrumDB[i], minDB);
+                const y = height - margin - ((db - minDB) / plotRange) * (plotHeight * 0.9);
+
+                if (i === 0) spectrumCtx.moveTo(x, y);
+                else spectrumCtx.lineTo(x, y);
+            }
+            spectrumCtx.stroke();
+
+            // Gitterlinien für dB-Werte
+            spectrumCtx.strokeStyle = '#ddd';
+            spectrumCtx.lineWidth = 1;
+            spectrumCtx.setLineDash([5, 5]);
+            spectrumCtx.fillStyle = '#666';
+            spectrumCtx.font = '11px Arial';
+            spectrumCtx.textAlign = 'right';
+
+            for (let db = 0; db >= minDB; db -= 20) {
+                const y = height - margin - ((db - minDB) / plotRange) * (plotHeight * 0.9);
+                spectrumCtx.beginPath();
+                spectrumCtx.moveTo(margin, y);
+                spectrumCtx.lineTo(width - margin, y);
+                spectrumCtx.stroke();
+                spectrumCtx.fillText(`${db} dB`, margin - 5, y + 4);
+            }
+            spectrumCtx.setLineDash([]);
+
+            // Beschriftung
+            spectrumCtx.fillStyle = '#333';
+            spectrumCtx.font = 'bold 14px Arial';
+            spectrumCtx.textAlign = 'center';
+            spectrumCtx.fillText('Normalisierte Frequenz', width / 2, height - 10);
+
+            spectrumCtx.save();
+            spectrumCtx.translate(15, height / 2);
+            spectrumCtx.rotate(-Math.PI / 2);
+            spectrumCtx.fillText('Magnitude (dB)', 0, 0);
+            spectrumCtx.restore();
+        }
+
+        function drawComparison(window) {
+            const width = comparisonCanvas.width;
+            const height = comparisonCanvas.height;
+            const margin = 60;
+            const plotWidth = width - 2 * margin;
+            const plotHeight = height / 2 - margin;
+
+            comparisonCtx.clearRect(0, 0, width, height);
+            comparisonCtx.fillStyle = '#ffffff';
+            comparisonCtx.fillRect(0, 0, width, height);
+
+            // Erzeuge Testsignal (endlicher Ausschnitt)
+            const fs = 100; // Sampling-Frequenz
+            const signal = new Array(window.length);
+            for (let n = 0; n < window.length; n++) {
+                const t = n / fs;
+                signal[n] = Math.sin(2 * Math.PI * signalFreq * t);
+            }
+
+            // Ungefenstertes Signal
+            const fftSize = 512;
+            const unwindowed = new Array(fftSize).fill(0);
+            for (let i = 0; i < signal.length; i++) {
+                unwindowed[i] = signal[i];
+            }
+            const spectrumUnwindowed = computeFFT(unwindowed);
+
+            // Gefenstertes Signal
+            const windowed = new Array(fftSize).fill(0);
+            for (let i = 0; i < signal.length; i++) {
+                windowed[i] = signal[i] * window[i];
+            }
+            const spectrumWindowed = computeFFT(windowed);
+
+            // Obere Hälfte: Zeitsignale
+            comparisonCtx.strokeStyle = '#333';
+            comparisonCtx.lineWidth = 2;
+            comparisonCtx.beginPath();
+            comparisonCtx.moveTo(margin, margin);
+            comparisonCtx.lineTo(margin, plotHeight + margin);
+            comparisonCtx.lineTo(width - margin, plotHeight + margin);
+            comparisonCtx.stroke();
+
+            const centerY1 = margin + plotHeight / 2;
+
+            // Nulllinie
+            comparisonCtx.strokeStyle = '#ddd';
+            comparisonCtx.lineWidth = 1;
+            comparisonCtx.beginPath();
+            comparisonCtx.moveTo(margin, centerY1);
+            comparisonCtx.lineTo(width - margin, centerY1);
+            comparisonCtx.stroke();
+
+            // Original Signal
+            comparisonCtx.strokeStyle = '#95a5a6';
+            comparisonCtx.lineWidth = 1.5;
+            comparisonCtx.beginPath();
+            for (let n = 0; n < signal.length; n++) {
+                const x = margin + (n / (signal.length - 1)) * plotWidth;
+                const y = centerY1 - signal[n] * (plotHeight / 2) * 0.7;
+                if (n === 0) comparisonCtx.moveTo(x, y);
+                else comparisonCtx.lineTo(x, y);
+            }
+            comparisonCtx.stroke();
+
+            // Gefenstertes Signal
+            comparisonCtx.strokeStyle = '#9b59b6';
+            comparisonCtx.lineWidth = 2.5;
+            comparisonCtx.beginPath();
+            for (let i = 0; i < signal.length; i++) {
+                const x = margin + (i / (signal.length - 1)) * plotWidth;
+                const y = centerY1 - windowed[i] * (plotHeight / 2) * 0.7;
+                if (i === 0) comparisonCtx.moveTo(x, y);
+                else comparisonCtx.lineTo(x, y);
+            }
+            comparisonCtx.stroke();
+
+            comparisonCtx.font = '13px Arial';
+            comparisonCtx.textAlign = 'left';
+            comparisonCtx.fillStyle = '#95a5a6';
+            comparisonCtx.fillText('Original', margin + 10, margin + 15);
+            comparisonCtx.fillStyle = '#9b59b6';
+            comparisonCtx.fillText('Gefenstert', margin + 10, margin + 35);
+
+            // Untere Hälfte: Spektren
+            const topY2 = height / 2 + margin / 2;
+            comparisonCtx.strokeStyle = '#333';
+            comparisonCtx.lineWidth = 2;
+            comparisonCtx.beginPath();
+            comparisonCtx.moveTo(margin, topY2);
+            comparisonCtx.lineTo(margin, topY2 + plotHeight);
+            comparisonCtx.lineTo(width - margin, topY2 + plotHeight);
+            comparisonCtx.stroke();
+
+            const maxSpec = Math.max(...spectrumUnwindowed, ...spectrumWindowed);
+            const scale = (plotHeight * 0.8) / maxSpec;
+
+            // Ungefenstertes Spektrum
+            comparisonCtx.strokeStyle = '#95a5a6';
+            comparisonCtx.lineWidth = 1.5;
+            comparisonCtx.beginPath();
+            for (let i = 0; i < spectrumUnwindowed.length; i++) {
+                const x = margin + (i / (spectrumUnwindowed.length - 1)) * plotWidth;
+                const y = topY2 + plotHeight - spectrumUnwindowed[i] * scale;
+                if (i === 0) comparisonCtx.moveTo(x, y);
+                else comparisonCtx.lineTo(x, y);
+            }
+            comparisonCtx.stroke();
+
+            // Gefenstertes Spektrum
+            comparisonCtx.strokeStyle = '#9b59b6';
+            comparisonCtx.lineWidth = 2.5;
+            comparisonCtx.beginPath();
+            for (let i = 0; i < spectrumWindowed.length; i++) {
+                const x = margin + (i / (spectrumWindowed.length - 1)) * plotWidth;
+                const y = topY2 + plotHeight - spectrumWindowed[i] * scale;
+                if (i === 0) comparisonCtx.moveTo(x, y);
+                else comparisonCtx.lineTo(x, y);
+            }
+            comparisonCtx.stroke();
+
+            comparisonCtx.fillStyle = '#95a5a6';
+            comparisonCtx.fillText('Ohne Fenster (Leckeffekte!)', margin + 10, topY2 + 15);
+            comparisonCtx.fillStyle = '#9b59b6';
+            comparisonCtx.fillText('Mit Fenster (reduzierte Leckeffekte)', margin + 10, topY2 + 35);
+
+            // Achsenbeschriftungen
+            comparisonCtx.fillStyle = '#333';
+            comparisonCtx.font = 'bold 14px Arial';
+            comparisonCtx.textAlign = 'center';
+            comparisonCtx.fillText('Zeit', width / 2, plotHeight + margin + 25);
+            comparisonCtx.fillText('Frequenz (Hz)', width / 2, height - 10);
+
+            comparisonCtx.save();
+            comparisonCtx.translate(15, margin + plotHeight / 2);
+            comparisonCtx.rotate(-Math.PI / 2);
+            comparisonCtx.fillText('Zeitsignal', 0, 0);
+            comparisonCtx.restore();
+
+            comparisonCtx.save();
+            comparisonCtx.translate(15, topY2 + plotHeight / 2);
+            comparisonCtx.rotate(-Math.PI / 2);
+            comparisonCtx.fillText('Spektrum', 0, 0);
+            comparisonCtx.restore();
+        }
+
+        function draw() {
+            const window = generateWindow(windowType, windowLength, kaiserBeta);
+            drawWindow(window);
+            drawSpectrum(window);
+            drawComparison(window);
+        }
+
+        draw();
+    </script>
+</body>
+</html>

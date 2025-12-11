@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digitale Verarbeitung - Das Herzstück</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #d8e8f4 0%, #c0d8ec 100%);
+            min-height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .intro {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 35px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            line-height: 1.6;
+            color: #555;
+        }
+        .visualizations {
+            display: grid;
+            gap: 20px;
+        }
+        .viz-card {
+            background: #fafafa;
+            padding: 25px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .viz-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+        .viz-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .viz-description {
+            color: #555;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .badge.stable {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge.unstable {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-link">← Zurück zur Übersicht</a>
+
+    <h1>Digitale Verarbeitung</h1>
+    <div class="subtitle">Das Herzstück - Filterung, Analyse und Transformation</div>
+
+    <div class="container">
+        <div class="intro">
+            Im digitalen Bereich werden Signale analysiert, gefiltert und transformiert. Hier kommen
+            leistungsstarke Algorithmen wie die FFT, digitale Filter (FIR/IIR) und Fensterfunktionen
+            zum Einsatz, um Signale zu verstehen und zu manipulieren.
+        </div>
+
+        <div class="visualizations">
+            <a href="diskrete_faltung.html" class="viz-card">
+                <div class="viz-title">Diskrete Faltung</div>
+                <div class="viz-description">
+                    Das digitale Äquivalent zur kontinuierlichen Faltung. Fundamentale Operation für
+                    digitale LTI-Systeme mit summenbasierter Berechnung: y[n] = Σ x[k]·h[n-k]
+                </div>
+            </a>
+
+            <a href="frequenzanalyse/fourier_transformation.html" class="viz-card">
+                <div class="viz-title">Frequenzanalyse (DFT/FFT)</div>
+                <div class="viz-description">
+                    Erkunde die Diskrete Fourier-Transformation und zerlege digitale Signale in ihre
+                    Frequenzkomponenten. Die DFT ist fundamental für die Spektralanalyse und ermöglicht
+                    die Umwandlung zwischen Zeit- und Frequenzdarstellung.
+                </div>
+            </a>
+
+            <a href="fensterfunktionen.html" class="viz-card">
+                <div class="viz-title">Fensterfunktionen</div>
+                <div class="viz-description">
+                    Verstehe, wie Fensterfunktionen (Hanning, Hamming, Blackman, Kaiser) spektrale
+                    Verzerrungen bei der Analyse von Signalausschnitten reduzieren. Wichtig für
+                    FFT-Analysen und FIR-Filter-Design.
+                </div>
+            </a>
+
+            <a href="fir_filter.html" class="viz-card">
+                <div class="viz-title">FIR-Filter <span class="badge stable">Immer stabil</span></div>
+                <div class="viz-description">
+                    Finite Impulse Response Filter sind nicht-rekursive Filter mit endlicher Impulsantwort.
+                    Sie sind immer stabil, ermöglichen lineare Phase und sind einfach zu implementieren.
+                    Ideal für Anwendungen, die Phasentreue erfordern.
+                </div>
+            </a>
+
+            <a href="iir_filter.html" class="viz-card">
+                <div class="viz-title">IIR-Filter <span class="badge unstable">Potentiell instabil</span></div>
+                <div class="viz-description">
+                    Infinite Impulse Response Filter sind rekursive Filter mit theoretisch unendlicher
+                    Impulsantwort. Sie sind effizienter als FIR-Filter, können aber instabil werden.
+                    Verstehe Pole, Nullstellen und Stabilität.
+                </div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

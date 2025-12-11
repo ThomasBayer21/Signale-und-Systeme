@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantisierung - Zuweisung zu Pegelstufen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #d4b8c8 0%, #c8b8d4 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .info-box {
+            background: #f0f4f8;
+            border-left: 4px solid #d4b8c8;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+        }
+
+        .info-box h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #d4b8c8;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #d4b8c8;
+            cursor: pointer;
+            border: none;
+        }
+
+        .value-display {
+            min-width: 60px;
+            text-align: right;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .canvas-wrapper {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .canvas-wrapper h2 {
+            color: #444;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            background: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .value {
+            color: #333;
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quantisierung</h1>
+        <div class="subtitle">Zuweisung zu Pegelstufen - Von kontinuierlich zu diskret</div>
+
+        <div class="info-box">
+            <h3>Was ist Quantisierung?</h3>
+            <p>
+                Die Quantisierung wandelt kontinuierliche Amplitudenwerte in diskrete Stufen um.
+                Bei n Bits stehen 2<sup>n</sup> verschiedene Werte zur Verfügung. Der kontinuierliche
+                Wert wird auf die nächstgelegene Quantisierungsstufe gerundet.
+            </p>
+            <p>
+                <strong>Quantisierungsrauschen:</strong> Der Fehler zwischen Original und quantisiertem
+                Signal. Mit mehr Bits wird dieser Fehler kleiner, aber der Speicherbedarf steigt.
+            </p>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>Anzahl Bits (n):</label>
+                <div class="slider-container">
+                    <input type="range" id="nBitsSlider" min="1" max="8" value="3" step="1">
+                    <span class="value-display" id="nBitsValue">3 Bits</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Signalfrequenz (Hz):</label>
+                <div class="slider-container">
+                    <input type="range" id="frequencySlider" min="0.5" max="5" value="2" step="0.1">
+                    <span class="value-display" id="frequencyValue">2.0 Hz</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Signaltyp:</label>
+                <select id="signalType" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                    <option value="sine">Sinus</option>
+                    <option value="triangle">Dreieck</option>
+                    <option value="sawtooth">Sägezahn</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="canvas-wrapper">
+            <h2>Quantisierung visualisiert</h2>
+            <canvas id="quantizationCanvas" width="1200" height="500"></canvas>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">Quantisierungsstufen</div>
+                <div class="value" id="levelsValue">8</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Stufenhöhe</div>
+                <div class="value" id="stepSizeValue">0.25</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Max. Quantisierungsfehler</div>
+                <div class="value" id="maxErrorValue">±0.125</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Signal-to-Noise Ratio</div>
+                <div class="value" id="snrValue">18 dB</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('quantizationCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const nBitsSlider = document.getElementById('nBitsSlider');
+        const frequencySlider = document.getElementById('frequencySlider');
+        const signalTypeSelect = document.getElementById('signalType');
+
+        let nBits = parseInt(nBitsSlider.value);
+        let frequency = parseFloat(frequencySlider.value);
+        let signalType = signalTypeSelect.value;
+
+        nBitsSlider.addEventListener('input', (e) => {
+            nBits = parseInt(e.target.value);
+            document.getElementById('nBitsValue').textContent = `${nBits} Bits`;
+            updateStats();
+            draw();
+        });
+
+        frequencySlider.addEventListener('input', (e) => {
+            frequency = parseFloat(e.target.value);
+            document.getElementById('frequencyValue').textContent = `${frequency.toFixed(1)} Hz`;
+            draw();
+        });
+
+        signalTypeSelect.addEventListener('change', (e) => {
+            signalType = e.target.value;
+            draw();
+        });
+
+        function generateSignal(t) {
+            switch(signalType) {
+                case 'sine':
+                    return Math.sin(2 * Math.PI * frequency * t);
+                case 'triangle':
+                    return 2 * Math.abs(2 * (frequency * t - Math.floor(frequency * t + 0.5))) - 1;
+                case 'sawtooth':
+                    return 2 * (frequency * t - Math.floor(frequency * t + 0.5));
+                default:
+                    return Math.sin(2 * Math.PI * frequency * t);
+            }
+        }
+
+        function quantize(value, levels) {
+            // Normalisiere auf [0, 1]
+            const normalized = (value + 1) / 2;
+            // Quantisiere
+            const step = 1 / (levels - 1);
+            const quantized = Math.round(normalized / step) * step;
+            // Zurück zu [-1, 1]
+            return quantized * 2 - 1;
+        }
+
+        function updateStats() {
+            const levels = Math.pow(2, nBits);
+            const stepSize = 2 / levels;
+            const maxError = stepSize / 2;
+            const snr = 6.02 * nBits + 1.76;
+
+            document.getElementById('levelsValue').textContent = levels;
+            document.getElementById('stepSizeValue').textContent = stepSize.toFixed(4);
+            document.getElementById('maxErrorValue').textContent = `±${maxError.toFixed(4)}`;
+            document.getElementById('snrValue').textContent = `${snr.toFixed(1)} dB`;
+        }
+
+        function draw() {
+            const width = canvas.width;
+            const height = canvas.height;
+            const margin = 60;
+            const plotWidth = width - 2 * margin;
+            const plotHeight = height - 2 * margin;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Hintergrund
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, height);
+
+            // Koordinatensystem
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(margin, margin);
+            ctx.lineTo(margin, height - margin);
+            ctx.lineTo(width - margin, height - margin);
+            ctx.stroke();
+
+            const levels = Math.pow(2, nBits);
+            const centerY = margin + plotHeight / 2;
+
+            // Zeichne Quantisierungsstufen
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            for (let i = 0; i < levels; i++) {
+                const value = -1 + (2 * i) / (levels - 1);
+                const y = centerY - value * (plotHeight / 2) * 0.9;
+
+                ctx.beginPath();
+                ctx.moveTo(margin, y);
+                ctx.lineTo(width - margin, y);
+                ctx.stroke();
+
+                // Beschriftung
+                ctx.fillStyle = '#666';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText(value.toFixed(2), margin - 5, y + 3);
+            }
+            ctx.setLineDash([]);
+
+            // Generiere Signal
+            const numSamples = 500;
+            const duration = 3;
+
+            // Zeichne Originalsignal
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i <= numSamples; i++) {
+                const t = (i / numSamples) * duration;
+                const value = generateSignal(t);
+                const x = margin + (i / numSamples) * plotWidth;
+                const y = centerY - value * (plotHeight / 2) * 0.9;
+
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Zeichne quantisiertes Signal
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            for (let i = 0; i <= numSamples; i++) {
+                const t = (i / numSamples) * duration;
+                const value = generateSignal(t);
+                const quantizedValue = quantize(value, levels);
+                const x = margin + (i / numSamples) * plotWidth;
+                const y = centerY - quantizedValue * (plotHeight / 2) * 0.9;
+
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Legende
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#3498db';
+            ctx.fillText('Original', width - margin - 100, margin + 20);
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillText(`Quantisiert (${nBits} Bits)`, width - margin - 100, margin + 40);
+
+            // Achsenbeschriftungen
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Zeit (s)', width / 2, height - 20);
+
+            ctx.save();
+            ctx.translate(15, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Amplitude', 0, 0);
+            ctx.restore();
+
+            // Zeitachsen-Ticks
+            ctx.fillStyle = '#666';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            for (let i = 0; i <= 6; i++) {
+                const t = (i / 6) * duration;
+                const x = margin + (i / 6) * plotWidth;
+                ctx.fillText(t.toFixed(1), x, height - margin + 20);
+
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(x, height - margin);
+                ctx.lineTo(x, height - margin + 5);
+                ctx.stroke();
+            }
+        }
+
+        updateStats();
+        draw();
+    </script>
+</body>
+</html>

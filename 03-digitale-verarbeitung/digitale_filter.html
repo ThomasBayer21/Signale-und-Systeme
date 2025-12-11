@@ -660,7 +660,7 @@
                     </select>
                 </div>
 
-                <div class="control-group">
+                <div class="control-group" id="iirCutoffGroup">
                     <label>Grenzfrequenz (normalisiert auf fs/2):</label>
                     <div class="slider-container">
                         <input type="range" id="iirCutoffSlider" min="0.05" max="0.95" value="0.25" step="0.01">
@@ -668,7 +668,7 @@
                     </div>
                 </div>
 
-                <div class="control-group">
+                <div class="control-group" id="iirFeedbackGroup">
                     <label>Rückkopplungsstärke (für einfaches Filter):</label>
                     <div class="slider-container">
                         <input type="range" id="iirFeedbackSlider" min="0" max="0.95" value="0.7" step="0.01">
@@ -1104,13 +1104,26 @@
         const iirCutoffSlider = document.getElementById('iirCutoffSlider');
         const iirFeedbackSlider = document.getElementById('iirFeedbackSlider');
         const stabilityIndicator = document.getElementById('stabilityIndicator');
+        const iirCutoffGroup = document.getElementById('iirCutoffGroup');
+        const iirFeedbackGroup = document.getElementById('iirFeedbackGroup');
 
         let iirFilterType = iirFilterTypeSelect.value;
         let iirCutoff = parseFloat(iirCutoffSlider.value);
         let iirFeedback = parseFloat(iirFeedbackSlider.value);
 
+        function updateIIRControlVisibility() {
+            if (iirFilterType === 'simple') {
+                iirCutoffGroup.style.display = 'none';
+                iirFeedbackGroup.style.display = 'block';
+            } else {
+                iirCutoffGroup.style.display = 'block';
+                iirFeedbackGroup.style.display = 'none';
+            }
+        }
+
         iirFilterTypeSelect.addEventListener('change', (e) => {
             iirFilterType = e.target.value;
+            updateIIRControlVisibility();
             drawIIR();
         });
 
@@ -1584,6 +1597,7 @@
         }
 
         // Initial draw
+        updateIIRControlVisibility();
         drawFIR();
         drawIIR();
     </script>

@@ -85,7 +85,7 @@
         }
         .value-display {
             font-size: 1.1em;
-            color: #9b59b6;
+            color: #16a085;
             font-weight: 600;
         }
         input[type="range"] {
@@ -102,14 +102,14 @@
             width: 16px;
             height: 16px;
             border-radius: 50%;
-            background: #9b59b6;
+            background: #16a085;
             cursor: pointer;
         }
         input[type="range"]::-moz-range-thumb {
             width: 16px;
             height: 16px;
             border-radius: 50%;
-            background: #9b59b6;
+            background: #16a085;
             cursor: pointer;
             border: none;
         }
@@ -284,7 +284,7 @@
             }
 
             // Draw triangle function
-            ctx.strokeStyle = '#9b59b6';
+            ctx.strokeStyle = '#16a085';
             ctx.lineWidth = 3;
             ctx.beginPath();
 
@@ -340,13 +340,13 @@
 
             // Peak marker
             if (peakX >= 0 && peakX <= width) {
-                ctx.fillStyle = '#9b59b6';
+                ctx.fillStyle = '#16a085';
                 ctx.beginPath();
                 ctx.arc(peakX, peakY, 5, 0, 2 * Math.PI);
                 ctx.fill();
 
                 // Peak label
-                ctx.fillStyle = '#9b59b6';
+                ctx.fillStyle = '#16a085';
                 ctx.font = 'bold 14px sans-serif';
                 ctx.textAlign = 'center';
                 ctx.fillText(`A = ${amplitude.toFixed(1)}`, peakX, peakY - 15);

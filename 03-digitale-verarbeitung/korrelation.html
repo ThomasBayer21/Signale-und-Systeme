@@ -501,36 +501,78 @@
             const startX = margin;
             const baseY = yPos + height - 20;
 
-            // Achse
+            // Erweiterte Achse für Verschiebung
+            const axisExtension = Math.abs(shift) * spacing;
             ctx.strokeStyle = '#666';
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(startX, baseY);
-            ctx.lineTo(startX + signal.length * spacing, baseY);
+            ctx.moveTo(startX - axisExtension, baseY);
+            ctx.lineTo(startX + signal.length * spacing + axisExtension, baseY);
             ctx.stroke();
 
             const maxVal = Math.max(...signal.map(Math.abs), 0.1);
             const scale = (height - 40) / maxVal;
 
-            // Balken
+            // Balken mit Verschiebung
             signal.forEach((val, i) => {
-                const x = startX + i * spacing;
+                // Position mit Verschiebung: y[k+m] bedeutet Signal nach rechts für positives m
+                const xPos = startX + (i + shift) * spacing;
                 const barHeight = Math.abs(val) * scale;
 
-                ctx.fillStyle = color;
-                ctx.fillRect(x, baseY - barHeight, barWidth, barHeight);
+                // Nur zeichnen wenn im sichtbaren Bereich
+                if(xPos >= startX - spacing && xPos <= startX + signal.length * spacing) {
+                    ctx.fillStyle = color;
+                    ctx.globalAlpha = 0.7;
+                    ctx.fillRect(xPos, baseY - barHeight, barWidth, barHeight);
 
-                ctx.strokeStyle = '#2c3e50';
-                ctx.lineWidth = 1;
-                ctx.strokeRect(x, baseY - barHeight, barWidth, barHeight);
+                    ctx.strokeStyle = '#2c3e50';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(xPos, baseY - barHeight, barWidth, barHeight);
+                    ctx.globalAlpha = 1.0;
 
-                // Verschiebungs-Highlight
-                if(shift !== 0 && i === Math.abs(shift)) {
-                    ctx.strokeStyle = '#f39c12';
-                    ctx.lineWidth = 3;
-                    ctx.strokeRect(x - 2, baseY - barHeight - 2, barWidth + 4, barHeight + 4);
+                    // Highlight für Überlappungsbereich
+                    if(shift !== 0 && i >= 0 && i < signal.length &&
+                       (i + shift) >= 0 && (i + shift) < signal.length) {
+                        ctx.strokeStyle = '#27ae60';
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(xPos - 1, baseY - barHeight - 1, barWidth + 2, barHeight + 2);
+                    }
                 }
             });
+
+            // Verschiebungspfeil zeichnen
+            if(shift !== 0) {
+                const arrowY = yPos + height + 10;
+                const arrowStartX = startX + signal.length * spacing / 2;
+                const arrowEndX = arrowStartX + shift * spacing;
+
+                ctx.strokeStyle = '#f39c12';
+                ctx.fillStyle = '#f39c12';
+                ctx.lineWidth = 2;
+
+                // Pfeil-Linie
+                ctx.beginPath();
+                ctx.moveTo(arrowStartX, arrowY);
+                ctx.lineTo(arrowEndX, arrowY);
+                ctx.stroke();
+
+                // Pfeilspitze
+                const arrowSize = 8;
+                const direction = shift > 0 ? 1 : -1;
+                ctx.beginPath();
+                ctx.moveTo(arrowEndX, arrowY);
+                ctx.lineTo(arrowEndX - direction * arrowSize, arrowY - arrowSize/2);
+                ctx.lineTo(arrowEndX - direction * arrowSize, arrowY + arrowSize/2);
+                ctx.closePath();
+                ctx.fill();
+
+                // Verschiebungstext
+                ctx.fillStyle = '#f39c12';
+                ctx.font = 'bold 12px Segoe UI';
+                ctx.textAlign = 'center';
+                ctx.fillText(`Verschiebung: ${shift > 0 ? '+' : ''}${shift}`,
+                            (arrowStartX + arrowEndX) / 2, arrowY - 8);
+            }
         }
 
         function drawCorrelationPlot(ctx, values, margin, yPos, height, highlight = null) {

@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digitale Filter - FIR vs IIR Vergleich</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #d8e8f4 0%, #c0d8ec 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+
+        /* Cross-references */
+        .cross-references {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+        }
+
+        .cross-references h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .cross-references ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .cross-references li {
+            padding: 8px 0;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .cross-references a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .cross-references a:hover {
+            text-decoration: underline;
+            color: #2980b9;
+        }
+
+        .cross-references .arrow {
+            color: #667eea;
+            font-weight: bold;
+            margin: 0 8px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #333;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .tab.fir-tab.active {
+            border-bottom-color: #3498db;
+        }
+
+        .tab.iir-tab.active {
+            border-bottom-color: #f39c12;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Info boxes */
+        .info-box {
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+
+        .info-box.fir {
+            background: #e8f4f8;
+            border-left-color: #3498db;
+        }
+
+        .info-box.iir {
+            background: #fff8e8;
+            border-left-color: #f39c12;
+        }
+
+        .info-box.comparison {
+            background: #f0f0f5;
+            border-left-color: #667eea;
+        }
+
+        .info-box h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .warning-box {
+            background: #ffe8e8;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+        }
+
+        .warning-box h3 {
+            color: #c0392b;
+            margin-bottom: 10px;
+        }
+
+        /* Comparison table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-table th {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 1.05em;
+        }
+
+        .comparison-table th:first-child {
+            width: 25%;
+            background: #34495e;
+        }
+
+        .comparison-table th.fir-col {
+            text-align: center;
+            background: #2980b9;
+        }
+
+        .comparison-table th.iir-col {
+            text-align: center;
+            background: #d68910;
+        }
+
+        .comparison-table td {
+            padding: 14px 20px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        .comparison-table td:first-child {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .comparison-table .fir-col {
+            background: #e8f4f8;
+        }
+
+        .comparison-table .iir-col {
+            background: #fff8e8;
+        }
+
+        /* Controls */
+        .controls {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .fir-controls input[type="range"]::-webkit-slider-thumb {
+            background: #3498db;
+        }
+
+        .fir-controls input[type="range"]::-moz-range-thumb {
+            background: #3498db;
+        }
+
+        .iir-controls input[type="range"]::-webkit-slider-thumb {
+            background: #f39c12;
+        }
+
+        .iir-controls input[type="range"]::-moz-range-thumb {
+            background: #f39c12;
+        }
+
+        .value-display {
+            min-width: 80px;
+            text-align: right;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .canvas-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .canvas-wrapper {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .canvas-wrapper.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .canvas-wrapper h2 {
+            color: #444;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            background: white;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .badge.stable {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge.finite {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .badge.unstable {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge.infinite {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge.recursive {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .stability-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+
+        .stability-indicator.stable {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .stability-indicator.unstable {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Zurück zur Digitalen Verarbeitung</a>
+
+        <h1>Digitale Filter</h1>
+        <div class="subtitle">FIR vs IIR - Vergleich und interaktive Visualisierung</div>
+
+        <!-- Cross-references -->
+        <div class="cross-references">
+            <h3>Konzeptuelle Verbindungen</h3>
+            <ul>
+                <li>
+                    <strong>Theorie:</strong>
+                    <a href="z_transformation.html">Z-Transformation</a>
+                    <span class="arrow">→</span>
+                    Pol-Nullstellen-Diagramm und Filterentwurf
+                </li>
+                <li>
+                    <strong>Grundlagen:</strong>
+                    <a href="diskrete_faltung.html">Diskrete Faltung</a>
+                    <span class="arrow">→</span>
+                    FIR-Filter = Faltung mit endlicher Impulsantwort h[n]
+                </li>
+                <li>
+                    <strong>Verbesserung:</strong>
+                    <a href="fensterfunktionen.html">Fensterfunktionen</a>
+                    <span class="arrow">→</span>
+                    Reduzieren Ripple bei FIR-Filtern
+                </li>
+                <li>
+                    <strong>Frequenzanalyse:</strong>
+                    <a href="frequenzanalyse/fourier_transformation.html">DFT/FFT</a>
+                    <span class="arrow">→</span>
+                    Spektralanalyse der Filterwirkung
+                </li>
+            </ul>
+        </div>
+
+        <!-- Comparison tab -->
+        <div class="tabs">
+            <button class="tab active" data-tab="comparison">Vergleich</button>
+            <button class="tab fir-tab" data-tab="fir">FIR-Filter</button>
+            <button class="tab iir-tab" data-tab="iir">IIR-Filter</button>
+        </div>
+
+        <!-- Comparison Content -->
+        <div class="tab-content active" id="comparison">
+            <div class="info-box comparison">
+                <h3>FIR vs IIR - Die zwei Haupttypen digitaler Filter</h3>
+                <p>
+                    Digitale Filter lassen sich in zwei grundlegende Kategorien einteilen:
+                    <strong>FIR</strong> (Finite Impulse Response) und <strong>IIR</strong> (Infinite Impulse Response).
+                    Der wesentliche Unterschied liegt in der Verwendung von Rückkopplung.
+                </p>
+            </div>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Eigenschaft</th>
+                        <th class="fir-col">FIR-Filter</th>
+                        <th class="iir-col">IIR-Filter</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Struktur</strong></td>
+                        <td>Nicht-rekursiv (keine Rückkopplung)</td>
+                        <td>Rekursiv (mit Rückkopplung)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gleichung</strong></td>
+                        <td>y[n] = Σ h[k] · x[n-k]</td>
+                        <td>y[n] = Σ b[k]·x[n-k] - Σ a[k]·y[n-k]</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Impulsantwort</strong></td>
+                        <td>Endlich (nach N Samples = 0)</td>
+                        <td>Theoretisch unendlich (klingt ab)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stabilität</strong></td>
+                        <td>Immer stabil</td>
+                        <td>Kann instabil werden</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Phase</strong></td>
+                        <td>Lineare Phase möglich</td>
+                        <td>Nichtlineare Phase</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Effizienz</strong></td>
+                        <td>Mehr Koeffizienten nötig</td>
+                        <td>Weniger Koeffizienten für steile Filter</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pole</strong></td>
+                        <td>Nur bei z=0 (trivial)</td>
+                        <td>Beliebig im z-Bereich</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Anwendung</strong></td>
+                        <td>Audio, phasentreue Übertragung</td>
+                        <td>Echtzeitanwendungen, Effizienz wichtig</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box comparison">
+                <h3>Wann welchen Filter verwenden?</h3>
+                <ul>
+                    <li><strong>FIR wählen wenn:</strong> Lineare Phase erforderlich, Stabilität kritisch, Audio-Verarbeitung</li>
+                    <li><strong>IIR wählen wenn:</strong> Steile Filter mit wenig Rechenaufwand, analoges Filter nachbilden, Echtzeitverarbeitung</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- FIR Content -->
+        <div class="tab-content" id="fir">
+            <div class="info-box fir">
+                <h3>FIR-Filter <span class="badge stable">Immer stabil</span><span class="badge finite">Endlich lang</span></h3>
+                <p>
+                    Ein FIR-Filter (Finite Impulse Response) ist ein nicht-rekursives digitales Filter,
+                    dessen Impulsantwort nach endlich vielen Abtastwerten auf Null abklingt.
+                </p>
+                <p><strong>Eigenschaften:</strong></p>
+                <ul>
+                    <li><strong>Immer stabil:</strong> Keine Rückkopplung, daher kann das Filter nicht schwingen</li>
+                    <li><strong>Endliche Impulsdauer:</strong> Die Impulsantwort ist nach N Abtastwerten zu Ende</li>
+                    <li><strong>Lineare Phase möglich:</strong> Keine Phasenverzerrung bei symmetrischen Koeffizienten</li>
+                    <li><strong>Einfache Implementierung:</strong> y[n] = Σ h[k] · x[n-k]</li>
+                </ul>
+            </div>
+
+            <div class="controls fir-controls">
+                <div class="control-group">
+                    <label>Filtertyp:</label>
+                    <select id="firFilterType">
+                        <option value="lowpass">Tiefpass (Low-pass)</option>
+                        <option value="highpass">Hochpass (High-pass)</option>
+                        <option value="bandpass">Bandpass</option>
+                        <option value="bandstop">Bandsperre (Notch)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Filterordnung (Anzahl Koeffizienten):</label>
+                    <div class="slider-container">
+                        <input type="range" id="firOrderSlider" min="5" max="101" value="31" step="2">
+                        <span class="value-display" id="firOrderValue">31</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Grenzfrequenz (normalisiert auf fs/2):</label>
+                    <div class="slider-container">
+                        <input type="range" id="firCutoffSlider" min="0.05" max="0.95" value="0.3" step="0.01">
+                        <span class="value-display" id="firCutoffValue">0.30</span>
+                    </div>
+                </div>
+
+                <div class="control-group" id="firCutoff2Group" style="display: none;">
+                    <label>Obere Grenzfrequenz (normalisiert):</label>
+                    <div class="slider-container">
+                        <input type="range" id="firCutoff2Slider" min="0.05" max="0.95" value="0.7" step="0.01">
+                        <span class="value-display" id="firCutoff2Value">0.70</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Fensterfunktion:</label>
+                    <select id="firWindowType">
+                        <option value="rectangular">Rechteck (keine Fensterung)</option>
+                        <option value="hamming" selected>Hamming</option>
+                        <option value="hanning">Hanning</option>
+                        <option value="blackman">Blackman</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="canvas-grid">
+                <div class="canvas-wrapper">
+                    <h2>Impulsantwort h[n]</h2>
+                    <canvas id="firImpulseCanvas" width="700" height="350"></canvas>
+                </div>
+
+                <div class="canvas-wrapper">
+                    <h2>Frequenzgang |H(f)|</h2>
+                    <canvas id="firFrequencyCanvas" width="700" height="350"></canvas>
+                </div>
+
+                <div class="canvas-wrapper full-width">
+                    <h2>Signalfilterung</h2>
+                    <canvas id="firSignalCanvas" width="1400" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- IIR Content -->
+        <div class="tab-content" id="iir">
+            <div class="info-box iir">
+                <h3>IIR-Filter <span class="badge recursive">Rekursiv</span><span class="badge unstable">Potentiell instabil</span><span class="badge infinite">Theoretisch ∞ lang</span></h3>
+                <p>
+                    Ein IIR-Filter (Infinite Impulse Response) ist ein rekursives digitales Filter,
+                    dessen Impulsantwort theoretisch unendlich lange andauert, da es Rückkopplung verwendet.
+                </p>
+                <p><strong>Eigenschaften:</strong></p>
+                <ul>
+                    <li><strong>Rekursiv:</strong> Verwendet frühere Ausgangswerte: y[n] = Σ b[k]·x[n-k] - Σ a[k]·y[n-k]</li>
+                    <li><strong>Potentiell instabil:</strong> Rückkopplung kann zu Schwingungen führen</li>
+                    <li><strong>Theoretisch unendlich lang:</strong> Die Impulsantwort klingt exponentiell ab</li>
+                    <li><strong>Effizient:</strong> Weniger Koeffizienten für steile Filter als FIR</li>
+                    <li><strong>Nichtlineare Phase:</strong> Kann Phasenverzerrungen verursachen</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h3>Stabilitätswarnung</h3>
+                <p>
+                    IIR-Filter können instabil werden, wenn die Pole der Übertragungsfunktion außerhalb
+                    des Einheitskreises liegen. Ein instabiles Filter schwingt sich auf und produziert
+                    unbegrenzte Ausgangswerte. Passe die Parameter vorsichtig an!
+                </p>
+            </div>
+
+            <div class="controls iir-controls">
+                <div class="control-group">
+                    <label>Filtertyp:</label>
+                    <select id="iirFilterType">
+                        <option value="butterworth">Butterworth (maximal flach)</option>
+                        <option value="chebyshev">Chebyshev (steiler Abfall)</option>
+                        <option value="simple">Einfaches 1. Ordnung</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>Grenzfrequenz (normalisiert auf fs/2):</label>
+                    <div class="slider-container">
+                        <input type="range" id="iirCutoffSlider" min="0.05" max="0.95" value="0.25" step="0.01">
+                        <span class="value-display" id="iirCutoffValue">0.25</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Rückkopplungsstärke (für einfaches Filter):</label>
+                    <div class="slider-container">
+                        <input type="range" id="iirFeedbackSlider" min="0" max="0.95" value="0.7" step="0.01">
+                        <span class="value-display" id="iirFeedbackValue">0.70</span>
+                    </div>
+                </div>
+
+                <div class="stability-indicator stable" id="stabilityIndicator">
+                    Filter ist stabil
+                </div>
+            </div>
+
+            <div class="canvas-grid">
+                <div class="canvas-wrapper">
+                    <h2>Impulsantwort h[n]</h2>
+                    <canvas id="iirImpulseCanvas" width="700" height="350"></canvas>
+                </div>
+
+                <div class="canvas-wrapper">
+                    <h2>Frequenzgang |H(f)|</h2>
+                    <canvas id="iirFrequencyCanvas" width="700" height="350"></canvas>
+                </div>
+
+                <div class="canvas-wrapper">
+                    <h2>Pol-Nullstellen-Diagramm</h2>
+                    <canvas id="poleZeroCanvas" width="700" height="350"></canvas>
+                </div>
+
+                <div class="canvas-wrapper">
+                    <h2>Signalfilterung</h2>
+                    <canvas id="iirSignalCanvas" width="700" height="350"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(targetTab).classList.add('active');
+            });
+        });
+
+        // ========== FIR FILTER CODE ==========
+        const firImpulseCanvas = document.getElementById('firImpulseCanvas');
+        const firFrequencyCanvas = document.getElementById('firFrequencyCanvas');
+        const firSignalCanvas = document.getElementById('firSignalCanvas');
+        const firImpulseCtx = firImpulseCanvas.getContext('2d');
+        const firFrequencyCtx = firFrequencyCanvas.getContext('2d');
+        const firSignalCtx = firSignalCanvas.getContext('2d');
+
+        const firFilterTypeSelect = document.getElementById('firFilterType');
+        const firOrderSlider = document.getElementById('firOrderSlider');
+        const firCutoffSlider = document.getElementById('firCutoffSlider');
+        const firCutoff2Slider = document.getElementById('firCutoff2Slider');
+        const firWindowTypeSelect = document.getElementById('firWindowType');
+        const firCutoff2Group = document.getElementById('firCutoff2Group');
+
+        let firFilterType = firFilterTypeSelect.value;
+        let firOrder = parseInt(firOrderSlider.value);
+        let firCutoff = parseFloat(firCutoffSlider.value);
+        let firCutoff2 = parseFloat(firCutoff2Slider.value);
+        let firWindowType = firWindowTypeSelect.value;
+
+        firFilterTypeSelect.addEventListener('change', (e) => {
+            firFilterType = e.target.value;
+            if (firFilterType === 'bandpass' || firFilterType === 'bandstop') {
+                firCutoff2Group.style.display = 'block';
+            } else {
+                firCutoff2Group.style.display = 'none';
+            }
+            drawFIR();
+        });
+
+        firOrderSlider.addEventListener('input', (e) => {
+            firOrder = parseInt(e.target.value);
+            document.getElementById('firOrderValue').textContent = firOrder;
+            drawFIR();
+        });
+
+        firCutoffSlider.addEventListener('input', (e) => {
+            firCutoff = parseFloat(e.target.value);
+            document.getElementById('firCutoffValue').textContent = firCutoff.toFixed(2);
+            drawFIR();
+        });
+
+        firCutoff2Slider.addEventListener('input', (e) => {
+            firCutoff2 = parseFloat(e.target.value);
+            document.getElementById('firCutoff2Value').textContent = firCutoff2.toFixed(2);
+            drawFIR();
+        });
+
+        firWindowTypeSelect.addEventListener('change', (e) => {
+            firWindowType = e.target.value;
+            drawFIR();
+        });
+
+        function sinc(x) {
+            if (Math.abs(x) < 1e-10) return 1.0;
+            return Math.sin(Math.PI * x) / (Math.PI * x);
+        }
+
+        function getWindow(n, N) {
+            switch(firWindowType) {
+                case 'hamming':
+                    return 0.54 - 0.46 * Math.cos(2 * Math.PI * n / (N - 1));
+                case 'hanning':
+                    return 0.5 - 0.5 * Math.cos(2 * Math.PI * n / (N - 1));
+                case 'blackman':
+                    return 0.42 - 0.5 * Math.cos(2 * Math.PI * n / (N - 1)) +
+                           0.08 * Math.cos(4 * Math.PI * n / (N - 1));
+                default:
+                    return 1.0;
+            }
+        }
+
+        function designFIRFilter() {
+            const N = firOrder;
+            const h = new Array(N);
+            const M = (N - 1) / 2;
+
+            for (let n = 0; n < N; n++) {
+                let value = 0;
+                const nShift = n - M;
+
+                switch(firFilterType) {
+                    case 'lowpass':
+                        value = 2 * firCutoff * sinc(2 * firCutoff * nShift);
+                        break;
+                    case 'highpass':
+                        value = (n === M ? 1 : 0) - 2 * firCutoff * sinc(2 * firCutoff * nShift);
+                        break;
+                    case 'bandpass':
+                        value = 2 * firCutoff2 * sinc(2 * firCutoff2 * nShift) -
+                                2 * firCutoff * sinc(2 * firCutoff * nShift);
+                        break;
+                    case 'bandstop':
+                        value = (n === M ? 1 : 0) -
+                                (2 * firCutoff2 * sinc(2 * firCutoff2 * nShift) -
+                                 2 * firCutoff * sinc(2 * firCutoff * nShift));
+                        break;
+                }
+
+                h[n] = value * getWindow(n, N);
+            }
+
+            return h;
+        }
+
+        function computeFIRFrequencyResponse(h, numPoints = 512) {
+            const response = [];
+            for (let k = 0; k < numPoints; k++) {
+                const omega = (k / numPoints) * Math.PI;
+                let real = 0, imag = 0;
+
+                for (let n = 0; n < h.length; n++) {
+                    real += h[n] * Math.cos(omega * n);
+                    imag -= h[n] * Math.sin(omega * n);
+                }
+
+                const magnitude = Math.sqrt(real * real + imag * imag);
+                response.push(magnitude);
+            }
+            return response;
+        }
+
+        function drawFIRImpulseResponse(h) {
+            const width = firImpulseCanvas.width;
+            const height = firImpulseCanvas.height;
+            const margin = 50;
+            const plotWidth = width - 2 * margin;
+            const plotHeight = height - 2 * margin;
+
+            firImpulseCtx.clearRect(0, 0, width, height);
+            firImpulseCtx.fillStyle = '#ffffff';
+            firImpulseCtx.fillRect(0, 0, width, height);
+
+            firImpulseCtx.strokeStyle = '#333';
+            firImpulseCtx.lineWidth = 2;
+            firImpulseCtx.beginPath();
+            firImpulseCtx.moveTo(margin, margin);
+            firImpulseCtx.lineTo(margin, height - margin);
+            firImpulseCtx.lineTo(width - margin, height - margin);
+            firImpulseCtx.stroke();
+
+            const centerY = height - margin;
+            const maxH = Math.max(...h.map(Math.abs));
+            const scale = (plotHeight * 0.8) / maxH;
+
+            firImpulseCtx.strokeStyle = '#ddd';
+            firImpulseCtx.lineWidth = 1;
+            firImpulseCtx.beginPath();
+            firImpulseCtx.moveTo(margin, centerY - maxH * scale / 2);
+            firImpulseCtx.lineTo(width - margin, centerY - maxH * scale / 2);
+            firImpulseCtx.stroke();
+
+            const barWidth = plotWidth / h.length;
+            for (let n = 0; n < h.length; n++) {
+                const x = margin + (n / (h.length - 1)) * plotWidth;
+                const y = centerY - h[n] * scale;
+
+                firImpulseCtx.strokeStyle = '#3498db';
+                firImpulseCtx.lineWidth = 2;
+                firImpulseCtx.beginPath();
+                firImpulseCtx.moveTo(x, centerY);
+                firImpulseCtx.lineTo(x, y);
+                firImpulseCtx.stroke();
+
+                firImpulseCtx.fillStyle = '#3498db';
+                firImpulseCtx.beginPath();
+                firImpulseCtx.arc(x, y, 3, 0, 2 * Math.PI);
+                firImpulseCtx.fill();
+            }
+
+            firImpulseCtx.fillStyle = '#333';
+            firImpulseCtx.font = 'bold 14px Arial';
+            firImpulseCtx.textAlign = 'center';
+            firImpulseCtx.fillText('Sample n', width / 2, height - 10);
+
+            firImpulseCtx.save();
+            firImpulseCtx.translate(15, height / 2);
+            firImpulseCtx.rotate(-Math.PI / 2);
+            firImpulseCtx.fillText('h[n]', 0, 0);
+            firImpulseCtx.restore();
+        }
+
+        function drawFIRFrequencyResponse(response) {
+            const width = firFrequencyCanvas.width;
+            const height = firFrequencyCanvas.height;
+            const margin = 50;
+            const plotWidth = width - 2 * margin;
+            const plotHeight = height - 2 * margin;
+
+            firFrequencyCtx.clearRect(0, 0, width, height);
+            firFrequencyCtx.fillStyle = '#ffffff';
+            firFrequencyCtx.fillRect(0, 0, width, height);
+
+            firFrequencyCtx.strokeStyle = '#333';
+            firFrequencyCtx.lineWidth = 2;
+            firFrequencyCtx.beginPath();
+            firFrequencyCtx.moveTo(margin, margin);
+            firFrequencyCtx.lineTo(margin, height - margin);
+            firFrequencyCtx.lineTo(width - margin, height - margin);
+            firFrequencyCtx.stroke();
+
+            const maxResponse = Math.max(...response);
+            const scale = (plotHeight * 0.9) / maxResponse;
+
+            firFrequencyCtx.strokeStyle = '#e74c3c';
+            firFrequencyCtx.lineWidth = 2;
+            firFrequencyCtx.beginPath();
+            for (let i = 0; i < response.length; i++) {
+                const x = margin + (i / (response.length - 1)) * plotWidth;
+                const y = height - margin - response[i] * scale;
+
+                if (i === 0) firFrequencyCtx.moveTo(x, y);
+                else firFrequencyCtx.lineTo(x, y);
+            }
+            firFrequencyCtx.stroke();
+
+            firFrequencyCtx.strokeStyle = '#27ae60';
+            firFrequencyCtx.lineWidth = 2;
+            firFrequencyCtx.setLineDash([5, 5]);
+            const cutoffX = margin + firCutoff * plotWidth;
+            firFrequencyCtx.beginPath();
+            firFrequencyCtx.moveTo(cutoffX, margin);
+            firFrequencyCtx.lineTo(cutoffX, height - margin);
+            firFrequencyCtx.stroke();
+
+            if (firFilterType === 'bandpass' || firFilterType === 'bandstop') {
+                const cutoff2X = margin + firCutoff2 * plotWidth;
+                firFrequencyCtx.beginPath();
+                firFrequencyCtx.moveTo(cutoff2X, margin);
+                firFrequencyCtx.lineTo(cutoff2X, height - margin);
+                firFrequencyCtx.stroke();
+            }
+            firFrequencyCtx.setLineDash([]);
+
+            firFrequencyCtx.fillStyle = '#333';
+            firFrequencyCtx.font = 'bold 14px Arial';
+            firFrequencyCtx.textAlign = 'center';
+            firFrequencyCtx.fillText('Normalisierte Frequenz (f/fs)', width / 2, height - 10);
+
+            firFrequencyCtx.save();
+            firFrequencyCtx.translate(15, height / 2);
+            firFrequencyCtx.rotate(-Math.PI / 2);
+            firFrequencyCtx.fillText('|H(f)|', 0, 0);
+            firFrequencyCtx.restore();
+        }
+
+        function applyFIRFilter(signal, h) {
+            const output = [];
+            for (let n = 0; n < signal.length; n++) {
+                let sum = 0;
+                for (let k = 0; k < h.length; k++) {
+                    const idx = n - k;
+                    if (idx >= 0) {
+                        sum += h[k] * signal[idx];
+                    }
+                }
+                output.push(sum);
+            }
+            return output;
+        }
+
+        function drawFIRSignalFiltering(h) {
+            const width = firSignalCanvas.width;
+            const height = firSignalCanvas.height;
+            const margin = 60;
+            const plotWidth = width - 2 * margin;
+            const plotHeight = height - 2 * margin;
+
+            firSignalCtx.clearRect(0, 0, width, height);
+            firSignalCtx.fillStyle = '#ffffff';
+            firSignalCtx.fillRect(0, 0, width, height);
+
+            const numSamples = 500;
+            const signal = [];
+            for (let n = 0; n < numSamples; n++) {
+                const t = n / numSamples;
+                const s = 0.5 * Math.sin(2 * Math.PI * 5 * t) +
+                         0.3 * Math.sin(2 * Math.PI * 30 * t) +
+                         0.2 * Math.sin(2 * Math.PI * 60 * t);
+                signal.push(s);
+            }
+
+            const filtered = applyFIRFilter(signal, h);
+
+            firSignalCtx.strokeStyle = '#333';
+            firSignalCtx.lineWidth = 2;
+            firSignalCtx.beginPath();
+            firSignalCtx.moveTo(margin, margin);
+            firSignalCtx.lineTo(margin, height - margin);
+            firSignalCtx.lineTo(width - margin, height - margin);
+            firSignalCtx.stroke();
+
+            const centerY = margin + plotHeight / 2;
+            const scale = (plotHeight / 2) * 0.8;
+
+            firSignalCtx.strokeStyle = '#ddd';
+            firSignalCtx.lineWidth = 1;
+            firSignalCtx.beginPath();
+            firSignalCtx.moveTo(margin, centerY);
+            firSignalCtx.lineTo(width - margin, centerY);
+            firSignalCtx.stroke();
+
+            firSignalCtx.strokeStyle = '#95a5a6';
+            firSignalCtx.lineWidth = 1.5;
+            firSignalCtx.beginPath();
+            for (let n = 0; n < signal.length; n++) {
+                const x = margin + (n / (signal.length - 1)) * plotWidth;
+                const y = centerY - signal[n] * scale;
+
+                if (n === 0) firSignalCtx.moveTo(x, y);
+                else firSignalCtx.lineTo(x, y);
+            }
+            firSignalCtx.stroke();
+
+            firSignalCtx.strokeStyle = '#e74c3c';
+            firSignalCtx.lineWidth = 2.5;
+            firSignalCtx.beginPath();
+            for (let n = 0; n < filtered.length; n++) {
+                const x = margin + (n / (filtered.length - 1)) * plotWidth;
+                const y = centerY - filtered[n] * scale;
+
+                if (n === 0) firSignalCtx.moveTo(x, y);
+                else firSignalCtx.lineTo(x, y);
+            }
+            firSignalCtx.stroke();
+
+            firSignalCtx.font = '14px Arial';
+            firSignalCtx.fillStyle = '#95a5a6';
+            firSignalCtx.textAlign = 'left';
+            firSignalCtx.fillText('Eingangssignal (gemischte Frequenzen)', margin + 20, margin + 20);
+            firSignalCtx.fillStyle = '#e74c3c';
+            firSignalCtx.fillText('FIR-gefilterte Ausgabe', margin + 20, margin + 40);
+
+            firSignalCtx.fillStyle = '#333';
+            firSignalCtx.font = 'bold 14px Arial';
+            firSignalCtx.textAlign = 'center';
+            firSignalCtx.fillText('Sample n', width / 2, height - 20);
+
+            firSignalCtx.save();
+            firSignalCtx.translate(15, height / 2);
+            firSignalCtx.rotate(-Math.PI / 2);
+            firSignalCtx.fillText('Amplitude', 0, 0);
+            firSignalCtx.restore();
+        }
+
+        function drawFIR() {
+            const h = designFIRFilter();
+            const response = computeFIRFrequencyResponse(h);
+
+            drawFIRImpulseResponse(h);
+            drawFIRFrequencyResponse(response);
+            drawFIRSignalFiltering(h);
+        }
+
+        // ========== IIR FILTER CODE ==========
+        const iirImpulseCanvas = document.getElementById('iirImpulseCanvas');
+        const iirFrequencyCanvas = document.getElementById('iirFrequencyCanvas');
+        const poleZeroCanvas = document.getElementById('poleZeroCanvas');
+        const iirSignalCanvas = document.getElementById('iirSignalCanvas');
+        const iirImpulseCtx = iirImpulseCanvas.getContext('2d');
+        const iirFrequencyCtx = iirFrequencyCanvas.getContext('2d');
+        const poleZeroCtx = poleZeroCanvas.getContext('2d');
+        const iirSignalCtx = iirSignalCanvas.getContext('2d');
+
+        const iirFilterTypeSelect = document.getElementById('iirFilterType');
+        const iirCutoffSlider = document.getElementById('iirCutoffSlider');
+        const iirFeedbackSlider = document.getElementById('iirFeedbackSlider');
+        const stabilityIndicator = document.getElementById('stabilityIndicator');
+
+        let iirFilterType = iirFilterTypeSelect.value;
+        let iirCutoff = parseFloat(iirCutoffSlider.value);
+        let iirFeedback = parseFloat(iirFeedbackSlider.value);
+
+        iirFilterTypeSelect.addEventListener('change', (e) => {
+            iirFilterType = e.target.value;
+            drawIIR();
+        });
+
+        iirCutoffSlider.addEventListener('input', (e) => {
+            iirCutoff = parseFloat(e.target.value);
+            document.getElementById('iirCutoffValue').textContent = iirCutoff.toFixed(2);
+            drawIIR();
+        });
+
+        iirFeedbackSlider.addEventListener('input', (e) => {
+            iirFeedback = parseFloat(e.target.value);
+            document.getElementById('iirFeedbackValue').textContent = iirFeedback.toFixed(2);
+            drawIIR();
+        });
+
+        function designIIRFilter() {
+            let b, a, poles = [], zeros = [];
+
+            if (iirFilterType === 'simple') {
+                const alpha = 1 - iirFeedback;
+                b = [alpha];
+                a = [1, -iirFeedback];
+                poles = [{real: iirFeedback, imag: 0}];
+                zeros = [];
+            } else if (iirFilterType === 'butterworth') {
+                const wc = Math.tan(Math.PI * iirCutoff);
+                const k = wc * wc;
+                const sqrt2 = Math.sqrt(2);
+                const q = 1 / sqrt2;
+
+                const norm = k + wc / q + 1;
+                b = [k / norm, 2 * k / norm, k / norm];
+                a = [1, 2 * (k - 1) / norm, (k - wc / q + 1) / norm];
+
+                const angle = Math.PI * (0.25 + 0.5 * iirCutoff);
+                const r = Math.sqrt(-a[2]);
+                poles = [
+                    {real: r * Math.cos(angle), imag: r * Math.sin(angle)},
+                    {real: r * Math.cos(angle), imag: -r * Math.sin(angle)}
+                ];
+                zeros = [{real: -1, imag: 0}, {real: -1, imag: 0}];
+            } else {
+                const wc = Math.tan(Math.PI * iirCutoff);
+                const ripple = 0.5;
+                const epsilon = Math.sqrt(Math.pow(10, ripple / 10) - 1);
+                const k = wc * wc;
+
+                const norm = k + wc * epsilon + 1;
+                b = [k / norm, 2 * k / norm, k / norm];
+                a = [1, 2 * (k - 1) / norm, (k - wc * epsilon + 1) / norm];
+
+                const angle = Math.PI * (0.2 + 0.6 * iirCutoff);
+                const r = Math.sqrt(-a[2]) * 0.9;
+                poles = [
+                    {real: r * Math.cos(angle), imag: r * Math.sin(angle)},
+                    {real: r * Math.cos(angle), imag: -r * Math.sin(angle)}
+                ];
+                zeros = [{real: -1, imag: 0}, {real: -1, imag: 0}];
+            }
+
+            return {b, a, poles, zeros};
+        }
+
+        function checkStability(poles) {
+            for (let pole of poles) {
+                const magnitude = Math.sqrt(pole.real * pole.real + pole.imag * pole.imag);
+                if (magnitude >= 0.999) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function updateStabilityIndicator(stable) {
+            if (stable) {
+                stabilityIndicator.className = 'stability-indicator stable';
+                stabilityIndicator.textContent = 'Filter ist stabil';
+            } else {
+                stabilityIndicator.className = 'stability-indicator unstable';
+                stabilityIndicator.textContent = 'WARNUNG: Filter ist INSTABIL!';
+            }
+        }
+
+        function computeIIRImpulseResponse(b, a, numSamples = 100) {
+            const h = new Array(numSamples).fill(0);
+            h[0] = b[0];
+
+            for (let n = 1; n < numSamples; n++) {
+                let sum = 0;
+
+                for (let k = 0; k < b.length && k <= n; k++) {
+                    sum += b[k] * (k === 0 ? 1 : (k === n ? 1 : 0));
+                }
+
+                for (let k = 1; k < a.length && k <= n; k++) {
+                    sum -= a[k] * h[n - k];
+                }
+
+                h[n] = sum;
+            }
+
+            return h;
+        }
+
+        function computeIIRFrequencyResponse(b, a, numPoints = 512) {
+            const response = [];
+            for (let k = 0; k < numPoints; k++) {
+                const omega = (k / numPoints) * Math.PI;
+                let numReal = 0, numImag = 0;
+                let denReal = 0, denImag = 0;
+
+                for (let n = 0; n < b.length; n++) {
+                    numReal += b[n] * Math.cos(omega * n);
+                    numImag -= b[n] * Math.sin(omega * n);
+                }
+
+                for (let n = 0; n < a.length; n++) {
+                    denReal += a[n] * Math.cos(omega * n);
+                    denImag -= a[n] * Math.sin(omega * n);
+                }
+
+                const denMag = denReal * denReal + denImag * denImag;
+                const real = (numReal * denReal + numImag * denImag) / denMag;
+                const imag = (numImag * denReal - numReal * denImag) / denMag;
+
+                const magnitude = Math.sqrt(real * real + imag * imag);
+                response.push(magnitude);
+            }
+            return response;
+        }
+
+        function applyIIRFilter(signal, b, a) {
+            const output = new Array(signal.length).fill(0);
+
+            for (let n = 0; n < signal.length; n++) {
+                let sum = 0;
+
+                for (let k = 0; k < b.length; k++) {
+                    if (n - k >= 0) {
+                        sum += b[k] * signal[n - k];
+                    }
+                }
+
+                for (let k = 1; k < a.length; k++) {
+                    if (n - k >= 0) {
+                        sum -= a[k] * output[n - k];
+                    }
+                }
+
+                output[n] = sum / a[0];
+            }
+
+            return output;
+        }
+
+        function drawIIRImpulseResponse(h) {
+            const width = iirImpulseCanvas.width;
+            const height = iirImpulseCanvas.height;
+            const margin = 50;
+            const plotWidth = width - 2 * margin;
+            const plotHeight = height - 2 * margin;
+
+            iirImpulseCtx.clearRect(0, 0, width, height);
+            iirImpulseCtx.fillStyle = '#ffffff';
+            iirImpulseCtx.fillRect(0, 0, width, height);
+
+            iirImpulseCtx.strokeStyle = '#333';
+            iirImpulseCtx.lineWidth = 2;
+            iirImpulseCtx.beginPath();
+            iirImpulseCtx.moveTo(margin, margin);
+            iirImpulseCtx.lineTo(margin, height - margin);
+            iirImpulseCtx.lineTo(width - margin, height - margin);
+            iirImpulseCtx.stroke();
+
+            const centerY = margin + plotHeight / 2;
+            const maxH = Math.max(...h.map(Math.abs), 0.1);
+            const scale = (plotHeight / 2) * 0.8 / maxH;
+
+            iirImpulseCtx.strokeStyle = '#ddd';
+            iirImpulseCtx.lineWidth = 1;
+            iirImpulseCtx.beginPath();
+            iirImpulseCtx.moveTo(margin, centerY);
+            iirImpulseCtx.lineTo(width - margin, centerY);
+            iirImpulseCtx.stroke();
+
+            for (let n = 0; n < h.length; n++) {
+                const x = margin + (n / (h.length - 1)) * plotWidth;
+                const y = centerY - h[n] * scale;
+
+                iirImpulseCtx.strokeStyle = '#f39c12';
+                iirImpulseCtx.lineWidth = 2;
+                iirImpulseCtx.beginPath();
+                iirImpulseCtx.moveTo(x, centerY);
+                iirImpulseCtx.lineTo(x, y);
+                iirImpulseCtx.stroke();
+
+                iirImpulseCtx.fillStyle = '#f39c12';
+                iirImpulseCtx.beginPath();
+                iirImpulseCtx.arc(x, y, 3, 0, 2 * Math.PI);
+                iirImpulseCtx.fill();
+            }
+
+            iirImpulseCtx.fillStyle = '#333';
+            iirImpulseCtx.font = 'bold 14px Arial';
+            iirImpulseCtx.textAlign = 'center';
+            iirImpulseCtx.fillText('Sample n', width / 2, height - 10);
+
+            iirImpulseCtx.save();
+            iirImpulseCtx.translate(15, height / 2);
+            iirImpulseCtx.rotate(-Math.PI / 2);
+            iirImpulseCtx.fillText('h[n]', 0, 0);
+            iirImpulseCtx.restore();
+
+            iirImpulseCtx.fillStyle = '#999';
+            iirImpulseCtx.font = 'italic 12px Arial';
+            iirImpulseCtx.textAlign = 'right';
+            iirImpulseCtx.fillText('(klingt exponentiell ab...)', width - margin - 10, margin + 20);
+        }
+
+        function drawIIRFrequencyResponse(response) {
+            const width = iirFrequencyCanvas.width;
+            const height = iirFrequencyCanvas.height;
+            const margin = 50;
+            const plotWidth = width - 2 * margin;
+            const plotHeight = height - 2 * margin;
+
+            iirFrequencyCtx.clearRect(0, 0, width, height);
+            iirFrequencyCtx.fillStyle = '#ffffff';
+            iirFrequencyCtx.fillRect(0, 0, width, height);
+
+            iirFrequencyCtx.strokeStyle = '#333';
+            iirFrequencyCtx.lineWidth = 2;
+            iirFrequencyCtx.beginPath();
+            iirFrequencyCtx.moveTo(margin, margin);
+            iirFrequencyCtx.lineTo(margin, height - margin);
+            iirFrequencyCtx.lineTo(width - margin, height - margin);
+            iirFrequencyCtx.stroke();
+
+            const maxResponse = Math.max(...response, 1);
+            const scale = (plotHeight * 0.9) / maxResponse;
+
+            iirFrequencyCtx.strokeStyle = '#e74c3c';
+            iirFrequencyCtx.lineWidth = 2.5;
+            iirFrequencyCtx.beginPath();
+            for (let i = 0; i < response.length; i++) {
+                const x = margin + (i / (response.length - 1)) * plotWidth;
+                const y = height - margin - response[i] * scale;
+
+                if (i === 0) iirFrequencyCtx.moveTo(x, y);
+                else iirFrequencyCtx.lineTo(x, y);
+            }
+            iirFrequencyCtx.stroke();
+
+            iirFrequencyCtx.strokeStyle = '#27ae60';
+            iirFrequencyCtx.lineWidth = 2;
+            iirFrequencyCtx.setLineDash([5, 5]);
+            const cutoffX = margin + iirCutoff * plotWidth;
+            iirFrequencyCtx.beginPath();
+            iirFrequencyCtx.moveTo(cutoffX, margin);
+            iirFrequencyCtx.lineTo(cutoffX, height - margin);
+            iirFrequencyCtx.stroke();
+            iirFrequencyCtx.setLineDash([]);
+
+            iirFrequencyCtx.fillStyle = '#333';
+            iirFrequencyCtx.font = 'bold 14px Arial';
+            iirFrequencyCtx.textAlign = 'center';
+            iirFrequencyCtx.fillText('Normalisierte Frequenz (f/fs)', width / 2, height - 10);
+
+            iirFrequencyCtx.save();
+            iirFrequencyCtx.translate(15, height / 2);
+            iirFrequencyCtx.rotate(-Math.PI / 2);
+            iirFrequencyCtx.fillText('|H(f)|', 0, 0);
+            iirFrequencyCtx.restore();
+        }
+
+        function drawPoleZeroDiagram(poles, zeros) {
+            const width = poleZeroCanvas.width;
+            const height = poleZeroCanvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) / 2 - 60;
+
+            poleZeroCtx.clearRect(0, 0, width, height);
+            poleZeroCtx.fillStyle = '#ffffff';
+            poleZeroCtx.fillRect(0, 0, width, height);
+
+            poleZeroCtx.strokeStyle = '#3498db';
+            poleZeroCtx.lineWidth = 2;
+            poleZeroCtx.beginPath();
+            poleZeroCtx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            poleZeroCtx.stroke();
+
+            poleZeroCtx.strokeStyle = '#ddd';
+            poleZeroCtx.lineWidth = 1;
+            poleZeroCtx.beginPath();
+            poleZeroCtx.moveTo(centerX - radius - 20, centerY);
+            poleZeroCtx.lineTo(centerX + radius + 20, centerY);
+            poleZeroCtx.moveTo(centerX, centerY - radius - 20);
+            poleZeroCtx.lineTo(centerX, centerY + radius + 20);
+            poleZeroCtx.stroke();
+
+            poleZeroCtx.strokeStyle = '#e74c3c';
+            poleZeroCtx.lineWidth = 3;
+            for (let pole of poles) {
+                const x = centerX + pole.real * radius;
+                const y = centerY - pole.imag * radius;
+
+                poleZeroCtx.beginPath();
+                poleZeroCtx.moveTo(x - 8, y - 8);
+                poleZeroCtx.lineTo(x + 8, y + 8);
+                poleZeroCtx.moveTo(x + 8, y - 8);
+                poleZeroCtx.lineTo(x - 8, y + 8);
+                poleZeroCtx.stroke();
+            }
+
+            poleZeroCtx.strokeStyle = '#2ecc71';
+            poleZeroCtx.lineWidth = 3;
+            for (let zero of zeros) {
+                const x = centerX + zero.real * radius;
+                const y = centerY - zero.imag * radius;
+
+                poleZeroCtx.beginPath();
+                poleZeroCtx.arc(x, y, 6, 0, 2 * Math.PI);
+                poleZeroCtx.stroke();
+            }
+
+            poleZeroCtx.font = '14px Arial';
+            poleZeroCtx.textAlign = 'left';
+
+            poleZeroCtx.strokeStyle = '#e74c3c';
+            poleZeroCtx.lineWidth = 3;
+            poleZeroCtx.beginPath();
+            poleZeroCtx.moveTo(20, 20);
+            poleZeroCtx.lineTo(35, 35);
+            poleZeroCtx.moveTo(35, 20);
+            poleZeroCtx.lineTo(20, 35);
+            poleZeroCtx.stroke();
+            poleZeroCtx.fillStyle = '#333';
+            poleZeroCtx.fillText('Pole', 45, 30);
+
+            poleZeroCtx.strokeStyle = '#2ecc71';
+            poleZeroCtx.beginPath();
+            poleZeroCtx.arc(28, 60, 6, 0, 2 * Math.PI);
+            poleZeroCtx.stroke();
+            poleZeroCtx.fillText('Nullstellen', 45, 65);
+
+            poleZeroCtx.fillStyle = '#333';
+            poleZeroCtx.font = 'bold 14px Arial';
+            poleZeroCtx.textAlign = 'center';
+            poleZeroCtx.fillText('Real', width / 2, height - 10);
+
+            poleZeroCtx.save();
+            poleZeroCtx.translate(15, height / 2);
+            poleZeroCtx.rotate(-Math.PI / 2);
+            poleZeroCtx.fillText('Imaginär', 0, 0);
+            poleZeroCtx.restore();
+
+            poleZeroCtx.font = 'italic 12px Arial';
+            poleZeroCtx.textAlign = 'center';
+            poleZeroCtx.fillStyle = '#3498db';
+            poleZeroCtx.fillText('Stabil: Alle Pole innerhalb', width / 2, height - 35);
+            poleZeroCtx.fillText('des Einheitskreises', width / 2, height - 20);
+        }
+
+        function drawIIRSignalFiltering(b, a) {
+            const width = iirSignalCanvas.width;
+            const height = iirSignalCanvas.height;
+            const margin = 50;
+            const plotWidth = width - 2 * margin;
+            const plotHeight = height - 2 * margin;
+
+            iirSignalCtx.clearRect(0, 0, width, height);
+            iirSignalCtx.fillStyle = '#ffffff';
+            iirSignalCtx.fillRect(0, 0, width, height);
+
+            const numSamples = 300;
+            const signal = [];
+            for (let n = 0; n < numSamples; n++) {
+                const t = n / numSamples;
+                const s = 0.5 * Math.sin(2 * Math.PI * 5 * t) +
+                         0.3 * Math.sin(2 * Math.PI * 30 * t);
+                signal.push(s);
+            }
+
+            const filtered = applyIIRFilter(signal, b, a);
+
+            iirSignalCtx.strokeStyle = '#333';
+            iirSignalCtx.lineWidth = 2;
+            iirSignalCtx.beginPath();
+            iirSignalCtx.moveTo(margin, margin);
+            iirSignalCtx.lineTo(margin, height - margin);
+            iirSignalCtx.lineTo(width - margin, height - margin);
+            iirSignalCtx.stroke();
+
+            const centerY = margin + plotHeight / 2;
+            const scale = (plotHeight / 2) * 0.8;
+
+            iirSignalCtx.strokeStyle = '#ddd';
+            iirSignalCtx.lineWidth = 1;
+            iirSignalCtx.beginPath();
+            iirSignalCtx.moveTo(margin, centerY);
+            iirSignalCtx.lineTo(width - margin, centerY);
+            iirSignalCtx.stroke();
+
+            iirSignalCtx.strokeStyle = '#95a5a6';
+            iirSignalCtx.lineWidth = 1.5;
+            iirSignalCtx.beginPath();
+            for (let n = 0; n < signal.length; n++) {
+                const x = margin + (n / (signal.length - 1)) * plotWidth;
+                const y = centerY - signal[n] * scale;
+                if (n === 0) iirSignalCtx.moveTo(x, y);
+                else iirSignalCtx.lineTo(x, y);
+            }
+            iirSignalCtx.stroke();
+
+            iirSignalCtx.strokeStyle = '#e74c3c';
+            iirSignalCtx.lineWidth = 2.5;
+            iirSignalCtx.beginPath();
+            for (let n = 0; n < filtered.length; n++) {
+                const x = margin + (n / (filtered.length - 1)) * plotWidth;
+                const y = centerY - filtered[n] * scale;
+                if (n === 0) iirSignalCtx.moveTo(x, y);
+                else iirSignalCtx.lineTo(x, y);
+            }
+            iirSignalCtx.stroke();
+
+            iirSignalCtx.font = '14px Arial';
+            iirSignalCtx.fillStyle = '#95a5a6';
+            iirSignalCtx.textAlign = 'left';
+            iirSignalCtx.fillText('Eingangssignal', margin + 20, margin + 20);
+            iirSignalCtx.fillStyle = '#e74c3c';
+            iirSignalCtx.fillText('IIR-gefilterte Ausgabe', margin + 20, margin + 40);
+
+            iirSignalCtx.fillStyle = '#333';
+            iirSignalCtx.font = 'bold 14px Arial';
+            iirSignalCtx.textAlign = 'center';
+            iirSignalCtx.fillText('Sample n', width / 2, height - 10);
+
+            iirSignalCtx.save();
+            iirSignalCtx.translate(15, height / 2);
+            iirSignalCtx.rotate(-Math.PI / 2);
+            iirSignalCtx.fillText('Amplitude', 0, 0);
+            iirSignalCtx.restore();
+        }
+
+        function drawIIR() {
+            const {b, a, poles, zeros} = designIIRFilter();
+            const stable = checkStability(poles);
+            updateStabilityIndicator(stable);
+
+            const h = computeIIRImpulseResponse(b, a);
+            const response = computeIIRFrequencyResponse(b, a);
+
+            drawIIRImpulseResponse(h);
+            drawIIRFrequencyResponse(response);
+            drawPoleZeroDiagram(poles, zeros);
+            drawIIRSignalFiltering(b, a);
+        }
+
+        // Initial draw
+        drawFIR();
+        drawIIR();
+    </script>
+</body>
+</html>

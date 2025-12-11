@@ -166,12 +166,70 @@
             color: #667eea;
             font-weight: bold;
         }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #5568d3;
+            text-decoration: underline;
+        }
+
+        .properties {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .properties h3 {
+            color: #667eea;
+            margin: 0 0 15px 0;
+            font-size: 1.2em;
+        }
+
+        .properties ul {
+            margin: 0;
+            padding-left: 25px;
+        }
+
+        .properties li {
+            color: #555;
+            line-height: 1.8;
+            margin: 8px 0;
+        }
+
+        .properties strong {
+            color: #333;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <a href="../../index.html" class="back-link">← Zurück zur Übersicht</a>
+
         <h1>Faltung (Convolution)</h1>
         <p class="subtitle">Interaktive Visualisierung der mathematischen Faltung</p>
+
+        <div class="properties">
+            <h3>Wichtige Konzepte</h3>
+            <ul>
+                <li><strong>Faltung:</strong> y(t) = x(t) * h(t) = ∫ x(τ)·h(t-τ) dτ - Systemantwort auf beliebige Eingänge</li>
+                <li><strong>Impulsantwort h(t):</strong> Vollständige Charakterisierung linearer zeitinvarianter Systeme</li>
+                <li><strong>Faltungssatz:</strong> x(t) * h(t) ↔ X(ω)·H(ω) - Faltung im Zeitbereich = Multiplikation im Frequenzbereich</li>
+                <li><strong>Kommutativität:</strong> x(t) * h(t) = h(t) * x(t) - Reihenfolge spielt keine Rolle</li>
+                <li><strong>Assoziativität:</strong> (x * h₁) * h₂ = x * (h₁ * h₂) - Kettenschaltung von Systemen</li>
+                <li><strong>Distributivität:</strong> x * (h₁ + h₂) = x * h₁ + x * h₂ - Parallelschaltung von Systemen</li>
+                <li><strong>Neutrales Element:</strong> x(t) * δ(t) = x(t) - Dirac-Impuls ist neutral</li>
+            </ul>
+        </div>
 
         <div class="info-box">
             <p><strong>Die Faltung</strong> zweier Funktionen f(t) und h(t) ist definiert als:</p>

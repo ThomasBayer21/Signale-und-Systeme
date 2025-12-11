@@ -674,11 +674,37 @@
             comparisonCtx.fillStyle = '#9b59b6';
             comparisonCtx.fillText('Mit Fenster (reduzierte Leckeffekte)', margin + 10, topY2 + 35);
 
+            // Frequenzachsen-Beschriftung mit Hz-Werten
+            comparisonCtx.fillStyle = '#666';
+            comparisonCtx.font = '11px Arial';
+            comparisonCtx.textAlign = 'center';
+            const nyquistFreq = fs / 2;
+            for (let i = 0; i <= 5; i++) {
+                const freq = (i / 5) * nyquistFreq;
+                const x = margin + (i / 5) * plotWidth;
+                comparisonCtx.fillText(freq.toFixed(0), x, topY2 + plotHeight + 20);
+            }
+
+            // Markiere die Signal-Frequenz
+            const signalFreqX = margin + (signalFreq / nyquistFreq) * plotWidth;
+            comparisonCtx.strokeStyle = '#e74c3c';
+            comparisonCtx.lineWidth = 2;
+            comparisonCtx.setLineDash([5, 5]);
+            comparisonCtx.beginPath();
+            comparisonCtx.moveTo(signalFreqX, topY2);
+            comparisonCtx.lineTo(signalFreqX, topY2 + plotHeight);
+            comparisonCtx.stroke();
+            comparisonCtx.setLineDash([]);
+
+            comparisonCtx.fillStyle = '#e74c3c';
+            comparisonCtx.font = 'bold 11px Arial';
+            comparisonCtx.fillText(`${signalFreq} Hz`, signalFreqX, topY2 - 5);
+
             // Achsenbeschriftungen
             comparisonCtx.fillStyle = '#333';
             comparisonCtx.font = 'bold 14px Arial';
             comparisonCtx.textAlign = 'center';
-            comparisonCtx.fillText('Zeit', width / 2, plotHeight + margin + 25);
+            comparisonCtx.fillText('Zeit (Samples)', width / 2, plotHeight + margin + 25);
             comparisonCtx.fillText('Frequenz (Hz)', width / 2, height - 10);
 
             comparisonCtx.save();

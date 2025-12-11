@@ -373,35 +373,70 @@
         }
 
         function calculateImpulseResponse(length) {
+            // Berechne Impulsantwort durch Filterung eines Einheitsimpulses
+            // Konvertiere Pole/Nullstellen zu Koeffizienten und nutze Differenzengleichung
+
             const h = new Array(length).fill(0);
-
-            // Für einfache Systeme: direkte Berechnung
-            // Komplexere Methode würde inverse Z-Transformation verwenden
-
-            // Simuliere durch Filterung eines Impulses
             const x = new Array(length).fill(0);
-            x[0] = 1; // Dirac-Impuls
+            x[0] = 1; // Einheitsimpuls δ[n]
 
-            // Konvertiere Pole/Nullstellen zu Differenzengleichung (vereinfacht)
-            // Für Demo: verwende direkte Form II
+            // Berechne Nenner- und Zählerkoeffizienten aus Polen und Nullstellen
+            // H(z) = (Produkt (z - z_i)) / (Produkt (z - p_i))
 
-            for (let n = 0; n < length; n++) {
-                const omega = 2 * Math.PI * n / length;
-                const H = evaluateH(omega);
-                h[n] = H.re / length; // Vereinfachte inverse FFT
+            // Für reale Implementation: verwende rekursive Filterung
+            // y[n] = (1/a[0]) * (Σ b[k]x[n-k] - Σ a[k]y[n-k])
+
+            // Vereinfachte Implementierung für bis zu 2 Pole/Nullstellen
+            const a = [1]; // Nennerkoeffizienten
+            const b = [1]; // Zählerkoeffizienten
+
+            // Expandiere Pole zu Koeffizienten (z - p)(z - p*)
+            if (poles.length >= 2) {
+                const p1 = polarToComplex(poles[0].r, poles[0].theta);
+                const p2 = polarToComplex(poles[1].r, poles[1].theta);
+
+                // (z - p1)(z - p2) = z^2 - (p1+p2)z + p1*p2
+                // Als z^-1 Form: 1 - (p1+p2)z^-1 + p1*p2 z^-2
+                a.push(-(p1.re + p2.re));
+                a.push(p1.re * p2.re - p1.im * p2.im);
+            } else if (poles.length === 1) {
+                const p = polarToComplex(poles[0].r, poles[0].theta);
+                a.push(-p.re * 2); // Konjugiert komplex
+                a.push(poles[0].r * poles[0].r);
             }
 
-            // Bessere Methode: analytische Berechnung für bekannte Pole
-            if (poles.length > 0) {
-                for (let n = 0; n < length; n++) {
-                    h[n] = 0;
-                    for (let pole of poles) {
-                        const r = pole.r;
-                        const theta = pole.theta;
-                        h[n] += Math.pow(r, n) * Math.cos(n * theta);
+            // Expandiere Nullstellen zu Koeffizienten
+            if (zeros.length >= 2) {
+                const z1 = polarToComplex(zeros[0].r, zeros[0].theta);
+                const z2 = polarToComplex(zeros[1].r, zeros[1].theta);
+
+                b.push(-(z1.re + z2.re));
+                b.push(z1.re * z2.re - z1.im * z2.im);
+            } else if (zeros.length === 1) {
+                const z = polarToComplex(zeros[0].r, zeros[0].theta);
+                b.push(-z.re * 2);
+                b.push(zeros[0].r * zeros[0].r);
+            }
+
+            // Rekursive Filterung: y[n] = Σ b[k]x[n-k] - Σ a[k]y[n-k]
+            for (let n = 0; n < length; n++) {
+                let sum = 0;
+
+                // Feedforward (Zähler)
+                for (let k = 0; k < b.length; k++) {
+                    if (n - k >= 0) {
+                        sum += b[k] * x[n - k];
                     }
-                    h[n] *= 0.5; // Normalisierung
                 }
+
+                // Feedback (Nenner)
+                for (let k = 1; k < a.length; k++) {
+                    if (n - k >= 0) {
+                        sum -= a[k] * h[n - k];
+                    }
+                }
+
+                h[n] = sum / a[0];
             }
 
             return h;

@@ -957,10 +957,23 @@
             }
             firFrequencyCtx.setLineDash([]);
 
+            // Frequenzachsen-Beschriftung mit Hz-Werten (angenommen fs = 100 Hz)
+            const fs = 100; // Abtastfrequenz
+            const nyquist = fs / 2;
+            firFrequencyCtx.fillStyle = '#666';
+            firFrequencyCtx.font = '11px Arial';
+            firFrequencyCtx.textAlign = 'center';
+            for (let i = 0; i <= 5; i++) {
+                const normFreq = i / 10; // 0, 0.1, 0.2, ..., 0.5
+                const freqHz = normFreq * fs;
+                const x = margin + normFreq * 2 * plotWidth;
+                firFrequencyCtx.fillText(freqHz.toFixed(0) + ' Hz', x, height - 20);
+            }
+
             firFrequencyCtx.fillStyle = '#333';
             firFrequencyCtx.font = 'bold 14px Arial';
             firFrequencyCtx.textAlign = 'center';
-            firFrequencyCtx.fillText('Normalisierte Frequenz (f/fs)', width / 2, height - 10);
+            firFrequencyCtx.fillText('Frequenz (Normalisiert: 0 bis 0.5, fs = ' + fs + ' Hz)', width / 2, height - 5);
 
             firFrequencyCtx.save();
             firFrequencyCtx.translate(15, height / 2);
@@ -1361,10 +1374,23 @@
             iirFrequencyCtx.stroke();
             iirFrequencyCtx.setLineDash([]);
 
+            // Frequenzachsen-Beschriftung mit Hz-Werten (angenommen fs = 100 Hz)
+            const fs = 100; // Abtastfrequenz
+            const nyquist = fs / 2;
+            iirFrequencyCtx.fillStyle = '#666';
+            iirFrequencyCtx.font = '11px Arial';
+            iirFrequencyCtx.textAlign = 'center';
+            for (let i = 0; i <= 5; i++) {
+                const normFreq = i / 10; // 0, 0.1, 0.2, ..., 0.5
+                const freqHz = normFreq * fs;
+                const x = margin + normFreq * 2 * plotWidth;
+                iirFrequencyCtx.fillText(freqHz.toFixed(0) + ' Hz', x, height - 20);
+            }
+
             iirFrequencyCtx.fillStyle = '#333';
             iirFrequencyCtx.font = 'bold 14px Arial';
             iirFrequencyCtx.textAlign = 'center';
-            iirFrequencyCtx.fillText('Normalisierte Frequenz (f/fs)', width / 2, height - 10);
+            iirFrequencyCtx.fillText('Frequenz (Normalisiert: 0 bis 0.5, fs = ' + fs + ' Hz)', width / 2, height - 5);
 
             iirFrequencyCtx.save();
             iirFrequencyCtx.translate(15, height / 2);

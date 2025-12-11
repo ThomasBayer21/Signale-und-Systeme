@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #d8e8f4 0%, #c0d8ec 100%);
+            background: linear-gradient(135deg, #d8e8f8 0%, #c8dce8 100%);
             padding: 20px;
             min-height: 100vh;
         }
@@ -58,14 +58,14 @@
         /* Cross-references */
         .cross-references {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #3498db;
             padding: 20px;
             margin-bottom: 25px;
             border-radius: 10px;
         }
 
         .cross-references h3 {
-            color: #667eea;
+            color: #3498db;
             margin-bottom: 15px;
             font-size: 1.2em;
         }
@@ -93,7 +93,7 @@
         }
 
         .cross-references .arrow {
-            color: #667eea;
+            color: #3498db;
             font-weight: bold;
             margin: 0 8px;
         }
@@ -133,7 +133,7 @@
         }
 
         .tab.iir-tab.active {
-            border-bottom-color: #f39c12;
+            border-bottom-color: #3498db;
         }
 
         .tab-content {
@@ -158,13 +158,13 @@
         }
 
         .info-box.iir {
-            background: #fff8e8;
-            border-left-color: #f39c12;
+            background: #e8f4f8;
+            border-left-color: #3498db;
         }
 
         .info-box.comparison {
-            background: #f0f0f5;
-            border-left-color: #667eea;
+            background: #e8f4f8;
+            border-left-color: #3498db;
         }
 
         .info-box h3 {
@@ -314,11 +314,11 @@
         }
 
         .iir-controls input[type="range"]::-webkit-slider-thumb {
-            background: #f39c12;
+            background: #3498db;
         }
 
         .iir-controls input[type="range"]::-moz-range-thumb {
-            background: #f39c12;
+            background: #3498db;
         }
 
         .value-display {
@@ -942,7 +942,7 @@
             }
             firFrequencyCtx.stroke();
 
-            firFrequencyCtx.strokeStyle = '#27ae60';
+            firFrequencyCtx.strokeStyle = '#3498db';
             firFrequencyCtx.lineWidth = 2;
             firFrequencyCtx.setLineDash([5, 5]);
             const cutoffX = margin + firCutoff * plotWidth;
@@ -1316,14 +1316,14 @@
                 const x = margin + (n / (h.length - 1)) * plotWidth;
                 const y = centerY - h[n] * scale;
 
-                iirImpulseCtx.strokeStyle = '#f39c12';
+                iirImpulseCtx.strokeStyle = '#3498db';
                 iirImpulseCtx.lineWidth = 2;
                 iirImpulseCtx.beginPath();
                 iirImpulseCtx.moveTo(x, centerY);
                 iirImpulseCtx.lineTo(x, y);
                 iirImpulseCtx.stroke();
 
-                iirImpulseCtx.fillStyle = '#f39c12';
+                iirImpulseCtx.fillStyle = '#3498db';
                 iirImpulseCtx.beginPath();
                 iirImpulseCtx.arc(x, y, 3, 0, 2 * Math.PI);
                 iirImpulseCtx.fill();
@@ -1380,7 +1380,7 @@
             }
             iirFrequencyCtx.stroke();
 
-            iirFrequencyCtx.strokeStyle = '#27ae60';
+            iirFrequencyCtx.strokeStyle = '#3498db';
             iirFrequencyCtx.lineWidth = 2;
             iirFrequencyCtx.setLineDash([5, 5]);
             const cutoffX = margin + iirCutoff * plotWidth;
@@ -1455,7 +1455,7 @@
                 poleZeroCtx.stroke();
             }
 
-            poleZeroCtx.strokeStyle = '#2ecc71';
+            poleZeroCtx.strokeStyle = '#3498db';
             poleZeroCtx.lineWidth = 3;
             for (let zero of zeros) {
                 const x = centerX + zero.real * radius;
@@ -1480,7 +1480,7 @@
             poleZeroCtx.fillStyle = '#333';
             poleZeroCtx.fillText('Pole', 45, 30);
 
-            poleZeroCtx.strokeStyle = '#2ecc71';
+            poleZeroCtx.strokeStyle = '#3498db';
             poleZeroCtx.beginPath();
             poleZeroCtx.arc(28, 60, 6, 0, 2 * Math.PI);
             poleZeroCtx.stroke();

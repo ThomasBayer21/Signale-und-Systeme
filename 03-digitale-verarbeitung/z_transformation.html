@@ -11,7 +11,7 @@
             max-width: 1400px;
             margin: 20px auto;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #d8e8f8 0%, #c8dce8 100%);
             min-height: 100vh;
         }
         .container {
@@ -35,7 +35,7 @@
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 25px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #3498db;
         }
         .info-box h3 {
             margin-top: 0;
@@ -98,7 +98,7 @@
         .value-display {
             display: inline-block;
             margin-left: 10px;
-            color: #667eea;
+            color: #3498db;
             font-weight: 600;
         }
         .formula {
@@ -139,7 +139,7 @@
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
-            color: #667eea;
+            color: #3498db;
             text-decoration: none;
             font-weight: 500;
         }
@@ -516,7 +516,7 @@
             }
 
             // Pole (Kreuze)
-            ctx.strokeStyle = '#27ae60';
+            ctx.strokeStyle = '#3498db';
             ctx.lineWidth = 3;
             for (let pole of poles) {
                 const pt = polarToComplex(pole.r, pole.theta);
@@ -536,7 +536,7 @@
             ctx.textAlign = 'left';
             ctx.fillStyle = '#e74c3c';
             ctx.fillText('○ Nullstellen (Zeros)', 50, h - 20);
-            ctx.fillStyle = '#27ae60';
+            ctx.fillStyle = '#3498db';
             ctx.fillText('× Pole', 220, h - 20);
         }
 

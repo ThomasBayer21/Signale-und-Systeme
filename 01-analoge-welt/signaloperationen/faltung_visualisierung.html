@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #d4ebe8 0%, #bcd8d4 100%);
+            background: linear-gradient(135deg, #d4f0dc 0%, #bce4c8 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -56,10 +56,10 @@
         }
 
         .control-group h3 {
-            color: #667eea;
+            color: #27ae60;
             margin-bottom: 15px;
             font-size: 1.3em;
-            border-bottom: 2px solid #667eea;
+            border-bottom: 2px solid #27ae60;
             padding-bottom: 8px;
         }
 
@@ -89,7 +89,7 @@
         .param-value {
             display: inline-block;
             margin-left: 10px;
-            color: #667eea;
+            color: #27ae60;
             font-weight: bold;
             min-width: 50px;
         }
@@ -118,7 +118,7 @@
         }
 
         button {
-            background: #667eea;
+            background: #27ae60;
             color: white;
             border: none;
             padding: 12px 30px;
@@ -146,7 +146,7 @@
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 20px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #27ae60;
         }
 
         .info-box p {
@@ -163,14 +163,14 @@
             margin-top: 10px;
             text-align: center;
             font-size: 1.1em;
-            color: #667eea;
+            color: #27ae60;
             font-weight: bold;
         }
 
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
-            color: #667eea;
+            color: #27ae60;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s;
@@ -186,11 +186,11 @@
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #27ae60;
         }
 
         .properties h3 {
-            color: #667eea;
+            color: #27ae60;
             margin: 0 0 15px 0;
             font-size: 1.2em;
         }
@@ -307,17 +307,17 @@
         </div>
 
         <div class="canvas-container">
-            <h3 style="margin-bottom: 10px; color: #667eea;">Animationsansicht: f(τ), h(t-τ) und ihr Produkt</h3>
+            <h3 style="margin-bottom: 10px; color: #27ae60;">Animationsansicht: f(τ), h(t-τ) und ihr Produkt</h3>
             <canvas id="animationCanvas" width="1200" height="300"></canvas>
         </div>
 
         <div class="canvas-container">
-            <h3 style="margin-bottom: 10px; color: #667eea;">Original-Funktionen: f(t) und h(t)</h3>
+            <h3 style="margin-bottom: 10px; color: #27ae60;">Original-Funktionen: f(t) und h(t)</h3>
             <canvas id="functionsCanvas" width="1200" height="300"></canvas>
         </div>
 
         <div class="canvas-container">
-            <h3 style="margin-bottom: 10px; color: #667eea;">Faltungsergebnis: (f ★ h)(t)</h3>
+            <h3 style="margin-bottom: 10px; color: #27ae60;">Faltungsergebnis: (f ★ h)(t)</h3>
             <canvas id="resultCanvas" width="1200" height="300"></canvas>
         </div>
     </div>
@@ -563,7 +563,7 @@
             animCtx.fillText('f(τ)·h(t-τ)', 255, 30);
 
             // Zeitmarker
-            animCtx.fillStyle = '#667eea';
+            animCtx.fillStyle = '#27ae60';
             animCtx.font = 'bold 16px Arial';
             animCtx.textAlign = 'right';
             animCtx.fillText(`t = ${animationTime.toFixed(2)}`, animCanvas.width - 20, 30);

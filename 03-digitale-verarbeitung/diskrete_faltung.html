@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #d8e8f4 0%, #c0d8ec 100%);
+            background: linear-gradient(135deg, #d8e8f8 0%, #c8dce8 100%);
             padding: 20px;
             min-height: 100vh;
         }
@@ -294,7 +294,7 @@
         }
 
         .result-box {
-            background: #27ae60;
+            background: #3498db;
             color: white;
             padding: 20px;
             border-radius: 8px;
@@ -314,8 +314,8 @@
         }
 
         .steps-box {
-            background: #fff9e6;
-            border-left: 4px solid #f39c12;
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
             padding: 20px;
             border-radius: 5px;
             margin-top: 20px;
@@ -419,7 +419,7 @@
                 <span class="legend-label">h[n-k] - Kernel gespiegelt & verschoben (Flipped & Shifted)</span>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background: #9b59b6;"></div>
+                <div class="legend-color" style="background: #3498db;"></div>
                 <span class="legend-label">x[k]·h[n-k] - Produkt (Element-wise Multiplication)</span>
             </div>
         </div>
@@ -691,15 +691,15 @@
                     ctx.strokeRect(xPos, hY, barWidth * 0.3, hHeight);
                 }
 
-                // Produkt (lila, oben)
+                // Produkt (blau, oben)
                 if(Math.abs(product[i]) > 0.001) {
                     const pHeight = Math.abs(product[i]) * scale;
                     const pY = product[i] >= 0 ? centerY - pHeight : centerY;
                     ctx.globalAlpha = 0.8;
-                    ctx.fillStyle = '#9b59b6';
+                    ctx.fillStyle = '#3498db';
                     ctx.fillRect(xPos + barWidth/3, pY, barWidth * 0.3, pHeight);
                     ctx.globalAlpha = 1;
-                    ctx.strokeStyle = '#8e44ad';
+                    ctx.strokeStyle = '#2980b9';
                     ctx.lineWidth = 2;
                     ctx.strokeRect(xPos + barWidth/3, pY, barWidth * 0.3, pHeight);
                 }
@@ -721,7 +721,7 @@
                     ctx.fillText(hShifted[i].toFixed(2), xPos + barWidth/6, centerY + 55);
                 }
                 if(Math.abs(product[i]) > 0.001) {
-                    ctx.fillStyle = '#9b59b6';
+                    ctx.fillStyle = '#3498db';
                     const pY = product[i] >= 0 ? centerY - Math.abs(product[i]) * scale - 10 : centerY + Math.abs(product[i]) * scale + 15;
                     ctx.fillText(product[i].toFixed(2), xPos + barWidth/2, pY);
                 }
@@ -736,7 +736,7 @@
             ctx.fillText((-maxVal).toFixed(2), startX - 25, canvas.height - margin + 5);
 
             // Summe anzeigen
-            ctx.fillStyle = '#27ae60';
+            ctx.fillStyle = '#3498db';
             ctx.font = 'bold 18px Segoe UI';
             ctx.textAlign = 'left';
             ctx.fillText(`Σ = ${sum.toFixed(3)}`, startX + x.length * spacing + 30, centerY);
@@ -802,10 +802,10 @@
                 const x = startX + i * spacing;
                 const barHeight = Math.abs(y[i]) * scale;
 
-                outCtx.fillStyle = (i === currentN) ? '#f39c12' : '#27ae60';
+                outCtx.fillStyle = (i === currentN) ? '#3498db' : '#3498db';
                 outCtx.fillRect(x, baseY - barHeight, barWidth, barHeight);
 
-                outCtx.strokeStyle = '#229954';
+                outCtx.strokeStyle = '#2980b9';
                 outCtx.lineWidth = 1;
                 outCtx.strokeRect(x, baseY - barHeight, barWidth, barHeight);
 

@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #d4cce0 0%, #c4bcd0 100%);
+            background: linear-gradient(135deg, #d8e8f8 0%, #c8dce8 100%);
             padding: 20px;
             min-height: 100vh;
         }
@@ -42,8 +42,8 @@
         }
 
         .info-box {
-            background: #f4f0f8;
-            border-left: 4px solid #9b59b6;
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
             padding: 15px;
             margin-bottom: 25px;
             border-radius: 5px;
@@ -106,7 +106,7 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #9b59b6;
+            background: #3498db;
             cursor: pointer;
         }
 
@@ -114,7 +114,7 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #9b59b6;
+            background: #3498db;
             cursor: pointer;
             border: none;
         }
@@ -189,8 +189,8 @@
         }
 
         .window-card.active {
-            border-color: #9b59b6;
-            background: #f4f0f8;
+            border-color: #3498db;
+            background: #e8f4f8;
         }
 
         .window-card h4 {
@@ -426,9 +426,9 @@
             windowCtx.stroke();
 
             // Fensterfunktion
-            windowCtx.strokeStyle = '#9b59b6';
+            windowCtx.strokeStyle = '#3498db';
             windowCtx.lineWidth = 2.5;
-            windowCtx.fillStyle = 'rgba(155, 89, 182, 0.1)';
+            windowCtx.fillStyle = 'rgba(52, 152, 219, 0.1)';
             windowCtx.beginPath();
             windowCtx.moveTo(margin, height - margin);
 
@@ -614,7 +614,7 @@
             comparisonCtx.stroke();
 
             // Gefenstertes Signal
-            comparisonCtx.strokeStyle = '#9b59b6';
+            comparisonCtx.strokeStyle = '#3498db';
             comparisonCtx.lineWidth = 2.5;
             comparisonCtx.beginPath();
             for (let i = 0; i < signal.length; i++) {
@@ -629,7 +629,7 @@
             comparisonCtx.textAlign = 'left';
             comparisonCtx.fillStyle = '#95a5a6';
             comparisonCtx.fillText('Original', margin + 10, margin + 15);
-            comparisonCtx.fillStyle = '#9b59b6';
+            comparisonCtx.fillStyle = '#3498db';
             comparisonCtx.fillText('Gefenstert', margin + 10, margin + 35);
 
             // Untere Hälfte: Spektren
@@ -658,7 +658,7 @@
             comparisonCtx.stroke();
 
             // Gefenstertes Spektrum
-            comparisonCtx.strokeStyle = '#9b59b6';
+            comparisonCtx.strokeStyle = '#3498db';
             comparisonCtx.lineWidth = 2.5;
             comparisonCtx.beginPath();
             for (let i = 0; i < spectrumWindowed.length; i++) {
@@ -671,7 +671,7 @@
 
             comparisonCtx.fillStyle = '#95a5a6';
             comparisonCtx.fillText('Ohne Fenster (Leckeffekte!)', margin + 10, topY2 + 15);
-            comparisonCtx.fillStyle = '#9b59b6';
+            comparisonCtx.fillStyle = '#3498db';
             comparisonCtx.fillText('Mit Fenster (reduzierte Leckeffekte)', margin + 10, topY2 + 35);
 
             // Frequenzachsen-Beschriftung mit Hz-Werten

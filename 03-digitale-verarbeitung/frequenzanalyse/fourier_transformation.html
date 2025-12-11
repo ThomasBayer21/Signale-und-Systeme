@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #e8e4f0 0%, #d4cce0 100%);
+            background: linear-gradient(135deg, #d8e8f8 0%, #c8dce8 100%);
             padding: 20px;
             min-height: 100vh;
         }
@@ -100,7 +100,7 @@
         }
 
         .frequency-item.active {
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #3498db;
         }
 
         .frequency-label {
@@ -142,7 +142,7 @@
             width: 18px;
             height: 18px;
             border-radius: 50%;
-            background: #667eea;
+            background: #3498db;
             cursor: pointer;
         }
 
@@ -150,14 +150,14 @@
             width: 18px;
             height: 18px;
             border-radius: 50%;
-            background: #667eea;
+            background: #3498db;
             cursor: pointer;
             border: none;
         }
 
         .value-display {
             min-width: 50px;
-            color: #667eea;
+            color: #3498db;
             font-weight: bold;
             text-align: right;
         }
@@ -172,7 +172,7 @@
         }
 
         .toggle-btn.active {
-            background: #667eea;
+            background: #3498db;
             color: white;
         }
 
@@ -190,9 +190,9 @@
 
         .preset-btn {
             padding: 10px 20px;
-            border: 2px solid #667eea;
+            border: 2px solid #3498db;
             background: white;
-            color: #667eea;
+            color: #3498db;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
@@ -200,13 +200,13 @@
         }
 
         .preset-btn:hover {
-            background: #667eea;
+            background: #3498db;
             color: white;
         }
 
         .info-box {
-            background: #e7f3ff;
-            border-left: 4px solid #2196F3;
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
             padding: 15px;
             border-radius: 5px;
             margin-top: 20px;
@@ -456,7 +456,7 @@
             if (signal.some(v => v !== 0)) {
                 const maxAmp = Math.max(Math.abs(Math.max(...signal)), Math.abs(Math.min(...signal)), 1);
 
-                timeCtx.strokeStyle = '#667eea';
+                timeCtx.strokeStyle = '#3498db';
                 timeCtx.lineWidth = 2.5;
                 timeCtx.beginPath();
 

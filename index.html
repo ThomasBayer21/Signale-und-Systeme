@@ -145,6 +145,25 @@
             transform: scaleY(1);
         }
 
+        /* Themen-spezifische Farben */
+        .viz-card.elementar::before { background: #27ae60; }
+        .viz-card.elementar:hover { border-color: #27ae60; }
+
+        .viz-card.system::before { background: #9b59b6; }
+        .viz-card.system:hover { border-color: #9b59b6; }
+
+        .viz-card.dezibel::before { background: #f39c12; }
+        .viz-card.dezibel:hover { border-color: #f39c12; }
+
+        .viz-card.fourier::before { background: #27ae60; }
+        .viz-card.fourier:hover { border-color: #27ae60; }
+
+        .viz-card.ad-wandlung::before { background: #b19ac3; }
+        .viz-card.ad-wandlung:hover { border-color: #b19ac3; }
+
+        .viz-card.digital::before { background: #3498db; }
+        .viz-card.digital:hover { border-color: #3498db; }
+
         .viz-title {
             font-size: 1.15em;
             font-weight: 600;
@@ -188,7 +207,7 @@
                 </div>
             </div>
             <div class="visualizations">
-                <a href="01-analoge-welt/elementarfunktionen/index.html" class="viz-card">
+                <a href="01-analoge-welt/elementarfunktionen/index.html" class="viz-card elementar">
                     <div class="viz-title">Elementare Signale</div>
                     <div class="viz-description">
                         Die grundlegenden Signaltypen und mathematischen Funktionen: Sprung, Rechteck, Dreieck,
@@ -197,7 +216,7 @@
                     <div class="viz-count">8 Visualisierungen</div>
                 </a>
 
-                <a href="01-analoge-welt/systemklassifikation/index.html" class="viz-card">
+                <a href="01-analoge-welt/systemklassifikation/index.html" class="viz-card system">
                     <div class="viz-title">Systemklassifikation</div>
                     <div class="viz-description">
                         Eigenschaften linearer und zeitinvarianter Systeme: Überlagerungsprinzip,
@@ -206,7 +225,7 @@
                     <div class="viz-count">4 Visualisierungen</div>
                 </a>
 
-                <a href="01-analoge-welt/dezibel/index.html" class="viz-card">
+                <a href="01-analoge-welt/dezibel/index.html" class="viz-card dezibel">
                     <div class="viz-title">Dezibel-Skala</div>
                     <div class="viz-description">
                         Logarithmische Messung von Signalpegeln und Leistung mit Umrechner
@@ -228,7 +247,7 @@
                 </div>
             </div>
             <div class="visualizations">
-                <a href="01-analoge-welt/signaloperationen/faltung_visualisierung.html" class="viz-card">
+                <a href="01-analoge-welt/signaloperationen/faltung_visualisierung.html" class="viz-card fourier">
                     <div class="viz-title">Kontinuierliche Faltung (Convolution)</div>
                     <div class="viz-description">
                         Die fundamentale Operation zur Beschreibung von analogen LTI-Systemen.
@@ -237,7 +256,7 @@
                     <div class="viz-count">1 Visualisierung</div>
                 </a>
 
-                <a href="01-analoge-welt/fourier/index.html" class="viz-card">
+                <a href="01-analoge-welt/fourier/index.html" class="viz-card fourier">
                     <div class="viz-title">Fourier-Transformation & Reihe</div>
                     <div class="viz-description">
                         Zerlegung analoger Signale in Frequenzkomponenten. Fourier-Reihe für periodische,
@@ -260,7 +279,7 @@
                 </div>
             </div>
             <div class="visualizations">
-                <a href="02-ad-wandlung/digitale-signalverarbeitung/abtastung_rekonstruktion.html" class="viz-card">
+                <a href="02-ad-wandlung/digitale-signalverarbeitung/abtastung_rekonstruktion.html" class="viz-card ad-wandlung">
                     <div class="viz-title">Abtastung & Abtasttheorem</div>
                     <div class="viz-description">
                         Nyquist-Shannon-Theorem (f<sub>s</sub> > 2·f<sub>max</sub>), Aliasing-Effekte
@@ -269,7 +288,7 @@
                     <div class="viz-count">1 Visualisierung</div>
                 </a>
 
-                <a href="02-ad-wandlung/quantisierung.html" class="viz-card">
+                <a href="02-ad-wandlung/quantisierung.html" class="viz-card ad-wandlung">
                     <div class="viz-title">Quantisierung & Codierung</div>
                     <div class="viz-description">
                         Zuweisung zu 2<sup>n</sup> Pegelstufen. Quantisierungsrauschen,
@@ -292,7 +311,7 @@
                 </div>
             </div>
             <div class="visualizations">
-                <a href="03-digitale-verarbeitung/diskrete_faltung.html" class="viz-card">
+                <a href="03-digitale-verarbeitung/diskrete_faltung.html" class="viz-card digital">
                     <div class="viz-title">Diskrete Faltung (Discrete Convolution)</div>
                     <div class="viz-description">
                         Digitales Äquivalent zur kontinuierlichen Faltung mit Kernel h[n].
@@ -301,7 +320,7 @@
                     <div class="viz-count">1 Visualisierung</div>
                 </a>
 
-                <a href="03-digitale-verarbeitung/korrelation.html" class="viz-card">
+                <a href="03-digitale-verarbeitung/korrelation.html" class="viz-card digital">
                     <div class="viz-title">Korrelation (Correlation)</div>
                     <div class="viz-description">
                         Kreuzkorrelation für Ähnlichkeitsbestimmung und Autokorrelation für
@@ -310,7 +329,7 @@
                     <div class="viz-count">2 Visualisierungen</div>
                 </a>
 
-                <a href="03-digitale-verarbeitung/z_transformation.html" class="viz-card">
+                <a href="03-digitale-verarbeitung/z_transformation.html" class="viz-card digital">
                     <div class="viz-title">Z-Transformation</div>
                     <div class="viz-description">
                         Diskretes Gegenstück zur Laplace-Transformation. Beschreibung von Systemen
@@ -319,7 +338,7 @@
                     <div class="viz-count">1 Visualisierung</div>
                 </a>
 
-                <a href="03-digitale-verarbeitung/frequenzanalyse/fourier_transformation.html" class="viz-card">
+                <a href="03-digitale-verarbeitung/frequenzanalyse/fourier_transformation.html" class="viz-card digital">
                     <div class="viz-title">DFT/FFT - Frequenzanalyse</div>
                     <div class="viz-description">
                         Diskrete Fourier-Transformation: Zerlegung digitaler Signale in
@@ -328,7 +347,7 @@
                     <div class="viz-count">1 Visualisierung</div>
                 </a>
 
-                <a href="03-digitale-verarbeitung/fensterfunktionen.html" class="viz-card">
+                <a href="03-digitale-verarbeitung/fensterfunktionen.html" class="viz-card digital">
                     <div class="viz-title">Fensterfunktionen (Windowing)</div>
                     <div class="viz-description">
                         Hanning, Hamming, Blackman, Kaiser: Reduzierung des Leckage-Effekts
@@ -337,7 +356,7 @@
                     <div class="viz-count">1 Visualisierung</div>
                 </a>
 
-                <a href="03-digitale-verarbeitung/digitale_filter.html" class="viz-card">
+                <a href="03-digitale-verarbeitung/digitale_filter.html" class="viz-card digital">
                     <div class="viz-title">Digitale Filter (FIR vs IIR)</div>
                     <div class="viz-description">
                         Direkter Vergleich der beiden Haupttypen digitaler Filter: FIR (nicht-rekursiv, immer stabil)
@@ -360,7 +379,7 @@
                 </div>
             </div>
             <div class="visualizations">
-                <a href="02-ad-wandlung/digitale-signalverarbeitung/abtastung_rekonstruktion.html" class="viz-card">
+                <a href="02-ad-wandlung/digitale-signalverarbeitung/abtastung_rekonstruktion.html" class="viz-card ad-wandlung">
                     <div class="viz-title">Rekonstruktion</div>
                     <div class="viz-description">
                         Vom diskreten zum kontinuierlichen Signal: Ideale vs. praktische

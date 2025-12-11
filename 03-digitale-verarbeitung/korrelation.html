@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #d8e8f4 0%, #c0d8ec 100%);
+            background: linear-gradient(135deg, #d8e8f8 0%, #c8dce8 100%);
             padding: 20px;
             min-height: 100vh;
         }
@@ -228,7 +228,7 @@
         }
 
         .result-box {
-            background: #27ae60;
+            background: #3498db;
             color: white;
             padding: 15px;
             border-radius: 8px;
@@ -533,7 +533,7 @@
                     // Highlight für Überlappungsbereich
                     if(shift !== 0 && i >= 0 && i < signal.length &&
                        (i + shift) >= 0 && (i + shift) < signal.length) {
-                        ctx.strokeStyle = '#27ae60';
+                        ctx.strokeStyle = '#3498db';
                         ctx.lineWidth = 2;
                         ctx.strokeRect(xPos - 1, baseY - barHeight - 1, barWidth + 2, barHeight + 2);
                     }
@@ -546,8 +546,8 @@
                 const arrowStartX = startX + signal.length * spacing / 2;
                 const arrowEndX = arrowStartX + shift * spacing;
 
-                ctx.strokeStyle = '#f39c12';
-                ctx.fillStyle = '#f39c12';
+                ctx.strokeStyle = '#3498db';
+                ctx.fillStyle = '#3498db';
                 ctx.lineWidth = 2;
 
                 // Pfeil-Linie
@@ -567,7 +567,7 @@
                 ctx.fill();
 
                 // Verschiebungstext
-                ctx.fillStyle = '#f39c12';
+                ctx.fillStyle = '#3498db';
                 ctx.font = 'bold 12px Segoe UI';
                 ctx.textAlign = 'center';
                 ctx.fillText(`Verschiebung: ${shift > 0 ? '+' : ''}${shift}`,
@@ -605,7 +605,7 @@
 
                 const isHighlight = highlight !== null && item.lag === highlight;
 
-                ctx.fillStyle = isHighlight ? '#f39c12' : (item.value >= 0 ? '#27ae60' : '#e74c3c');
+                ctx.fillStyle = isHighlight ? '#3498db' : (item.value >= 0 ? '#3498db' : '#e74c3c');
 
                 if(isNegative) {
                     ctx.fillRect(x, baseY, barWidth, barHeight);

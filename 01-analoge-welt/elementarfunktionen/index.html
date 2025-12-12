@@ -4,139 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analoge Elementarfunktionen</title>
+    <link rel="stylesheet" href="../../styles/common.css">
     <style>
-        * { box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 20px;
+            max-width: var(--container-width-index);
             background: linear-gradient(135deg, #d4f0dc 0%, #bce4c8 100%);
-            min-height: 100vh;
         }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 2.2em;
-            font-weight: 600;
-        }
-        .subtitle {
-            text-align: center;
-            color: #7f8c8d;
-            margin-bottom: 40px;
-            font-size: 1.1em;
-        }
+
         .container {
-            background: white;
-            border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
+
         .intro {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 35px;
-            
-            line-height: 1.6;
-            color: #555;
         }
-        .visualizations {
-            display: grid;
-            gap: 20px;
-        }
-        .viz-card {
-            background: #fafafa;
-            padding: 25px;
-            border-radius: 6px;
-            
-            transition: transform 0.2s, box-shadow 0.2s;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
-        .viz-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-        }
-        .viz-card.step {
-            border-left-color: #27ae60;
-        }
-        .viz-card.rect {
-            border-left-color: #27ae60;
-        }
-        .viz-card.triangle {
-            border-left-color: #27ae60;
-        }
-        .viz-card.sinc {
-            border-left-color: #27ae60;
-        }
-        .viz-card.dirac {
-            border-left-color: #27ae60;
-        }
-        .viz-card.exponential {
-            border-left-color: #27ae60;
-        }
-        .viz-card.cosine {
-            border-left-color: #27ae60;
-        }
+        /* Verwende Themenfarbe für alle Cards */
+        .viz-card.step,
+        .viz-card.rect,
+        .viz-card.triangle,
+        .viz-card.sinc,
+        .viz-card.dirac,
+        .viz-card.exponential,
+        .viz-card.cosine,
         .viz-card.complex {
-            border-left-color: #27ae60;
+            /* Themenfarbe wird durch .elementar Klasse gesetzt */
         }
-        .viz-title {
-            font-size: 1.3em;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        .viz-subtitle {
-            font-size: 0.95em;
-            color: #7f8c8d;
-            margin-bottom: 12px;
-            font-style: italic;
-        }
-        .viz-description {
-            color: #555;
-            line-height: 1.6;
-            font-size: 0.95em;
-        }
-        .properties {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 6px;
-            margin-top: 35px;
-            border: 1px solid #ddd;
-        }
-        .properties h3 {
-            color: #2c3e50;
-            margin: 0 0 15px 0;
-            font-size: 1.1em;
-        }
-        .properties ul {
-            margin: 0;
-            padding-left: 25px;
-        }
-        .properties li {
-            color: #555;
-            line-height: 1.8;
-            margin: 8px 0;
-        }
-        .properties strong {
-            color: #2c3e50;
-        }
-        .back-link {
-            text-align: center;
-            margin-top: 30px;
-        }
+
+        /* Back-Link mit Themenfarbe */
         .back-link a {
-            color: #27ae60;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .back-link a:hover {
-            text-decoration: underline;
+            color: var(--color-elementar);
         }
     </style>
 </head>
@@ -166,7 +62,7 @@
         </div>
 
         <div class="visualizations">
-            <a href="sprungfunktion.html" class="viz-card step">
+            <a href="sprungfunktion.html" class="viz-card elementar">
                 <div class="viz-title">Sprungfunktion</div>
                 <div class="viz-subtitle">u(t) oder σ(t) - Unit Step Function</div>
                 <div class="viz-description">
@@ -176,7 +72,7 @@
                 </div>
             </a>
 
-            <a href="rechteckfunktion.html" class="viz-card rect">
+            <a href="rechteckfunktion.html" class="viz-card elementar">
                 <div class="viz-title">Rechteckfunktion</div>
                 <div class="viz-subtitle">rect(t/T) - Rectangular Pulse</div>
                 <div class="viz-description">
@@ -186,7 +82,7 @@
                 </div>
             </a>
 
-            <a href="dreieckfunktion.html" class="viz-card triangle">
+            <a href="dreieckfunktion.html" class="viz-card elementar">
                 <div class="viz-title">Dreieckfunktion</div>
                 <div class="viz-subtitle">tri(t/T) - Triangular Function</div>
                 <div class="viz-description">
@@ -196,7 +92,7 @@
                 </div>
             </a>
 
-            <a href="cosinus_signal.html" class="viz-card cosine">
+            <a href="cosinus_signal.html" class="viz-card elementar">
                 <div class="viz-title">Cosinusförmige Signale</div>
                 <div class="viz-subtitle">cos(ωt + φ) - Cosine Function</div>
                 <div class="viz-description">
@@ -206,7 +102,7 @@
                 </div>
             </a>
 
-            <a href="komplexer_drehzeiger.html" class="viz-card complex">
+            <a href="komplexer_drehzeiger.html" class="viz-card elementar">
                 <div class="viz-title">Komplexer Drehzeiger</div>
                 <div class="viz-subtitle">e^(jωt) - Complex Exponential</div>
                 <div class="viz-description">
@@ -216,7 +112,7 @@
                 </div>
             </a>
 
-            <a href="sinc_funktion.html" class="viz-card sinc">
+            <a href="sinc_funktion.html" class="viz-card elementar">
                 <div class="viz-title">Sinc-Funktion</div>
                 <div class="viz-subtitle">sinc(t) = sin(πt)/(πt)</div>
                 <div class="viz-description">
@@ -226,7 +122,7 @@
                 </div>
             </a>
 
-            <a href="dirac_impuls.html" class="viz-card dirac">
+            <a href="dirac_impuls.html" class="viz-card elementar">
                 <div class="viz-title">Dirac-Impuls</div>
                 <div class="viz-subtitle">δ(t) - Dirac Delta Distribution</div>
                 <div class="viz-description">
@@ -236,7 +132,7 @@
                 </div>
             </a>
 
-            <a href="exponentialfunktion.html" class="viz-card exponential">
+            <a href="exponentialfunktion.html" class="viz-card elementar">
                 <div class="viz-title">Exponentialfunktion</div>
                 <div class="viz-subtitle">e^(at)·u(t) - Causal Exponential</div>
                 <div class="viz-description">

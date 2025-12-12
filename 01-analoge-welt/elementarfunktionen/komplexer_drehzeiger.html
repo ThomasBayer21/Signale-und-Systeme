@@ -4,19 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Komplexer Drehzeiger</title>
+    <link rel="stylesheet" href="../../styles/common.css">
     <style>
-        * { box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #d4f0dc 0%, #bce4c8 100%);
-            padding: 20px;
-            min-height: 100vh;
         }
+
+        .container {
+            max-width: var(--container-width-interactive);
+            padding: var(--spacing-xl);
+        }
+
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
+            font-size: 2.2em;
+            font-weight: 600;
         }
         .description {
             text-align: center;
@@ -249,11 +250,11 @@
         <div class="canvas-row">
             <div class="canvas-container">
                 <div class="canvas-label">Komplexe Ebene (Einheitskreis)</div>
-                <canvas id="circle-canvas" width="400" height="400"></canvas>
+                <canvas id="circle-canvas" width="400" height="320"></canvas>
             </div>
             <div class="canvas-container">
                 <div class="canvas-label">Zeitverläufe der Projektionen</div>
-                <canvas id="time-canvas" width="500" height="400"></canvas>
+                <canvas id="time-canvas" width="500" height="320"></canvas>
             </div>
         </div>
 

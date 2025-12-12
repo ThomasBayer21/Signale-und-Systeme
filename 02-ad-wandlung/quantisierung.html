@@ -4,100 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quantisierung - Zuweisung zu Pegelstufen</title>
+    <link rel="stylesheet" href="../styles/common.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #f0e4f8 0%, #e4d4ec 100%);
-            padding: 20px;
-            min-height: 100vh;
         }
 
         .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: var(--container-width-interactive);
+            padding: var(--spacing-xl);
         }
 
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
+            font-size: 2.2em;
+            font-weight: 600;
         }
 
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 1.1em;
-        }
-
-        .info-box {
-            background: #f4f0f8;
-            border-left: 4px solid #b19ac3;
-            padding: 15px;
-            margin-bottom: 25px;
-            border-radius: 5px;
-        }
-
-        .info-box h3 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .info-box p {
-            color: #555555;
-            line-height: 1.6;
-            margin-bottom: 8px;
-        }
-
-        .controls {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
+        /* Kompaktere Controls */
         .control-group {
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
         }
 
-        .control-group label {
-            display: block;
-            color: #555;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .slider-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        input[type="range"] {
-            flex: 1;
-            height: 6px;
-            border-radius: 3px;
-            background: #ddd;
-            outline: none;
-        }
-
+        /* Themenfarben für Slider */
         input[type="range"]::-webkit-slider-thumb {
-            appearance: none;
-            width: 20px;
+            background: var(--color-ad-wandlung);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            background: var(--color-ad-wandlung);
             height: 20px;
             border-radius: 50%;
             background: #b19ac3;
@@ -217,7 +152,7 @@
 
         <div class="canvas-wrapper">
             <h2>Quantisierung visualisiert</h2>
-            <canvas id="quantizationCanvas" width="1200" height="500"></canvas>
+            <canvas id="quantizationCanvas" width="1200" height="400"></canvas>
         </div>
 
         <div class="stats-grid">

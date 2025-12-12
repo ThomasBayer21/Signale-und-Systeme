@@ -4,41 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Faltung - Interaktive Visualisierung</title>
+    <link rel="stylesheet" href="../../styles/common.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #d4f0dc 0%, #bce4c8 100%);
-            min-height: 100vh;
-            padding: 20px;
         }
 
         .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: var(--container-width-interactive);
+            padding: var(--spacing-xl);
         }
 
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
+            font-size: 2.2em;
+            font-weight: 600;
         }
 
         .subtitle {
-            text-align: center;
-            color: #666;
             margin-bottom: 30px;
-            font-size: 1.1em;
         }
 
         .controls-grid {
@@ -308,17 +291,17 @@
 
         <div class="canvas-container">
             <h3 style="margin-bottom: 10px; color: #27ae60;">Animationsansicht: f(τ), h(t-τ) und ihr Produkt</h3>
-            <canvas id="animationCanvas" width="1200" height="300"></canvas>
+            <canvas id="animationCanvas" width="1200" height="240"></canvas>
         </div>
 
         <div class="canvas-container">
             <h3 style="margin-bottom: 10px; color: #27ae60;">Original-Funktionen: f(t) und h(t)</h3>
-            <canvas id="functionsCanvas" width="1200" height="300"></canvas>
+            <canvas id="functionsCanvas" width="1200" height="240"></canvas>
         </div>
 
         <div class="canvas-container">
             <h3 style="margin-bottom: 10px; color: #27ae60;">Faltungsergebnis: (f ★ h)(t)</h3>
-            <canvas id="resultCanvas" width="1200" height="300"></canvas>
+            <canvas id="resultCanvas" width="1200" height="240"></canvas>
         </div>
     </div>
 

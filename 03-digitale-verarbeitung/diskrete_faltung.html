@@ -4,55 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diskrete Faltung - Digitale Signalverarbeitung</title>
+    <link rel="stylesheet" href="../styles/common.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #d8e8f8 0%, #c8dce8 100%);
-            padding: 20px;
-            min-height: 100vh;
         }
 
-        .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #3498db;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .back-link:hover {
-            color: #2980b9;
-            text-decoration: underline;
+        .back-link a {
+            color: var(--color-digital);
         }
 
         .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: var(--container-width-interactive);
+            padding: var(--spacing-xl);
         }
 
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 25px;
-            font-size: 1.1em;
+            font-size: 2.2em;
+            font-weight: 600;
         }
 
         .info-box {
@@ -426,7 +395,7 @@
 
         <div class="visualization-area">
             <div class="canvas-wrapper">
-                <canvas id="convolutionCanvas" width="1100" height="500"></canvas>
+                <canvas id="convolutionCanvas" width="1100" height="400"></canvas>
             </div>
             <div class="output-panel">
                 <h3>Ausgangssignal y[n]</h3>

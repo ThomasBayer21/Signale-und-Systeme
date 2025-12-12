@@ -4,19 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dirac-Impuls</title>
+    <link rel="stylesheet" href="../../styles/common.css">
     <style>
-        * { box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #d4f0dc 0%, #bce4c8 100%);
-            padding: 20px;
-            min-height: 100vh;
         }
+
+        .container {
+            max-width: var(--container-width-interactive);
+            padding: var(--spacing-xl);
+        }
+
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
+            font-size: 2.2em;
+            font-weight: 600;
         }
         .description {
             text-align: center;
@@ -189,7 +190,7 @@
             </div>
         </div>
 
-        <canvas id="canvas" width="800" height="400"></canvas>
+        <canvas id="canvas" width="800" height="320"></canvas>
 
         <div class="properties">
             <h3>Eigenschaften des Dirac-Impulses</h3>

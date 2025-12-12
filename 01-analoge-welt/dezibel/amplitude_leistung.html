@@ -4,19 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amplitude und Leistung</title>
+    <link rel="stylesheet" href="../../styles/common.css">
     <style>
-        * { box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #ffe8d4 0%, #ffd4b8 100%);
-            padding: 20px;
-            min-height: 100vh;
+            background: linear-gradient(135deg, #fff4e4 0%, #ffe8d4 100%);
         }
+
+        .container {
+            max-width: var(--container-width-interactive);
+            padding: var(--spacing-xl);
+        }
+
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
+            font-size: 2.2em;
+            font-weight: 600;
         }
         .description {
             text-align: center;
@@ -297,11 +298,11 @@
         <div class="canvas-row">
             <div class="canvas-container">
                 <div class="canvas-label">Feldgröße vs. Zeit (A · sin(ωt))</div>
-                <canvas id="amplitude-canvas" width="450" height="300"></canvas>
+                <canvas id="amplitude-canvas" width="450" height="240"></canvas>
             </div>
             <div class="canvas-container">
                 <div class="canvas-label">Leistung vs. Zeit (P = A² · sin²(ωt))</div>
-                <canvas id="power-canvas" width="450" height="300"></canvas>
+                <canvas id="power-canvas" width="450" height="240"></canvas>
             </div>
         </div>
 

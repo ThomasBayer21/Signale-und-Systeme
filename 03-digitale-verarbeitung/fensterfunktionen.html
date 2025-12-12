@@ -4,66 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fensterfunktionen - Spektrale Verzerrungen reduzieren</title>
+    <link rel="stylesheet" href="../styles/common.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #d8e8f8 0%, #c8dce8 100%);
-            padding: 20px;
-            min-height: 100vh;
         }
 
         .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: var(--container-width-interactive);
+            padding: var(--spacing-xl);
         }
 
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
+            font-size: 2.2em;
+            font-weight: 600;
         }
 
         .subtitle {
-            text-align: center;
-            color: #666;
             margin-bottom: 20px;
-            font-size: 1.1em;
-        }
-
-        .info-box {
-            background: #e8f4f8;
-            border-left: 4px solid #3498db;
-            padding: 15px;
-            margin-bottom: 25px;
-            border-radius: 5px;
-        }
-
-        .info-box h3 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .info-box p {
-            color: #555;
-            line-height: 1.6;
-            margin-bottom: 8px;
-        }
-
-        .info-box ul {
-            margin-left: 20px;
-            color: #555;
-            line-height: 1.8;
         }
 
         .controls {
@@ -282,17 +240,17 @@
         <div class="canvas-grid">
             <div class="canvas-wrapper">
                 <h2>Fensterfunktion im Zeitbereich</h2>
-                <canvas id="windowCanvas" width="700" height="350"></canvas>
+                <canvas id="windowCanvas" width="700" height="280"></canvas>
             </div>
 
             <div class="canvas-wrapper">
                 <h2>Frequenzgang (logarithmisch)</h2>
-                <canvas id="spectrumCanvas" width="700" height="350"></canvas>
+                <canvas id="spectrumCanvas" width="700" height="280"></canvas>
             </div>
 
             <div class="canvas-wrapper full-width">
                 <h2>Effekt auf Signalanalyse (gefenstert vs. ungefenstert)</h2>
-                <canvas id="comparisonCanvas" width="1400" height="400"></canvas>
+                <canvas id="comparisonCanvas" width="1400" height="320"></canvas>
             </div>
         </div>
     </div>

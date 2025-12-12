@@ -4,33 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dispersive Systeme</title>
+    <link rel="stylesheet" href="../../styles/common.css">
     <style>
-        * { box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #ead4f4 0%, #d8c0e8 100%);
-            padding: 20px;
-            min-height: 100vh;
+            background: linear-gradient(135deg, #e8d4f8 0%, #d8c4e8 100%);
         }
+
+        .container {
+            max-width: var(--container-width-interactive);
+            padding: var(--spacing-xl);
+        }
+
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
+            font-size: 2.2em;
+            font-weight: 600;
         }
         .description {
             text-align: center;
             color: #666;
             margin-bottom: 30px;
             font-size: 1.1em;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
         .info-box {
             background: #f8f9fa;
@@ -305,7 +298,7 @@
             <div class="signal-row">
                 <div class="signal-box">
                     <div class="signal-label">Eingang x(t)<br><small>Impuls mit beiden Frequenzen</small></div>
-                    <canvas id="input" width="380" height="130"></canvas>
+                    <canvas id="input" width="380" height="104"></canvas>
                 </div>
                 <div class="operator">→</div>
                 <div class="system-box">
@@ -315,7 +308,7 @@
                 <div class="operator">→</div>
                 <div class="signal-box">
                     <div class="signal-label">Ausgang y(t)<br><small>Impuls zerfließt</small></div>
-                    <canvas id="output" width="380" height="130"></canvas>
+                    <canvas id="output" width="380" height="104"></canvas>
                 </div>
             </div>
 
@@ -325,7 +318,7 @@
                     <div class="component-card freq1">
                         <div class="signal-label">Niedrige Frequenz f₁</div>
                         <div class="delay-info">Verzögerung: <span id="delay1-display">gering</span></div>
-                        <canvas id="component1" width="380" height="110"></canvas>
+                        <canvas id="component1" width="380" height="88"></canvas>
                         <div style="text-align: center; margin-top: 10px; color: #7f8c8d; font-size: 13px;">
                             Kommt früher an
                         </div>
@@ -333,7 +326,7 @@
                     <div class="component-card freq2">
                         <div class="signal-label">Hohe Frequenz f₂</div>
                         <div class="delay-info">Verzögerung: <span id="delay2-display">stark</span></div>
-                        <canvas id="component2" width="380" height="110"></canvas>
+                        <canvas id="component2" width="380" height="88"></canvas>
                         <div style="text-align: center; margin-top: 10px; color: #7f8c8d; font-size: 13px;">
                             Kommt später an
                         </div>

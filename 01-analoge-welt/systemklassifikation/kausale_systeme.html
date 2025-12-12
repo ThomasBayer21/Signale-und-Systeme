@@ -4,33 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kausale Systeme</title>
+    <link rel="stylesheet" href="../../styles/common.css">
     <style>
-        * { box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #ead4f4 0%, #d8c0e8 100%);
-            padding: 20px;
-            min-height: 100vh;
+            background: linear-gradient(135deg, #e8d4f8 0%, #d8c4e8 100%);
         }
+
+        .container {
+            max-width: var(--container-width-interactive);
+            padding: var(--spacing-xl);
+        }
+
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
+            font-size: 2.2em;
+            font-weight: 600;
         }
         .description {
             text-align: center;
             color: #666;
             margin-bottom: 30px;
             font-size: 1.1em;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
         .info-box {
             background: #f8f9fa;
@@ -278,10 +271,10 @@
                 </div>
 
                 <div class="signal-label">Eingang x(t)</div>
-                <canvas id="input-causal" width="420" height="110"></canvas>
+                <canvas id="input-causal" width="420" height="88"></canvas>
 
                 <div class="signal-label">Ausgang y(t)</div>
-                <canvas id="output-causal" width="420" height="110"></canvas>
+                <canvas id="output-causal" width="420" height="88"></canvas>
 
                 <div class="badge possible">Realisierbar</div>
             </div>
@@ -294,10 +287,10 @@
                 </div>
 
                 <div class="signal-label">Eingang x(t)</div>
-                <canvas id="input-noncausal" width="420" height="110"></canvas>
+                <canvas id="input-noncausal" width="420" height="88"></canvas>
 
                 <div class="signal-label">Ausgang y(t)</div>
-                <canvas id="output-noncausal" width="420" height="110"></canvas>
+                <canvas id="output-noncausal" width="420" height="88"></canvas>
 
                 <div class="badge impossible">Nicht realisierbar</div>
             </div>

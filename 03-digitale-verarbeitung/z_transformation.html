@@ -31,6 +31,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin-bottom: 20px;
+            align-items: start;
         }
         .panel {
             background: #fafafa;
@@ -43,6 +44,23 @@
             color: #2c3e50;
             font-size: 1.2em;
             margin-bottom: 15px;
+        }
+        .panel.compact {
+            padding: 15px;
+        }
+        .panel.compact h3 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .panel.compact canvas {
+            margin: 10px auto;
+        }
+        .panel.compact .stability-indicator {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        .panel.compact .pole-zero-list {
+            display: none;
         }
         canvas {
             display: block;
@@ -201,10 +219,10 @@
         </div>
 
         <div class="grid-container">
-            <div class="panel">
+            <div class="panel compact">
                 <h3>Pol-Nullstellen-Diagramm (Pole-Zero Plot)</h3>
-                <canvas id="pzCanvas" width="400" height="400"></canvas>
-                <div style="text-align: center; margin-top: 10px;">
+                <canvas id="pzCanvas" width="360" height="360"></canvas>
+                <div style="text-align: center;">
                     <div id="stabilityIndicator" class="stability-indicator stable">STABIL</div>
                 </div>
                 <div class="pole-zero-list" id="poleZeroList"></div>

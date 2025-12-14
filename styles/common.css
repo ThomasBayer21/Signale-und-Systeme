@@ -437,6 +437,30 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* ==========================================================================
+   Toggle Buttons (ON/OFF controls)
+   ========================================================================== */
+
+.toggle-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+    min-width: 60px;
+}
+
+.toggle-btn.active {
+    background: var(--color-digital);
+    color: white;
+}
+
+.toggle-btn.inactive {
+    background: #e0e0e0;
+    color: #999;
+}
+
+/* ==========================================================================
    Responsive Design
    ========================================================================== */
 

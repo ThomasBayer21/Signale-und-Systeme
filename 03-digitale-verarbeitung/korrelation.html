@@ -303,6 +303,25 @@
             <p><strong>Anwendungen Kreuzkorrelation:</strong> Mustererkennung (Template Matching), Signalverzögerung messen, Radar/Sonar</p>
             <p><strong>Anwendungen Autokorrelation:</strong> Periodizitätserkennung, Pitch Detection (Tonhöhe), Spektralanalyse, Zufälligkeit testen</p>
         </div>
+
+
+        <div class="related-topics">
+            <h4>Verwandte Themen</h4>
+            <a href="diskrete_faltung.html">→ Diskrete Faltung (verwandte Operation)</a>
+            <a href="frequenzanalyse/fourier_transformation.html">→ Fourier-Transformation (Spektralanalyse)</a>
+            <a href="digitale_filter.html">→ Matched Filter (Korrelation)</a>
+        </div>
+
+        <div class="common-mistake">
+            <h4>Wichtig</h4>
+            <p>Korrelation und Faltung sind <strong>nicht identisch</strong>! Korrelation verschiebt vorwärts, Faltung kehrt um und verschiebt.</p>
+            <p>Autokorrelation bei Lag 0 entspricht der <strong>Signalenergie</strong>.</p>
+            <p><strong>Anwendung:</strong> Mustersuche, Zeitverzögerungsschätzung, Ähnlichkeitsmessung</p>
+        </div>
+
+        <div class="export-controls">
+            <button class="export-btn" onclick="exportPNG()">Visualisierung speichern</button>
+        </div>
     </div>
 
     <script>
@@ -601,6 +620,27 @@
         // Initialisierung
         drawCrossCorrelation();
         drawAutoCorrelation();
+
+
+        // ===== Export-Funktionen =====
+        function exportPNG() {
+            const canvas = document.querySelector('canvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.download = 'visualisierung.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>

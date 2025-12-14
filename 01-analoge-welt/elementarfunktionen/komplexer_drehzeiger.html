@@ -269,6 +269,24 @@
         <div class="back-link">
             <a href="index.html">← Zurück zur Übersicht</a>
         </div>
+
+
+        <div class="related-topics">
+            <h4>Verwandte Themen</h4>
+            <a href="cosinus_signal.html">→ cos(t) = Re{e^(jt)}</a>
+            <a href="exponentialfunktion.html">→ Exponentialfunktion</a>
+            <a href="../fourier/index.html">→ Fourier-Reihe (Überlagerung von Drehzeigern)</a>
+        </div>
+
+        <div class="common-mistake">
+            <h4>Merken</h4>
+            <p><strong>Euler:</strong> e^(jωt) = cos(ωt) + j·sin(ωt)</p>
+            <p>Rotation mit Winkelgeschwindigkeit ω</p>
+        </div>
+
+        <div class="export-controls">
+            <button class="export-btn" onclick="exportPNG()">Visualisierung speichern</button>
+        </div>
     </div>
 
     <script>
@@ -689,6 +707,27 @@
         // Initial draw
         drawCircle();
         drawTimePlots();
+
+
+        // ===== Export-Funktionen =====
+        function exportPNG() {
+            const canvas = document.querySelector('canvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.download = 'visualisierung.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>

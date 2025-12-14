@@ -173,6 +173,31 @@
                 <div class="value" id="snrValue">18 dB</div>
             </div>
         </div>
+
+        <div class="audio-controls">
+            <h4>Hörbares Beispiel</h4>
+            <p>Höre den Unterschied im Quantisierungsrauschen zwischen verschiedenen Bitauflösungen</p>
+            <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.95;">Es wird immer ein 440 Hz Sinussignal (Kammerton A) abgespielt. Bei wenigen Bits (1-3) hörst du deutliches Rauschen, bei mehr Bits (6-8) wird das Signal sauberer.</p>
+            <button class="play-button" id="playBtn" onclick="toggleAudio()">Abspielen (440 Hz Sinussignal)</button>
+        </div>
+
+        <div class="export-controls">
+            <button class="export-btn" onclick="exportCSV()">Daten als CSV exportieren</button>
+            <button class="export-btn" onclick="exportPNG()">Visualisierung speichern</button>
+        </div>
+
+        <div class="common-mistake">
+            <h4>Wichtig</h4>
+            <p>Mehr Bits reduzieren nur das <strong>Quantisierungsrauschen</strong>. Aliasing (zu niedrige Abtastrate) oder andere Verzerrungen werden dadurch nicht behoben!</p>
+            <p><strong>Faustregel:</strong> 16 Bit (CD-Qualität) reichen für die meisten Audio-Anwendungen. Mehr Bits bringen nur bei sehr hohem Dynamikumfang (z.B. professionelle Studioaufnahmen) einen Vorteil.</p>
+        </div>
+
+        <div class="related-topics">
+            <h4>Verwandte Themen</h4>
+            <a href="digitale-signalverarbeitung/abtastung_rekonstruktion.html">→ Abtastung & Rekonstruktion (Nyquist-Theorem)</a>
+            <a href="../01-analoge-welt/dezibel/amplitude_leistung.html">→ Dezibel-Skala (SNR verstehen)</a>
+            <a href="../03-digitale-verarbeitung/digitale_filter.html">→ Digitale Filter (Rauschunterdrückung)</a>
+        </div>
     </div>
 
     <script>
@@ -360,6 +385,108 @@
 
         updateStats();
         draw();
+
+        // ===== Audio-Wiedergabe =====
+        let audioContext = null;
+        let oscillator = null;
+        let gainNode = null;
+        let isPlaying = false;
+
+        function toggleAudio() {
+            if (isPlaying) {
+                stopAudio();
+            } else {
+                playQuantizedAudio();
+            }
+        }
+
+        function playQuantizedAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const sampleRate = audioContext.sampleRate;
+            const duration = 3; // 3 Sekunden
+            const audioFreq = 440; // A4 Note
+            const numSamples = sampleRate * duration;
+
+            // Erstelle Buffer
+            const buffer = audioContext.createBuffer(1, numSamples, sampleRate);
+            const channelData = buffer.getChannelData(0);
+
+            // Generiere quantisiertes Signal
+            const levels = Math.pow(2, nBits);
+            for (let i = 0; i < numSamples; i++) {
+                const t = i / sampleRate;
+                const value = Math.sin(2 * Math.PI * audioFreq * t);
+                channelData[i] = quantize(value, levels);
+            }
+
+            // Spiele Buffer ab
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+
+            gainNode = audioContext.createGain();
+            gainNode.gain.value = 0.3; // Lautstärke reduzieren
+
+            source.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            source.start(0);
+            source.onended = () => {
+                stopAudio();
+            };
+
+            isPlaying = true;
+            const btn = document.getElementById('playBtn');
+            btn.textContent = 'Stoppen';
+            btn.classList.add('playing');
+        }
+
+        function stopAudio() {
+            if (audioContext) {
+                audioContext.close();
+                audioContext = null;
+            }
+            isPlaying = false;
+            const btn = document.getElementById('playBtn');
+            btn.textContent = 'Abspielen (440 Hz Ton)';
+            btn.classList.remove('playing');
+        }
+
+        // ===== Export-Funktionen =====
+        function exportCSV() {
+            const numSamples = 500;
+            const duration = 3;
+            const levels = Math.pow(2, nBits);
+
+            let csv = 'Zeit (s),Original,Quantisiert,Fehler\n';
+
+            for (let i = 0; i <= numSamples; i++) {
+                const t = (i / numSamples) * duration;
+                const original = generateSignal(t);
+                const quantized = quantize(original, levels);
+                const error = original - quantized;
+
+                csv += `${t.toFixed(6)},${original.toFixed(6)},${quantized.toFixed(6)},${error.toFixed(6)}\n`;
+            }
+
+            downloadFile(csv, `quantisierung_${nBits}bit.csv`, 'text/csv');
+        }
+
+        function exportPNG() {
+            const link = document.createElement('a');
+            link.download = `quantisierung_${nBits}bit.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>

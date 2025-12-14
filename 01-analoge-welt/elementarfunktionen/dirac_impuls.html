@@ -204,6 +204,24 @@
                 <li><strong>Anwendung:</strong> Impulsantwort, Abtastung, ideale Anregung von Systemen</li>
             </ul>
         </div>
+
+
+        <div class="related-topics">
+            <h4>Verwandte Themen</h4>
+            <a href="sprungfunktion.html">→ Sprungfunktion (u'(t) = δ(t))</a>
+            <a href="sinc_funktion.html">→ sinc-Funktion (Fourier-Paar mit rect)</a>
+            <a href="../fourier/index.html">→ Fourier-Transformation (δ(t) ↔ 1)</a>
+        </div>
+
+        <div class="common-mistake">
+            <h4>Merken</h4>
+            <p>δ(t) = Ableitung der Sprungfunktion</p>
+            <p>∫ δ(t) dt = 1 (Einheitsimpuls)</p>
+        </div>
+
+        <div class="export-controls">
+            <button class="export-btn" onclick="exportPNG()">Visualisierung speichern</button>
+        </div>
     </div>
 
     <script>
@@ -395,6 +413,27 @@
         }
 
         draw();
+
+
+        // ===== Export-Funktionen =====
+        function exportPNG() {
+            const canvas = document.querySelector('canvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.download = 'visualisierung.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>

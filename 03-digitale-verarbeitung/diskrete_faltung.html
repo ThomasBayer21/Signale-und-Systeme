@@ -448,6 +448,24 @@
             <p><strong>Ausgangssignal y[n] (Output Signal):</strong> Das Faltungsergebnis (Convolution Result), wächst mit jedem Zeitschritt</p>
             <p><strong>Praktische Anwendungen:</strong> Digitale Bildfilter (Gaußfilter, Sobel, Laplace), Audio-Effekte (Reverb, Echo), Signalglättung (Moving Average), Kantenerkennung (Edge Detection)</p>
         </div>
+
+
+        <div class="related-topics">
+            <h4>Verwandte Themen</h4>
+            <a href="korrelation.html">→ Korrelation (ähnlich, aber ohne Umkehrung)</a>
+            <a href="digitale_filter.html">→ Digitale Filter (Faltung mit Impulsantwort)</a>
+            <a href="../01-analoge-welt/signaloperationen/faltung_visualisierung.html">→ Kontinuierliche Faltung</a>
+        </div>
+
+        <div class="common-mistake">
+            <h4>Merken</h4>
+            <p><strong>Kommutativ:</strong> x[n] * h[n] = h[n] * x[n]</p>
+            <p><strong>Ausgangslänge:</strong> L<sub>y</sub> = L<sub>x</sub> + L<sub>h</sub> - 1</p>
+        </div>
+
+        <div class="export-controls">
+            <button class="export-btn" onclick="exportPNG()">Visualisierung speichern</button>
+        </div>
     </div>
 
     <script>
@@ -910,6 +928,27 @@
                 updateStepIndicators();
             }
         }, 500);
+
+
+        // ===== Export-Funktionen =====
+        function exportPNG() {
+            const canvas = document.querySelector('canvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.download = 'visualisierung.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>

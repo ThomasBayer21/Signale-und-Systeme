@@ -232,6 +232,24 @@
         <div class="back-link">
             <a href="index.html">← Zurück zur Übersicht</a>
         </div>
+
+
+        <div class="related-topics">
+            <h4>Verwandte Themen</h4>
+            <a href="komplexer_drehzeiger.html">→ cos(t) = Re{e^(jt)}</a>
+            <a href="../fourier/index.html">→ Fourier-Reihe</a>
+            <a href="../../03-digitale-verarbeitung/frequenzanalyse/fourier_transformation.html">→ Spektralanalyse</a>
+        </div>
+
+        <div class="common-mistake">
+            <h4>Merken</h4>
+            <p>x(t) = A·cos(2πft + φ)</p>
+            <p>T = 1/f | ω = 2πf</p>
+        </div>
+
+        <div class="export-controls">
+            <button class="export-btn" onclick="exportPNG()">Visualisierung speichern</button>
+        </div>
     </div>
 
     <script>
@@ -485,6 +503,27 @@
 
         updateEquation();
         draw();
+
+
+        // ===== Export-Funktionen =====
+        function exportPNG() {
+            const canvas = document.querySelector('canvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.download = 'visualisierung.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>

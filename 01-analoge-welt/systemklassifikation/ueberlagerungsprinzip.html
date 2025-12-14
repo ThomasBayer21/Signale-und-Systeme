@@ -329,6 +329,24 @@
             <p>Das orange Signal unten rechts ist identisch mit der Summe der beiden blauen/grünen Ausgangssignale.</p>
             <p>Das beweist: Dieses System ist linear.</p>
         </div>
+
+
+        <div class="related-topics">
+            <h4>Verwandte Themen</h4>
+            <a href="verschiebungsprinzip.html">→ Zeitinvarianz (zweite LTI-Eigenschaft)</a>
+            <a href="kausale_systeme.html">→ Kausalität</a>
+            <a href="../signaloperationen/faltung_visualisierung.html">→ Faltung (nur für lineare Systeme)</a>
+        </div>
+
+        <div class="common-mistake">
+            <h4>Merken</h4>
+            <p><strong>Linearität:</strong> T{ax₁ + bx₂} = aT{x₁} + bT{x₂}</p>
+            <p>Ermöglicht Superposition</p>
+        </div>
+
+        <div class="export-controls">
+            <button class="export-btn" onclick="exportPNG()">Visualisierung speichern</button>
+        </div>
     </div>
 
     <script>
@@ -486,6 +504,27 @@
         }
 
         draw();
+
+
+        // ===== Export-Funktionen =====
+        function exportPNG() {
+            const canvas = document.querySelector('canvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.download = 'visualisierung.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>

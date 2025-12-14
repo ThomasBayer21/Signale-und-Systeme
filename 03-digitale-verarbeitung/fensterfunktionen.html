@@ -261,6 +261,33 @@
                 <canvas id="comparisonCanvas" width="1400" height="320"></canvas>
             </div>
         </div>
+
+        <div class="audio-controls">
+            <h4>Hörbares Beispiel</h4>
+            <p>Höre den Unterschied zwischen den Fensterfunktionen beim Fade-in/Fade-out</p>
+            <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.95;">Ein 440 Hz Ton mit 1 Sekunde Dauer. Das gewählte Fenster steuert Fade-in am Anfang und Fade-out am Ende. <strong>Rechteck:</strong> Klicks | <strong>Hanning/Hamming:</strong> Glatt</p>
+            <button class="play-button" id="playBtn" onclick="toggleAudio()">Abspielen (440 Hz, 1s)</button>
+            <button class="play-button" id="testBtn" onclick="toggleTestAudio()" style="margin-left: 10px; background: #27ae60;">Test (reiner Ton)</button>
+        </div>
+
+        <div class="export-controls">
+            <button class="export-btn" onclick="exportWindowCSV()">Fensterfunktion als CSV</button>
+            <button class="export-btn" onclick="exportSpectrumCSV()">Spektrum als CSV</button>
+            <button class="export-btn" onclick="exportPNG()">Visualisierungen speichern</button>
+        </div>
+
+        <div class="common-mistake">
+            <h4>Tipp</h4>
+            <p>Das Rechteck-Fenster hat die beste Frequenzauflösung, aber auch die größten Nebenkeulen (-13 dB). Diese verursachen <strong>Spectral Leakage</strong> - Energie "leckt" von starken Frequenzen in benachbarte Bins!</p>
+            <p><strong>Faustregel:</strong> Hanning für die meisten Anwendungen | Hamming/Blackman bei hohen Anforderungen an Nebenkeulen-Dämpfung (z.B. Spracharkennung)</p>
+        </div>
+
+        <div class="related-topics">
+            <h4>Verwandte Themen</h4>
+            <a href="frequenzanalyse/fourier_transformation.html">→ Fourier-Transformation (DFT/FFT)</a>
+            <a href="../02-ad-wandlung/digitale-signalverarbeitung/abtastung_rekonstruktion.html">→ Abtastung (Spektrale Betrachtung)</a>
+            <a href="digitale_filter.html">→ Digitale Filter (Windowed-Sinc Entwurf)</a>
+        </div>
     </div>
 
     <script>
@@ -694,6 +721,209 @@
         }
 
         draw();
+
+        // ===== Audio-Wiedergabe =====
+        let audioContext = null;
+        let isPlaying = false;
+        let testAudioContext = null;
+        let testOscillator = null;
+        let isPlayingTest = false;
+
+        function toggleAudio() {
+            if (isPlaying) {
+                stopAudio();
+            } else {
+                playWindowedTone();
+            }
+        }
+
+        function toggleTestAudio() {
+            if (isPlayingTest) {
+                stopTestAudio();
+            } else {
+                playTestAudio();
+            }
+        }
+
+        function playWindowedTone() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const sampleRate = audioContext.sampleRate;
+            const freq = 440; // A4
+            const duration = 1; // 1 Sekunde
+
+            // Erstelle langen Ton mit Fade-in/Fade-out am Anfang und Ende
+            const numSamples = Math.floor(sampleRate * duration);
+            const buffer = audioContext.createBuffer(1, numSamples, sampleRate);
+            const channelData = buffer.getChannelData(0);
+
+            // Fade-Länge: 0.1 Sekunden am Anfang und Ende
+            const fadeSamples = Math.floor(sampleRate * 0.1);
+            const fadeWindow = generateWindow(windowType, fadeSamples * 2, kaiserBeta);
+
+            // Generiere Ton
+            for (let i = 0; i < numSamples; i++) {
+                const t = i / sampleRate;
+                const sine = Math.sin(2 * Math.PI * freq * t);
+
+                let envelope = 1.0;
+                // Fade-in am Anfang
+                if (i < fadeSamples) {
+                    envelope = fadeWindow[i];
+                }
+                // Fade-out am Ende
+                else if (i >= numSamples - fadeSamples) {
+                    const fadeIndex = fadeSamples * 2 - (numSamples - i);
+                    envelope = fadeWindow[fadeIndex];
+                }
+
+                channelData[i] = sine * envelope * 0.6;
+            }
+
+            // Gain Node für Lautstärkekontrolle
+            const gainNode = audioContext.createGain();
+            gainNode.gain.value = 0.7;
+
+            // Spiele ab
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            source.start(0);
+            source.onended = () => {
+                stopAudio();
+            };
+
+            isPlaying = true;
+            const btn = document.getElementById('playBtn');
+            btn.textContent = 'Stoppen';
+            btn.classList.add('playing');
+        }
+
+        function stopAudio() {
+            if (audioContext) {
+                audioContext.close();
+                audioContext = null;
+            }
+            isPlaying = false;
+            const btn = document.getElementById('playBtn');
+            btn.textContent = 'Abspielen (440 Hz, 1s)';
+            btn.classList.remove('playing');
+        }
+
+        // Test-Funktion: Reiner Ton OHNE Fenster zum Testen
+        function playTestAudio() {
+            testAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            testOscillator = testAudioContext.createOscillator();
+            const gainNode = testAudioContext.createGain();
+
+            testOscillator.type = 'sine';
+            testOscillator.frequency.value = 440;
+            gainNode.gain.value = 0.5;
+
+            testOscillator.connect(gainNode);
+            gainNode.connect(testAudioContext.destination);
+
+            testOscillator.start();
+            testOscillator.stop(testAudioContext.currentTime + 1); // Stoppe nach 1 Sekunde
+
+            testOscillator.onended = () => {
+                stopTestAudio();
+            };
+
+            isPlayingTest = true;
+            const btn = document.getElementById('testBtn');
+            btn.textContent = 'Stoppen';
+            btn.classList.add('playing');
+        }
+
+        function stopTestAudio() {
+            if (testOscillator) {
+                try {
+                    testOscillator.stop();
+                } catch (e) {
+                    // Oscillator bereits gestoppt
+                }
+                testOscillator = null;
+            }
+            if (testAudioContext) {
+                testAudioContext.close();
+                testAudioContext = null;
+            }
+            isPlayingTest = false;
+            const btn = document.getElementById('testBtn');
+            btn.textContent = 'Test (reiner Ton)';
+            btn.classList.remove('playing');
+        }
+
+        // ===== Export-Funktionen =====
+        function exportWindowCSV() {
+            const window = generateWindow(windowType, windowLength, kaiserBeta);
+            let csv = 'Sample,Fensterwert\n';
+
+            for (let i = 0; i < window.length; i++) {
+                csv += `${i},${window[i].toFixed(6)}\n`;
+            }
+
+            downloadFile(csv, `fenster_${windowType}_${windowLength}.csv`, 'text/csv');
+        }
+
+        function exportSpectrumCSV() {
+            const window = generateWindow(windowType, windowLength, kaiserBeta);
+            const paddedLength = 2048;
+            const paddedWindow = new Array(paddedLength).fill(0);
+            for (let i = 0; i < window.length; i++) {
+                paddedWindow[i] = window[i];
+            }
+
+            const spectrum = fft(paddedWindow);
+            let csv = 'Frequenz (normalized),Magnitude (dB)\n';
+
+            for (let i = 0; i < spectrum.length / 2; i++) {
+                const freq = i / (spectrum.length / 2);
+                const mag = 20 * Math.log10(spectrum[i].magnitude + 1e-10);
+                csv += `${freq.toFixed(6)},${mag.toFixed(2)}\n`;
+            }
+
+            downloadFile(csv, `spektrum_${windowType}_${windowLength}.csv`, 'text/csv');
+        }
+
+        function exportPNG() {
+            // Erstelle temporäres Canvas mit allen drei Plots
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 1400;
+            tempCanvas.height = 900;
+            const tempCtx = tempCanvas.getContext('2d');
+
+            // Weißer Hintergrund
+            tempCtx.fillStyle = 'white';
+            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+            // Kopiere die drei Canvas-Elemente
+            tempCtx.drawImage(windowCanvas, 50, 50);
+            tempCtx.drawImage(spectrumCanvas, 750, 50);
+            tempCtx.drawImage(comparisonCanvas, 0, 400);
+
+            // Titel
+            tempCtx.fillStyle = 'black';
+            tempCtx.font = 'bold 20px Arial';
+            tempCtx.textAlign = 'center';
+            tempCtx.fillText(`Fensterfunktion: ${windowType} (N=${windowLength})`, 700, 30);
+
+            const link = document.createElement('a');
+            link.download = `fenster_${windowType}_${windowLength}.png`;
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>

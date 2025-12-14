@@ -373,37 +373,6 @@
         <h1>Digitale Filter</h1>
         <div class="subtitle">FIR vs IIR - Vergleich und interaktive Visualisierung</div>
 
-        <!-- Cross-references -->
-        <div class="cross-references">
-            <h3>Konzeptuelle Verbindungen</h3>
-            <ul>
-                <li>
-                    <strong>Theorie:</strong>
-                    <a href="z_transformation.html">Z-Transformation</a>
-                    <span class="arrow">→</span>
-                    Pol-Nullstellen-Diagramm und Filterentwurf
-                </li>
-                <li>
-                    <strong>Grundlagen:</strong>
-                    <a href="diskrete_faltung.html">Diskrete Faltung</a>
-                    <span class="arrow">→</span>
-                    FIR-Filter = Faltung mit endlicher Impulsantwort h[n]
-                </li>
-                <li>
-                    <strong>Verbesserung:</strong>
-                    <a href="fensterfunktionen.html">Fensterfunktionen</a>
-                    <span class="arrow">→</span>
-                    Reduzieren Ripple bei FIR-Filtern
-                </li>
-                <li>
-                    <strong>Frequenzanalyse:</strong>
-                    <a href="frequenzanalyse/fourier_transformation.html">DFT/FFT</a>
-                    <span class="arrow">→</span>
-                    Spektralanalyse der Filterwirkung
-                </li>
-            </ul>
-        </div>
-
         <!-- Comparison tab -->
         <div class="tabs">
             <button class="tab active" data-tab="comparison">Vergleich</button>
@@ -646,6 +615,24 @@
                     <canvas id="iirSignalCanvas" width="700" height="250"></canvas>
                 </div>
             </div>
+        </div>
+
+
+        <div class="related-topics">
+            <h4>Verwandte Themen</h4>
+            <a href="fensterfunktionen.html">→ Fensterfunktionen (Windowed-Sinc FIR-Entwurf)</a>
+            <a href="z_transformation.html">→ Z-Transformation (Pol-Nullstellen-Analyse)</a>
+            <a href="../02-ad-wandlung/digitale-signalverarbeitung/abtastung_rekonstruktion.html">→ Abtastung (Anti-Aliasing-Filter)</a>
+        </div>
+
+        <div class="common-mistake">
+            <h4>Wichtig</h4>
+            <p>IIR-Filter haben zwar geringere Ordnung als FIR, können aber <strong>instabil</strong> werden und haben <strong>keine lineare Phase</strong> (Phasenverzerrung!).</p>
+            <p><strong>Faustregel:</strong> FIR für Audio/Bildverarbeitung (lineare Phase wichtig) | IIR für Echtzeit-Systeme mit begrenzten Ressourcen</p>
+        </div>
+
+        <div class="export-controls">
+            <button class="export-btn" onclick="exportPNG()">Visualisierung speichern</button>
         </div>
     </div>
 
@@ -1544,6 +1531,27 @@
         updateIIRControlVisibility();
         drawFIR();
         drawIIR();
+
+
+        // ===== Export-Funktionen =====
+        function exportPNG() {
+            const canvas = document.querySelector('canvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.download = 'visualisierung.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>

@@ -241,6 +241,24 @@
         </div>
 
         <div class="formula" id="transferFunction"></div>
+
+
+        <div class="related-topics">
+            <h4>Verwandte Themen</h4>
+            <a href="digitale_filter.html">→ IIR-Filter (Pol-Nullstellen-Design)</a>
+            <a href="frequenzanalyse/fourier_transformation.html">→ Frequenzgang H(e^jω)</a>
+            <a href="fensterfunktionen.html">→ Spektralanalyse</a>
+        </div>
+
+        <div class="common-mistake">
+            <h4>Merken</h4>
+            <p><strong>Stabilität:</strong> Alle Pole innerhalb Einheitskreis (|z| &lt; 1)</p>
+            <p>Nullstellen → Amplitude | Pole → Amplitude + Stabilität</p>
+        </div>
+
+        <div class="export-controls">
+            <button class="export-btn" onclick="exportPNG()">Visualisierung speichern</button>
+        </div>
     </div>
 
     <script>
@@ -842,6 +860,27 @@
         document.getElementById('poleControls').style.display = 'none';
         document.getElementById('angleControls').style.display = 'none';
         loadFilter('lowpass');
+
+
+        // ===== Export-Funktionen =====
+        function exportPNG() {
+            const canvas = document.querySelector('canvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.download = 'visualisierung.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>

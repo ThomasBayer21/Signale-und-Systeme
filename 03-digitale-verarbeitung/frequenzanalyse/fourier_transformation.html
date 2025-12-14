@@ -121,6 +121,24 @@
             <p>Die Fourier-Transformation zerlegt ein Signal in seine Frequenzkomponenten. Jedes komplexe Signal kann als Summe von einfachen Sinuswellen unterschiedlicher Frequenzen, Amplituden und Phasen dargestellt werden.</p>
             <p><strong>Anleitung:</strong> Aktivieren Sie verschiedene Frequenzen und ändern Sie deren Amplitude und Phase. Beobachten Sie, wie sich das Zeitsignal (links) und das Frequenzspektrum (rechts) verändern.</p>
         </div>
+
+
+        <div class="related-topics">
+            <h4>Verwandte Themen</h4>
+            <a href="../fensterfunktionen.html">→ Fensterfunktionen (Spectral Leakage reduzieren)</a>
+            <a href="../../01-analoge-welt/fourier/index.html">→ Fourier-Reihe (kontinuierlich)</a>
+            <a href="../../02-ad-wandlung/digitale-signalverarbeitung/abtastung_rekonstruktion.html">→ Abtastung (Spektraleffekte)</a>
+        </div>
+
+        <div class="common-mistake">
+            <h4>Tipp</h4>
+            <p>Die Fourier-Transformation zerlegt Signale in ihre <strong>Frequenzkomponenten</strong>. Jede periodische Funktion lässt sich als Summe von Sinusfunktionen darstellen.</p>
+            <p><strong>Rechtecksignal:</strong> Ungerade Harmonische (1/n Amplitude) | <strong>Sägezahn:</strong> Alle Harmonischen (1/n Amplitude)</p>
+        </div>
+
+        <div class="export-controls">
+            <button class="export-btn" onclick="exportPNG()">Visualisierung speichern</button>
+        </div>
     </div>
 
     <script>
@@ -506,6 +524,27 @@
 
         // Standardmäßig eine Sinuswelle zeigen
         setTimeout(() => setPreset('sine'), 100);
+
+
+        // ===== Export-Funktionen =====
+        function exportPNG() {
+            const canvas = document.querySelector('canvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.download = 'visualisierung.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>

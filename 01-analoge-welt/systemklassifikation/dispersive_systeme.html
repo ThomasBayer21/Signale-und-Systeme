@@ -364,6 +364,25 @@
                 <li>In nicht-dispersiven Systemen: τ(ω) = const → keine Verzerrung</li>
             </ul>
         </div>
+
+
+        <div class="related-topics">
+            <h4>Verwandte Themen</h4>
+            <a href="../../03-digitale-verarbeitung/digitale_filter.html">→ Phasengang von Filtern</a>
+            <a href="../../03-digitale-verarbeitung/z_transformation.html">→ Gruppenlaufzeit</a>
+            <a href="ueberlagerungsprinzip.html">→ Lineare Systeme</a>
+        </div>
+
+        <div class="common-mistake">
+            <h4>Wichtig</h4>
+            <p>Dispersive Systeme haben <strong>frequenzabhängige Laufzeiten</strong>: τ(ω) ≠ const</p>
+            <p>Folge: Impulsverbreiterung, da unterschiedliche Frequenzkomponenten zu verschiedenen Zeiten ankommen.</p>
+            <p><strong>Beispiel:</strong> Glasfaserkabel, atmosphärische Ausbreitung</p>
+        </div>
+
+        <div class="export-controls">
+            <button class="export-btn" onclick="exportPNG()">Visualisierung speichern</button>
+        </div>
     </div>
 
     <script>
@@ -515,6 +534,27 @@
 
         updateDelayDisplays();
         draw();
+
+
+        // ===== Export-Funktionen =====
+        function exportPNG() {
+            const canvas = document.querySelector('canvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.download = 'visualisierung.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>

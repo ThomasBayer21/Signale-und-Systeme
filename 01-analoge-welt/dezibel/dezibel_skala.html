@@ -288,6 +288,24 @@
         <div class="back-link">
             <a href="index.html">← Zurück zur Übersicht</a>
         </div>
+
+
+        <div class="related-topics">
+            <h4>Verwandte Themen</h4>
+            <a href="dezibel_umrechner.html">→ Dezibel-Umrechner</a>
+            <a href="amplitude_leistung.html">→ 20 log vs 10 log</a>
+            <a href="logarithmus_eigenschaften.html">→ Logarithmus-Rechenregeln</a>
+        </div>
+
+        <div class="common-mistake">
+            <h4>Tipp</h4>
+            <p>Die Dezibel-Skala ist <strong>logarithmisch</strong> und komprimiert große Wertebereiche.</p>
+            <p><strong>Merkhilfen:</strong> +3 dB ≈ Verdopplung | +10 dB = Verzehnfachung | -20 dB = 1/10 der Amplitude</p>
+        </div>
+
+        <div class="export-controls">
+            <button class="export-btn" onclick="exportPNG()">Visualisierung speichern</button>
+        </div>
     </div>
 
     <script>
@@ -538,6 +556,27 @@
         }
 
         draw();
+
+
+        // ===== Export-Funktionen =====
+        function exportPNG() {
+            const canvas = document.querySelector('canvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.download = 'visualisierung.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>

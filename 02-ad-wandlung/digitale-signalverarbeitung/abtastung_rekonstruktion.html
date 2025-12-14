@@ -204,6 +204,37 @@
             <p><strong>3. Sample-and-Hold:</strong> In der Praxis wird oft eine einfachere Methode verwendet: Der Abtastwert wird bis zum nächsten Abtastzeitpunkt konstant gehalten (Treppenfunktion). Dies führt zu einer Verzerrung im Frequenzbereich.</p>
             <p><strong>Aliasing:</strong> Wenn die Abtastrate zu niedrig ist (unterhalb der Nyquist-Rate), entsteht Aliasing - hohe Frequenzen werden als niedrigere Frequenzen fehlinterpretiert.</p>
         </div>
+
+        <div class="audio-controls">
+            <h4>Hörbares Beispiel</h4>
+            <p>Höre den Aliasing-Effekt: Bei zu niedriger Abtastrate hört man eine falsche, tiefere Frequenz</p>
+            <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.95;">Für das Audio werden die eingestellten Frequenzen mit Faktor 100 hochskaliert, damit sie hörbar sind. Das Verhältnis und der Aliasing-Effekt bleiben identisch!</p>
+            <p style="font-size: 0.95em; margin-top: 12px; font-weight: 600;">
+                Audio-Frequenz: <span id="audioFreqDisplay">200</span> Hz |
+                Audio-Abtastrate: <span id="audioSamplingDisplay">2000</span> Hz
+            </p>
+            <button class="play-button" id="playBtn" onclick="toggleAudio()">Sample-and-Hold</button>
+            <button class="play-button" id="playIdealBtn" onclick="toggleIdealAudio()" style="margin-left: 10px;">Ideale Rekonstruktion (sinc)</button>
+            <button class="play-button" id="playOptimalBtn" onclick="toggleOptimalAudio()" style="margin-left: 10px;">Original (Vergleich)</button>
+        </div>
+
+        <div class="export-controls">
+            <button class="export-btn" onclick="exportCSV()">Signaldaten als CSV</button>
+            <button class="export-btn" onclick="exportPNG()">Visualisierungen speichern</button>
+        </div>
+
+        <div class="common-mistake">
+            <h4>Merken</h4>
+            <p><strong>Nyquist-Theorem:</strong> f<sub>s</sub> &gt; 2 × f<sub>max</sub></p>
+            <p>Praxis: Faktor 2.5-10 höher wegen nicht-idealer Filter</p>
+        </div>
+
+        <div class="related-topics">
+            <h4>Verwandte Themen</h4>
+            <a href="../quantisierung.html">→ Quantisierung (zweiter Schritt der A/D-Wandlung)</a>
+            <a href="../../01-analoge-welt/elementarfunktionen/sinc_funktion.html">→ sinc-Funktion (Rekonstruktion)</a>
+            <a href="../../03-digitale-verarbeitung/digitale_filter.html">→ Anti-Aliasing-Filter</a>
+        </div>
     </div>
 
     <script>
@@ -226,17 +257,26 @@
 
         const duration = 2; // Sekunden
         const plotPoints = 2000; // Punkte für kontinuierliches Signal
+        const audioScaleFactor = 100; // Skalierungsfaktor für Audio (macht Frequenzen hörbar)
+
+        // Funktion zum Aktualisieren der Audio-Frequenz-Anzeige
+        function updateAudioDisplay() {
+            document.getElementById('audioFreqDisplay').textContent = (signalFrequency * audioScaleFactor).toFixed(0);
+            document.getElementById('audioSamplingDisplay').textContent = (samplingRate * audioScaleFactor).toFixed(0);
+        }
 
         // Slider Events
         document.getElementById('freqSlider').addEventListener('input', (e) => {
             signalFrequency = parseFloat(e.target.value);
             document.getElementById('freqValue').textContent = signalFrequency.toFixed(1) + ' Hz';
+            updateAudioDisplay();
             update();
         });
 
         document.getElementById('samplingSlider').addEventListener('input', (e) => {
             samplingRate = parseInt(e.target.value);
             document.getElementById('samplingValue').textContent = samplingRate + ' Hz';
+            updateAudioDisplay();
             update();
         });
 
@@ -692,7 +732,287 @@
         }
 
         // Initialisierung
+        updateAudioDisplay();
         update();
+
+        // ===== Audio-Wiedergabe =====
+        let audioContext = null;
+        let isPlaying = false;
+        let isPlayingIdeal = false;
+        let isPlayingOptimal = false;
+
+        function stopAllAudio() {
+            if (isPlaying) stopAudio();
+            if (isPlayingIdeal) stopIdealAudio();
+            if (isPlayingOptimal) stopOptimalAudio();
+        }
+
+        function toggleAudio() {
+            if (isPlaying) {
+                stopAudio();
+            } else {
+                stopAllAudio();
+                playCurrentSignal();
+            }
+        }
+
+        function toggleIdealAudio() {
+            if (isPlayingIdeal) {
+                stopIdealAudio();
+            } else {
+                stopAllAudio();
+                playIdealReconstruction();
+            }
+        }
+
+        function toggleOptimalAudio() {
+            if (isPlayingOptimal) {
+                stopOptimalAudio();
+            } else {
+                stopAllAudio();
+                playOptimalSignal();
+            }
+        }
+
+        function playCurrentSignal() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const sampleRate = audioContext.sampleRate;
+            const duration = 2;
+            const numSamples = sampleRate * duration;
+
+            const buffer = audioContext.createBuffer(1, numSamples, sampleRate);
+            const channelData = buffer.getChannelData(0);
+
+            // Skaliere Frequenzen für hörbaren Bereich
+            const audioFrequency = signalFrequency * audioScaleFactor;
+            const audioSamplingRate = samplingRate * audioScaleFactor;
+
+            // Generiere abgetastetes und rekonstruiertes Signal
+            for (let i = 0; i < numSamples; i++) {
+                const t = i / sampleRate;
+
+                // Sample-and-Hold-Rekonstruktion simulieren
+                const sampleIndex = Math.floor(t * audioSamplingRate);
+                const sampleTime = sampleIndex / audioSamplingRate;
+
+                // Sinussignal (immer Sinus für einfache Hörbarkeit)
+                const sampleValue = amplitude * Math.sin(2 * Math.PI * audioFrequency * sampleTime);
+
+                channelData[i] = sampleValue * 0.3; // Lautstärke reduzieren
+            }
+
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioContext.destination);
+            source.start(0);
+            source.onended = () => {
+                stopAudio();
+            };
+
+            isPlaying = true;
+            const btn = document.getElementById('playBtn');
+            btn.textContent = 'Stoppen';
+            btn.classList.add('playing');
+        }
+
+        function stopAudio() {
+            if (audioContext) {
+                audioContext.close();
+                audioContext = null;
+            }
+            isPlaying = false;
+            const btn = document.getElementById('playBtn');
+            btn.textContent = 'Sample-and-Hold';
+            btn.classList.remove('playing');
+        }
+
+        // ===== Ideale Rekonstruktion (sinc-Interpolation) =====
+        let audioContextIdeal = null;
+
+        function playIdealReconstruction() {
+            audioContextIdeal = new (window.AudioContext || window.webkitAudioContext)();
+            const sampleRate = audioContextIdeal.sampleRate;
+            const duration = 2;
+            const numSamples = sampleRate * duration;
+
+            const buffer = audioContextIdeal.createBuffer(1, numSamples, sampleRate);
+            const channelData = buffer.getChannelData(0);
+
+            // Skaliere Frequenzen für hörbaren Bereich
+            const audioFrequency = signalFrequency * audioScaleFactor;
+            const audioSamplingRate = samplingRate * audioScaleFactor;
+
+            // Generiere Abtastpunkte
+            const numAudioSamples = Math.floor(duration * audioSamplingRate);
+            const samples = [];
+            for (let i = 0; i < numAudioSamples; i++) {
+                const t = i / audioSamplingRate;
+                const value = amplitude * Math.sin(2 * Math.PI * audioFrequency * t);
+                samples.push({ time: t, value: value });
+            }
+
+            // Rekonstruiere mit sinc-Interpolation
+            for (let i = 0; i < numSamples; i++) {
+                const t = i / sampleRate;
+                let sum = 0;
+
+                // sinc-Interpolation über alle Abtastpunkte
+                for (let j = 0; j < samples.length; j++) {
+                    const tj = samples[j].time;
+                    const sj = samples[j].value;
+                    const sincArg = (t - tj) * audioSamplingRate;
+                    const sincVal = sinc(sincArg);
+                    sum += sj * sincVal;
+                }
+
+                channelData[i] = sum * 0.3; // Lautstärke reduzieren
+            }
+
+            const source = audioContextIdeal.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioContextIdeal.destination);
+            source.start(0);
+            source.onended = () => {
+                stopIdealAudio();
+            };
+
+            isPlayingIdeal = true;
+            const btn = document.getElementById('playIdealBtn');
+            btn.textContent = 'Stoppen';
+            btn.classList.add('playing');
+        }
+
+        function stopIdealAudio() {
+            if (audioContextIdeal) {
+                audioContextIdeal.close();
+                audioContextIdeal = null;
+            }
+            isPlayingIdeal = false;
+            const btn = document.getElementById('playIdealBtn');
+            btn.textContent = 'Ideale Rekonstruktion (sinc)';
+            btn.classList.remove('playing');
+        }
+
+        // ===== Optimale Audio-Wiedergabe (zum Vergleich) =====
+        let audioContextOptimal = null;
+
+        function playOptimalSignal() {
+            audioContextOptimal = new (window.AudioContext || window.webkitAudioContext)();
+            const sampleRate = audioContextOptimal.sampleRate;
+            const duration = 2;
+            const numSamples = sampleRate * duration;
+
+            const buffer = audioContextOptimal.createBuffer(1, numSamples, sampleRate);
+            const channelData = buffer.getChannelData(0);
+
+            // Skaliere Frequenz für hörbaren Bereich
+            const audioFrequency = signalFrequency * audioScaleFactor;
+
+            // Generiere KONTINUIERLICHES Signal (keine Sample-and-Hold, perfekte Abtastung)
+            for (let i = 0; i < numSamples; i++) {
+                const t = i / sampleRate;
+                // Perfektes kontinuierliches Sinussignal
+                channelData[i] = amplitude * Math.sin(2 * Math.PI * audioFrequency * t) * 0.3;
+            }
+
+            const source = audioContextOptimal.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioContextOptimal.destination);
+            source.start(0);
+            source.onended = () => {
+                stopOptimalAudio();
+            };
+
+            isPlayingOptimal = true;
+            const btn = document.getElementById('playOptimalBtn');
+            btn.textContent = 'Stoppen';
+            btn.classList.add('playing');
+        }
+
+        function stopOptimalAudio() {
+            if (audioContextOptimal) {
+                audioContextOptimal.close();
+                audioContextOptimal = null;
+            }
+            isPlayingOptimal = false;
+            const btn = document.getElementById('playOptimalBtn');
+            btn.textContent = 'Original (Vergleich)';
+            btn.classList.remove('playing');
+        }
+
+        // ===== Export-Funktionen =====
+        function exportCSV() {
+            const numPoints = 500;
+            const duration = 3;
+            let csv = 'Zeit (s),Original,Abgetastet\n';
+
+            for (let i = 0; i < numPoints; i++) {
+                const t = (i / numPoints) * duration;
+                let original = 0;
+                if (signalType === 'sine') {
+                    original = amplitude * Math.sin(2 * Math.PI * signalFrequency * t);
+                } else if (signalType === 'complex') {
+                    original = amplitude * (Math.sin(2 * Math.PI * signalFrequency * t) +
+                              0.3 * Math.sin(2 * Math.PI * signalFrequency * 3 * t));
+                } else if (signalType === 'sawtooth') {
+                    original = amplitude * (2 * (signalFrequency * t - Math.floor(signalFrequency * t + 0.5)));
+                }
+
+                // Nächster Abtastwert
+                const sampleIndex = Math.floor(t * samplingRate);
+                const sampleTime = sampleIndex / samplingRate;
+                let sampled = null;
+                if (Math.abs(t - sampleTime) < 1/(samplingRate * 10)) {
+                    if (signalType === 'sine') {
+                        sampled = amplitude * Math.sin(2 * Math.PI * signalFrequency * sampleTime);
+                    } else if (signalType === 'complex') {
+                        sampled = amplitude * (Math.sin(2 * Math.PI * signalFrequency * sampleTime) +
+                                  0.3 * Math.sin(2 * Math.PI * signalFrequency * 3 * sampleTime));
+                    } else if (signalType === 'sawtooth') {
+                        sampled = amplitude * (2 * (signalFrequency * sampleTime - Math.floor(signalFrequency * sampleTime + 0.5)));
+                    }
+                }
+
+                csv += `${t.toFixed(6)},${original.toFixed(6)},${sampled !== null ? sampled.toFixed(6) : ''}\n`;
+            }
+
+            downloadFile(csv, `abtastung_fs${samplingRate}_f${signalFrequency}.csv`, 'text/csv');
+        }
+
+        function exportPNG() {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 1400;
+            tempCanvas.height = 1000;
+            const tempCtx = tempCanvas.getContext('2d');
+
+            tempCtx.fillStyle = 'white';
+            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+            tempCtx.drawImage(originalCanvas, 50, 50);
+            tempCtx.drawImage(sampledCanvas, 750, 50);
+            tempCtx.drawImage(idealReconCanvas, 50, 400);
+            tempCtx.drawImage(sahReconCanvas, 750, 400);
+
+            tempCtx.fillStyle = 'black';
+            tempCtx.font = 'bold 20px Arial';
+            tempCtx.textAlign = 'center';
+            tempCtx.fillText(`Abtastung: fs=${samplingRate} Hz, f=${signalFrequency} Hz`, 700, 30);
+
+            const link = document.createElement('a');
+            link.download = `abtastung_fs${samplingRate}_f${signalFrequency}.png`;
+            link.href = tempCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>

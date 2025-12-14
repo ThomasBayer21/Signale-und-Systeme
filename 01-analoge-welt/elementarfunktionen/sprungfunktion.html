@@ -178,6 +178,24 @@
                 <li><strong>Fourier-Transformation:</strong> U(ω) = πδ(ω) + 1/(jω)</li>
             </ul>
         </div>
+
+
+        <div class="related-topics">
+            <h4>Verwandte Themen</h4>
+            <a href="dirac_impuls.html">→ Dirac-Impuls (Ableitung der Sprungfunktion)</a>
+            <a href="exponentialfunktion.html">→ Exponentialfunktion (e^at·u(t))</a>
+            <a href="../../02-ad-wandlung/digitale-signalverarbeitung/abtastung_rekonstruktion.html">→ Abtastung</a>
+        </div>
+
+        <div class="common-mistake">
+            <h4>Merken</h4>
+            <p>u(t) = Integral des Dirac-Impulses</p>
+            <p>Modelliert plötzliche Änderungen (z.B. Einschalten)</p>
+        </div>
+
+        <div class="export-controls">
+            <button class="export-btn" onclick="exportPNG()">Visualisierung speichern</button>
+        </div>
     </div>
 
     <script>
@@ -332,6 +350,27 @@
         }
 
         draw();
+
+
+        // ===== Export-Funktionen =====
+        function exportPNG() {
+            const canvas = document.querySelector('canvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.download = 'visualisierung.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>

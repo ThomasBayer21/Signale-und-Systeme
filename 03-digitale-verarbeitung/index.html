@@ -12,12 +12,38 @@
         }
 
         .viz-card {
-            border-left: 4px solid var(--color-digital);
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
+            overflow: hidden;
         }
+
+        .viz-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--color-digital);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
         .viz-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
             border-color: var(--color-digital);
+        }
+
+        .viz-card:hover::before {
+            transform: scaleY(1);
         }
         .viz-title {
             font-size: 1.3em;

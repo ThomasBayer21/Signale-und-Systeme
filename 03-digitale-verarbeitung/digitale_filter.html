@@ -531,6 +531,14 @@
                     <canvas id="firSignalCanvas" width="1400" height="280"></canvas>
                 </div>
             </div>
+
+            <div class="audio-controls">
+                <h4>Hörbares Beispiel</h4>
+                <p>Höre den Unterschied zwischen FIR-Filtertypen: Weißes Rauschen wird gefiltert</p>
+                <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.95;"><strong>Tiefpass:</strong> Dumpf | <strong>Hochpass:</strong> Zischend | <strong>Bandpass:</strong> Mittenbetonung</p>
+                <button class="play-button" id="firPlayBtn" onclick="toggleFIRAudio()">Abspielen (gefiltert, 2s)</button>
+                <button class="play-button" onclick="playUnfiltered()" style="margin-left: 10px; background: #95a5a6;">Original (ungefiltert)</button>
+            </div>
         </div>
 
         <!-- IIR Content -->
@@ -614,6 +622,14 @@
                     <h2>Signalfilterung</h2>
                     <canvas id="iirSignalCanvas" width="700" height="250"></canvas>
                 </div>
+            </div>
+
+            <div class="audio-controls">
+                <h4>Hörbares Beispiel</h4>
+                <p>Höre den Unterschied zwischen IIR-Filtertypen: Weißes Rauschen wird gefiltert</p>
+                <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.95;"><strong>Butterworth:</strong> Glatter Abfall | <strong>Chebyshev:</strong> Steilerer Abfall | <strong>Einfach:</strong> Sanfte Filterung</p>
+                <button class="play-button" id="iirPlayBtn" onclick="toggleIIRAudio()">Abspielen (gefiltert, 2s)</button>
+                <button class="play-button" onclick="playUnfiltered()" style="margin-left: 10px; background: #95a5a6;">Original (ungefiltert)</button>
             </div>
         </div>
 
@@ -1551,6 +1567,180 @@
             link.download = filename;
             link.click();
             URL.revokeObjectURL(url);
+        }
+
+        // ===== Audio-Wiedergabe FIR =====
+        let firAudioContext = null;
+        let firIsPlaying = false;
+
+        function toggleFIRAudio() {
+            if (firIsPlaying) {
+                stopFIRAudio();
+            } else {
+                playFIRFilteredNoise();
+            }
+        }
+
+        function playFIRFilteredNoise() {
+            firAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const sampleRate = firAudioContext.sampleRate;
+            const duration = 2;
+            const numSamples = sampleRate * duration;
+
+            const buffer = firAudioContext.createBuffer(1, numSamples, sampleRate);
+            const channelData = buffer.getChannelData(0);
+
+            // Generiere weißes Rauschen
+            for (let i = 0; i < numSamples; i++) {
+                channelData[i] = Math.random() * 2 - 1;
+            }
+
+            // Verwende die gleichen FIR-Filterkoeffizienten wie in der Visualisierung
+            const h = designFIRFilter();
+
+            // Filtere das Rauschen
+            const filtered = new Float32Array(numSamples);
+            for (let n = 0; n < numSamples; n++) {
+                let sum = 0;
+                for (let k = 0; k < h.length && k <= n; k++) {
+                    sum += h[k] * channelData[n - k];
+                }
+                filtered[n] = sum * 0.5; // Lautstärke
+            }
+
+            // Kopiere gefilterte Daten zurück
+            for (let i = 0; i < numSamples; i++) {
+                channelData[i] = filtered[i];
+            }
+
+            const source = firAudioContext.createBufferSource();
+            source.buffer = buffer;
+            source.connect(firAudioContext.destination);
+            source.start(0);
+            source.onended = () => {
+                stopFIRAudio();
+            };
+
+            firIsPlaying = true;
+            const btn = document.getElementById('firPlayBtn');
+            btn.textContent = 'Stoppen';
+            btn.classList.add('playing');
+        }
+
+        function stopFIRAudio() {
+            if (firAudioContext) {
+                firAudioContext.close();
+                firAudioContext = null;
+            }
+            firIsPlaying = false;
+            const btn = document.getElementById('firPlayBtn');
+            btn.textContent = 'Abspielen (gefiltert, 2s)';
+            btn.classList.remove('playing');
+        }
+
+        // ===== Audio-Wiedergabe IIR =====
+        let iirAudioContext = null;
+        let iirIsPlaying = false;
+
+        function toggleIIRAudio() {
+            if (iirIsPlaying) {
+                stopIIRAudio();
+            } else {
+                playIIRFilteredNoise();
+            }
+        }
+
+        function playIIRFilteredNoise() {
+            iirAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const sampleRate = iirAudioContext.sampleRate;
+            const duration = 2;
+            const numSamples = sampleRate * duration;
+
+            const buffer = iirAudioContext.createBuffer(1, numSamples, sampleRate);
+            const channelData = buffer.getChannelData(0);
+
+            // Generiere weißes Rauschen
+            for (let i = 0; i < numSamples; i++) {
+                channelData[i] = Math.random() * 2 - 1;
+            }
+
+            // Hole aktuelle IIR-Filterkoeffizienten
+            const {b, a} = designIIRFilter();
+
+            // Wende IIR-Filter an (Direct Form II)
+            const filtered = new Float32Array(numSamples);
+            const state = new Array(Math.max(a.length, b.length)).fill(0);
+
+            for (let n = 0; n < numSamples; n++) {
+                // Direct Form II implementation
+                let w = channelData[n];
+                for (let i = 1; i < a.length; i++) {
+                    w -= a[i] * (state[i-1] || 0);
+                }
+
+                let y = b[0] * w;
+                for (let i = 1; i < b.length; i++) {
+                    y += b[i] * (state[i-1] || 0);
+                }
+
+                // Update state
+                for (let i = state.length - 1; i > 0; i--) {
+                    state[i] = state[i-1];
+                }
+                state[0] = w;
+
+                filtered[n] = y * 0.5; // Lautstärke
+            }
+
+            // Kopiere gefilterte Daten zurück
+            for (let i = 0; i < numSamples; i++) {
+                channelData[i] = filtered[i];
+            }
+
+            const source = iirAudioContext.createBufferSource();
+            source.buffer = buffer;
+            source.connect(iirAudioContext.destination);
+            source.start(0);
+            source.onended = () => {
+                stopIIRAudio();
+            };
+
+            iirIsPlaying = true;
+            const btn = document.getElementById('iirPlayBtn');
+            btn.textContent = 'Stoppen';
+            btn.classList.add('playing');
+        }
+
+        function stopIIRAudio() {
+            if (iirAudioContext) {
+                iirAudioContext.close();
+                iirAudioContext = null;
+            }
+            iirIsPlaying = false;
+            const btn = document.getElementById('iirPlayBtn');
+            btn.textContent = 'Abspielen (gefiltert, 2s)';
+            btn.classList.remove('playing');
+        }
+
+        // Ungefilteres Rauschen
+        function playUnfiltered() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const duration = 1;
+            const sampleRate = ctx.sampleRate;
+            const numSamples = sampleRate * duration;
+
+            const buffer = ctx.createBuffer(1, numSamples, sampleRate);
+            const channelData = buffer.getChannelData(0);
+
+            for (let i = 0; i < numSamples; i++) {
+                channelData[i] = (Math.random() * 2 - 1) * 0.3;
+            }
+
+            const source = ctx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(ctx.destination);
+            source.start(0);
+            source.onended = () => ctx.close();
         }
     </script>
 </body>

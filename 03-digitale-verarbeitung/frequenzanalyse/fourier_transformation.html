@@ -130,6 +130,13 @@
             <a href="../../02-ad-wandlung/digitale-signalverarbeitung/abtastung_rekonstruktion.html">→ Abtastung (Spektraleffekte)</a>
         </div>
 
+        <div class="audio-controls">
+            <h4>Hörbares Beispiel</h4>
+            <p>Höre das aktuell synthetisierte Signal</p>
+            <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.95;">Das Signal wird mit den eingestellten Harmonischen synthetisiert. <strong>Rechteck:</strong> Quadratisch | <strong>Sägezahn:</strong> Metallisch</p>
+            <button class="play-button" id="playBtn" onclick="toggleAudio()">Abspielen (2s)</button>
+        </div>
+
         <div class="common-mistake">
             <h4>Tipp</h4>
             <p>Die Fourier-Transformation zerlegt Signale in ihre <strong>Frequenzkomponenten</strong>. Jede periodische Funktion lässt sich als Summe von Sinusfunktionen darstellen.</p>
@@ -544,6 +551,77 @@
             link.download = filename;
             link.click();
             URL.revokeObjectURL(url);
+        }
+
+        // ===== Audio-Wiedergabe =====
+        let audioContext = null;
+        let isPlaying = false;
+
+        function toggleAudio() {
+            if (isPlaying) {
+                stopAudio();
+            } else {
+                playSynthesizedSignal();
+            }
+        }
+
+        function playSynthesizedSignal() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const sampleRate = audioContext.sampleRate;
+            const duration = 2;
+            const numSamples = sampleRate * duration;
+
+            const buffer = audioContext.createBuffer(1, numSamples, sampleRate);
+            const channelData = buffer.getChannelData(0);
+
+            // Basis-Frequenz (hörbar)
+            const baseFreq = 220; // A3
+
+            // Synthetisiere Signal aus aktiven Harmonischen
+            for (let i = 0; i < numSamples; i++) {
+                const t = i / sampleRate;
+                let sum = 0;
+
+                // Addiere alle aktiven Frequenzkomponenten
+                frequencyStates.forEach(state => {
+                    if (state.active) {
+                        const freq = baseFreq * state.freq;
+                        const amp = state.amplitude;
+                        const phase = state.phase;
+                        sum += amp * Math.sin(2 * Math.PI * freq * t + phase);
+                    }
+                });
+
+                // Normalisiere
+                const activeCount = frequencyStates.filter(s => s.active).length;
+                if (activeCount > 0) {
+                    channelData[i] = sum / activeCount * 0.4;
+                }
+            }
+
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioContext.destination);
+            source.start(0);
+            source.onended = () => {
+                stopAudio();
+            };
+
+            isPlaying = true;
+            const btn = document.getElementById('playBtn');
+            btn.textContent = 'Stoppen';
+            btn.classList.add('playing');
+        }
+
+        function stopAudio() {
+            if (audioContext) {
+                audioContext.close();
+                audioContext = null;
+            }
+            isPlaying = false;
+            const btn = document.getElementById('playBtn');
+            btn.textContent = 'Abspielen (2s)';
+            btn.classList.remove('playing');
         }
     </script>
 </body>

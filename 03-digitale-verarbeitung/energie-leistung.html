@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Energie und Leistungssignale (Diskret)</title>
+<link rel="stylesheet" href="../styles/common.css">
+<style>
+body{background:linear-gradient(135deg,#e8f0f8 0%,#d8e4f0 100%);margin:0;padding:20px;}
+h1{font-size:2.2em;font-weight:600;text-align:center;margin:0 0 10px 0;color:#3498db;}
+.desc{text-align:center;color:#666;margin-bottom:20px;font-size:0.95em;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1400px;margin:0 auto;}
+.sec{background:white;border-radius:8px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1);border-top:3px solid #3498db;}
+.sec h2{font-size:1.4em;color:#3498db;margin:0 0 15px 0;text-align:center;}
+.eq{background:#f8f9fa;padding:10px;border-radius:4px;text-align:center;font-family:monospace;font-size:0.95em;margin:10px 0;color:#333;border:1px solid #ddd;}
+.info{background:#fff8e8;padding:12px;border-radius:4px;margin:10px 0;border-left:3px solid #f39c12;font-size:0.9em;color:#555;}
+.ctrl{display:grid;grid-template-columns:auto 1fr;gap:10px 15px;align-items:center;margin:15px 0;padding:15px;background:#fafafa;border-radius:4px;font-size:0.9em;}
+.ctrl label{color:#666;font-weight:500;}
+.ctrl select,.ctrl input[type="range"]{padding:6px;font-size:0.9em;border:1px solid #ddd;border-radius:3px;background:white;}
+.ctrl input[type="range"]{width:100%;height:3px;-webkit-appearance:none;padding:0;}
+.ctrl input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#3498db;cursor:pointer;}
+.ctrl input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#3498db;cursor:pointer;border:none;}
+.val{color:#3498db;font-weight:600;font-size:1em;}
+canvas{border:1px solid #ddd;border-radius:4px;background:#fafafa;display:block;width:100%;margin:10px 0;}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0;}
+.card{background:#e8f0f8;padding:12px;border-radius:4px;border:2px solid #3498db;text-align:center;}
+.card .lbl{font-size:0.75em;color:#7f8c8d;margin-bottom:4px;}
+.card .v{font-size:1.2em;font-weight:600;color:#3498db;}
+.badge{background:white;padding:12px;border-radius:6px;text-align:center;font-size:1.1em;font-weight:700;margin:10px 0;border:3px solid #ddd;}
+.badge.energy{border-color:#27ae60;color:#27ae60;background:#e8f8f0;}
+.badge.power{border-color:#3498db;color:#3498db;background:#e8f4f8;}
+.links{background:#f8f9fa;padding:15px;border-radius:6px;margin:20px auto;max-width:1400px;}
+.links h4{margin:0 0 10px 0;color:#333;font-size:1em;}
+.links a{display:inline-block;color:#3498db;text-decoration:none;padding:5px 10px;margin:2px;background:white;border-radius:3px;font-size:0.9em;}
+@media (max-width:1200px){.grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<h1>Energie und Leistungssignale (Diskret)</h1>
+<div class="desc">Klassifikation diskreter Signale x[n] mit Summen (Σ) statt Integralen (∫)</div>
+
+<div class="grid">
+<div class="sec" id="klassifikation">
+<h2>1. Signalklassifikation</h2>
+<div class="eq">E = Σ|x[n]|² | P = lim<sub>N→∞</sub> (1/(2N+1)) Σ|x[n]|²</div>
+<div class="info">∫dt→Σ | x(t)→x[n] | T→N</div>
+<div class="ctrl">
+<label>Signal:</label><select id="c-t"><option value="rect">Rechteck</option><option value="exp">Exponential</option><option value="tri">Dreieck</option><option value="cos">Cosinus</option><option value="sq">Rechteck (Period.)</option><option value="dc">DC</option></select>
+<label>A:</label><input type="range" id="c-a" min="0.1" max="2" step="0.1" value="1"><span class="val" id="c-av">1.0</span>
+<label id="c-pl">Länge:</label><input type="range" id="c-p" min="4" max="20" step="1" value="8"><span class="val" id="c-pv">8</span>
+</div>
+<div class="badge" id="c-b">ENERGIESIGNAL</div>
+<div class="cards">
+<div class="card"><div class="lbl">Energie E</div><div class="v" id="c-e">0</div></div>
+<div class="card"><div class="lbl">Leistung P</div><div class="v" id="c-p2">0</div></div>
+<div class="card"><div class="lbl">RMS</div><div class="v" id="c-r">0</div></div>
+</div>
+<canvas id="c-c" width="600" height="220"></canvas>
+</div>
+
+<div class="sec" id="energiesignale">
+<h2>2. Energiesignale (Diskret)</h2>
+<div class="eq">E = Σ<sub>n=0</sub><sup>L-1</sup> |x[n]|² < ∞</div>
+<div class="info">FIR-Filter, zeitlich begrenzte Sequenzen</div>
+<div class="ctrl">
+<label>Signal:</label><select id="e-t"><option value="rect">Rechteck</option><option value="tri">Dreieck</option><option value="exp">Exponential</option><option value="ham">Hamming</option></select>
+<label>A:</label><input type="range" id="e-a" min="0.1" max="2" step="0.1" value="1"><span class="val" id="e-av">1.0</span>
+<label>Länge L:</label><input type="range" id="e-l" min="4" max="32" step="1" value="16"><span class="val" id="e-lv">16</span>
+</div>
+<div class="cards">
+<div class="card"><div class="lbl">Energie E</div><div class="v" id="e-e">0</div></div>
+<div class="card"><div class="lbl">Peak</div><div class="v" id="e-pk">0</div></div>
+<div class="card"><div class="lbl">Samples</div><div class="v" id="e-len">0</div></div>
+</div>
+<canvas id="e-c" width="600" height="220"></canvas>
+</div>
+
+<div class="sec" id="leistungssignale">
+<h2>3. Leistungssignale (Diskret)</h2>
+<div class="eq">P = (1/N₀) Σ<sub>n=0</sub><sup>N₀-1</sup> |x[n]|² < ∞</div>
+<div class="info">IIR-Filter, periodische/unendliche Sequenzen</div>
+<div class="ctrl">
+<label>Signal:</label><select id="p-t"><option value="cos">Cosinus</option><option value="sq">Rechteck</option><option value="saw">Sägezahn</option><option value="dc">DC</option></select>
+<label>A:</label><input type="range" id="p-a" min="0.1" max="2" step="0.1" value="1"><span class="val" id="p-av">1.0</span>
+<label id="p-pl">Periode N:</label><input type="range" id="p-per" min="4" max="32" step="1" value="16"><span class="val" id="p-pv">16</span>
+</div>
+<div class="cards">
+<div class="card"><div class="lbl">Leistung P</div><div class="v" id="p-p">0</div></div>
+<div class="card"><div class="lbl">RMS</div><div class="v" id="p-r">0</div></div>
+<div class="card"><div class="lbl">E</div><div class="v">∞</div></div>
+</div>
+<canvas id="p-c" width="600" height="220"></canvas>
+</div>
+
+<div class="sec">
+<h2>Eigenschaften</h2>
+<div style="font-size:0.9em;line-height:1.8;color:#666;">
+<strong style="color:#27ae60;">Energiesignale:</strong> Endliche Länge, E<∞, P=0, FIR-Filter<br>
+<strong style="color:#3498db;">Leistungssignale:</strong> Periodisch/unendlich, P<∞, E=∞, IIR-Filter<br>
+<strong>RMS-Wert:</strong> x<sub>RMS</sub> = √P (quadratischer Mittelwert)<br>
+<strong>Parseval (Diskret):</strong> E = Σ|x[n]|² = Σ|X[k]|²/N
+</div>
+</div>
+</div>
+
+<div class="links">
+<h4>Verwandte Themen:</h4>
+<a href="korrelation.html">Korrelation</a>
+<a href="fensterfunktionen.html">Fensterfunktionen</a>
+<a href="../01-analoge-welt/energie-leistung.html">Energie & Leistung (Analog)</a>
+<a href="index.html">← Zurück</a>
+</div>
+
+<script>
+const els=id=>document.getElementById(id);
+const stem=(ctx,w,h,data,col='#3498db')=>{
+const m={l:50,r:20,t:20,b:30},pw=w-m.l-m.r,ph=h-m.t-m.b,cy=h/2;
+ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafafa';ctx.fillRect(0,0,w,h);
+ctx.strokeStyle='#e0e0e0';ctx.lineWidth=1;
+for(let i=0;i<=4;i++){const y=m.t+(i/4)*ph;ctx.beginPath();ctx.moveTo(m.l,y);ctx.lineTo(w-m.r,y);ctx.stroke();}
+ctx.strokeStyle='#333';ctx.lineWidth=1.5;
+ctx.beginPath();ctx.moveTo(m.l,cy);ctx.lineTo(w-m.r,cy);ctx.stroke();
+ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=2;
+data.forEach(d=>{ctx.beginPath();ctx.moveTo(d.x,cy);ctx.lineTo(d.x,d.y);ctx.stroke();ctx.beginPath();ctx.arc(d.x,d.y,3.5,0,2*Math.PI);ctx.fill();});
+};
+
+let cs={t:'rect',a:1,p:8};
+const cSig=n=>{switch(cs.t){case 'rect':return Math.abs(n)<cs.p/2?cs.a:0;case 'exp':const al=0.8;return n>=0&&n<cs.p*2?cs.a*Math.pow(al,n):0;case 'tri':return Math.abs(n)<cs.p/2?cs.a*(1-2*Math.abs(n)/cs.p):0;case 'cos':return cs.a*Math.cos(2*Math.PI*n/cs.p);case 'sq':return(n%cs.p)<cs.p/2?cs.a:-cs.a;case 'dc':return cs.a;}};
+const cCalc=()=>{let e=0,ps=0;const N=50;for(let n=-N;n<=N;n++){const v=cSig(n);e+=v*v;ps+=v*v;}const p=ps/(2*N+1),cls=['rect','exp','tri'].includes(cs.t)?'energy':'power';els('c-b').textContent=cls==='energy'?'ENERGIESIGNAL':'LEISTUNGSSIGNAL';els('c-b').className=`badge ${cls}`;els('c-e').textContent=cls==='power'?'∞':e.toFixed(2);els('c-p2').textContent=cls==='energy'?'≈0':p.toFixed(3);els('c-r').textContent=Math.sqrt(p).toFixed(3);};
+const cDraw=()=>{const cv=els('c-c'),ctx=cv.getContext('2d'),w=cv.width,h=cv.height;const m={l:50,r:20,t:20,b:30},pw=w-m.l-m.r,ph=h-m.t-m.b,cy=h/2,nr=25,ys=ph*0.4/cs.a;const data=[];for(let n=-nr;n<=nr;n++){const x=m.l+((n+nr)/(2*nr))*pw,y=cy-cSig(n)*ys;data.push({x,y});}stem(ctx,w,h,data);};
+els('c-t').onchange=e=>{cs.t=e.target.value;els('c-pl').textContent=(cs.t==='cos'||cs.t==='sq'?'Periode:':'Länge:');cCalc();cDraw();};
+els('c-a').oninput=e=>{cs.a=+e.target.value;els('c-av').textContent=cs.a.toFixed(1);cCalc();cDraw();};
+els('c-p').oninput=e=>{cs.p=+e.target.value;els('c-pv').textContent=cs.p;cCalc();cDraw();};
+
+let es={t:'rect',a:1,l:16};
+const eSig=n=>{if(n<0||n>=es.l)return 0;switch(es.t){case 'rect':return es.a;case 'tri':return es.a*(1-2*Math.abs(n-(es.l-1)/2)/es.l);case 'exp':const al=0.85;return es.a*Math.pow(al,n);case 'ham':return es.a*(0.54-0.46*Math.cos(2*Math.PI*n/(es.l-1)));}};
+const eCalc=()=>{let e=0,pk=0,sm=0;for(let n=0;n<es.l;n++){const v=eSig(n);e+=v*v;pk=Math.max(pk,Math.abs(v));sm++;}els('e-e').textContent=e.toFixed(2);els('e-pk').textContent=pk.toFixed(2);els('e-len').textContent=sm;};
+const eDraw=()=>{const cv=els('e-c'),ctx=cv.getContext('2d'),w=cv.width,h=cv.height;const m={l:50,r:20,t:20,b:30},pw=w-m.l-m.r,ph=h-m.t-m.b,cy=h/2,mx=Math.max(32,es.l),ys=ph*0.4/es.a;const data=[];for(let n=0;n<mx;n++){const x=m.l+(n/mx)*pw,y=cy-eSig(n)*ys;data.push({x,y});}stem(ctx,w,h,data,'#27ae60');};
+els('e-t').onchange=e=>{es.t=e.target.value;eCalc();eDraw();};
+els('e-a').oninput=e=>{es.a=+e.target.value;els('e-av').textContent=es.a.toFixed(1);eCalc();eDraw();};
+els('e-l').oninput=e=>{es.l=+e.target.value;els('e-lv').textContent=es.l;eCalc();eDraw();};
+
+let ps={t:'cos',a:1,per:16};
+const pSig=n=>{switch(ps.t){case 'cos':return ps.a*Math.cos(2*Math.PI*n/ps.per);case 'sq':return(n%ps.per)<ps.per/2?ps.a:-ps.a;case 'saw':return ps.a*(2*(n%ps.per)/ps.per-1);case 'dc':return ps.a;}};
+const pCalc=()=>{const N=ps.t==='dc'?1:ps.per;let s=0;for(let n=0;n<N;n++){const v=pSig(n);s+=v*v;}const p=s/N;els('p-p').textContent=p.toFixed(3);els('p-r').textContent=Math.sqrt(p).toFixed(3);};
+const pDraw=()=>{const cv=els('p-c'),ctx=cv.getContext('2d'),w=cv.width,h=cv.height;const m={l:50,r:20,t:20,b:30},pw=w-m.l-m.r,ph=h-m.t-m.b,cy=h/2,mx=Math.max(48,ps.per*2),ys=ph*0.4/ps.a;const data=[];for(let n=0;n<mx;n++){const x=m.l+(n/mx)*pw,y=cy-pSig(n)*ys;data.push({x,y});}stem(ctx,w,h,data);};
+els('p-t').onchange=e=>{ps.t=e.target.value;pCalc();pDraw();};
+els('p-a').oninput=e=>{ps.a=+e.target.value;els('p-av').textContent=ps.a.toFixed(1);pCalc();pDraw();};
+els('p-per').oninput=e=>{ps.per=+e.target.value;els('p-pv').textContent=ps.per;pCalc();pDraw();};
+
+cCalc();cDraw();eCalc();eDraw();pCalc();pDraw();
+</script>
+</body>
+</html>

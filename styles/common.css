@@ -23,6 +23,7 @@
     --color-digital: #3498db;
     --color-ad-wandlung: #b19ac3;
     --color-fourier: #27ae60;
+    --color-energie: #e67e22;
 
     /* Neutrale Farben */
     --color-text-primary: #2c3e50;
@@ -221,6 +222,14 @@ h1 {
 }
 .viz-card.digital::before {
     background: var(--color-digital);
+}
+
+.viz-card.energie::before,
+.viz-card.energie:hover {
+    border-color: var(--color-energie);
+}
+.viz-card.energie::before {
+    background: var(--color-energie);
 }
 
 /* ==========================================================================

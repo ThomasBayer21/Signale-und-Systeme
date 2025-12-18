@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Energie und Leistungssignale</title>
+<link rel="stylesheet" href="../styles/common.css">
+<style>
+body{background:linear-gradient(135deg,#fdeee8 0%,#fce4d4 100%);margin:0;padding:20px;}
+h1{font-size:2.2em;font-weight:600;text-align:center;margin:0 0 10px 0;color:#e67e22;}
+.desc{text-align:center;color:#666;margin-bottom:20px;font-size:0.95em;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:1400px;margin:0 auto;}
+.sec{background:white;border-radius:8px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1);border-top:3px solid #e67e22;}
+.sec h2{font-size:1.4em;color:#e67e22;margin:0 0 15px 0;text-align:center;}
+.eq{background:#f8f9fa;padding:10px;border-radius:4px;text-align:center;font-family:monospace;font-size:0.95em;margin:10px 0;color:#333;border:1px solid #ddd;}
+.ctrl{background:#f8f9fa;border-radius:6px;padding:12px;margin:12px 0;}
+.ctrl-row{display:grid;grid-template-columns:80px 1fr 50px;gap:10px;align-items:center;margin:8px 0;}
+.ctrl-row label{color:#555;font-weight:500;font-size:0.9em;}
+.ctrl-row select{width:100%;padding:6px;font-size:0.9em;border:1px solid #ddd;border-radius:3px;background:white;}
+.ctrl-row input[type="range"]{width:100%;}
+input[type="range"]{height:6px;border-radius:3px;background:#ddd;outline:none;-webkit-appearance:none;appearance:none;}
+input[type="range"]::-webkit-slider-track{height:6px;background:#ddd;border-radius:3px;}
+input[type="range"]::-moz-range-track{height:6px;background:#ddd;border-radius:3px;}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#e67e22;cursor:pointer;}
+input[type="range"]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#e67e22;cursor:pointer;border:none;}
+.val{color:#e67e22;font-weight:600;font-size:0.95em;text-align:right;}
+canvas{border:1px solid #ddd;border-radius:4px;background:#fafafa;display:block;width:100%;margin:10px 0;}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0;}
+.card{background:#fef9f5;padding:12px;border-radius:4px;border:1px solid #e0e0e0;text-align:center;}
+.card .lbl{font-size:0.75em;color:#888;margin-bottom:4px;}
+.card .v{font-size:1.2em;font-weight:600;color:#e67e22;}
+.badge{background:white;padding:12px;border-radius:6px;text-align:center;font-size:1.1em;font-weight:700;margin:10px 0;border:2px solid #ddd;}
+.badge.energy{border-color:#27ae60;color:#27ae60;background:#f0f8f4;}
+.badge.power{border-color:#5dade2;color:#5dade2;background:#f4f9fc;}
+.pv-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:15px 0;}
+.pv-eq{display:grid;grid-template-columns:1fr auto 1fr;gap:15px;align-items:center;margin:15px 0;padding:15px;background:#fff8e8;border-radius:6px;border:2px solid #f39c12;}
+.pv-eq .v{font-size:1.8em;font-weight:700;color:#f39c12;text-align:center;}
+.pv-eq .eq{font-size:2.5em;font-weight:bold;color:#27ae60;background:none;border:none;padding:0;margin:0;}
+.links{background:#f8f9fa;padding:15px;border-radius:6px;margin:20px auto;max-width:1400px;}
+.links h4{margin:0 0 10px 0;color:#333;font-size:1em;}
+.links a{display:inline-block;color:#3498db;text-decoration:none;padding:5px 10px;margin:2px;background:white;border-radius:3px;font-size:0.9em;}
+@media (max-width:1200px){.grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<h1>Energie und Leistungssignale</h1>
+<div class="desc">Signale können als Energiesignale (zeitlich begrenzt, E < ∞) oder Leistungssignale (periodisch/konstant, P < ∞) klassifiziert werden</div>
+
+<div class="grid">
+<div class="sec" id="klassifikation">
+<h2>1. Signalklassifikation</h2>
+<div class="eq">E = ∫|x(t)|² dt | P = lim<sub>T→∞</sub> (1/T) ∫|x(t)|² dt</div>
+<div class="ctrl">
+<div class="ctrl-row">
+<label>Signal:</label>
+<select id="c-t"><option value="rect">Rechteck</option><option value="exp">Exponential</option><option value="tri">Dreieck</option><option value="cos">Cosinus</option><option value="sq">Rechteckschwingung</option><option value="dc">DC</option></select>
+<span></span>
+</div>
+<div class="ctrl-row">
+<label>A:</label>
+<input type="range" id="c-a" min="0.1" max="2" step="0.1" value="1">
+<span class="val" id="c-av">1.0</span>
+</div>
+<div class="ctrl-row">
+<label id="c-pl">Breite:</label>
+<input type="range" id="c-p" min="0.5" max="5" step="0.1" value="2">
+<span class="val" id="c-pv">2.0</span>
+</div>
+</div>
+<div class="badge" id="c-b">ENERGIESIGNAL</div>
+<div class="cards">
+<div class="card"><div class="lbl">Energie E</div><div class="v" id="c-e">0</div></div>
+<div class="card"><div class="lbl">Leistung P</div><div class="v" id="c-p2">0</div></div>
+<div class="card"><div class="lbl">RMS</div><div class="v" id="c-r">0</div></div>
+</div>
+<canvas id="c-c" width="600" height="220"></canvas>
+</div>
+
+<div class="sec" id="energiesignale">
+<h2>2. Energiesignale</h2>
+<div class="eq">E = ∫|x(t)|² dt < ∞</div>
+<div class="ctrl">
+<div class="ctrl-row">
+<label>Signal:</label>
+<select id="e-t"><option value="rect">Rechteck</option><option value="tri">Dreieck</option><option value="exp">Exponential</option><option value="gauss">Gauß</option></select>
+<span></span>
+</div>
+<div class="ctrl-row">
+<label>A:</label>
+<input type="range" id="e-a" min="0.1" max="2" step="0.1" value="1">
+<span class="val" id="e-av">1.0</span>
+</div>
+<div class="ctrl-row">
+<label>Breite:</label>
+<input type="range" id="e-w" min="0.5" max="5" step="0.1" value="2">
+<span class="val" id="e-wv">2.0</span>
+</div>
+</div>
+<div class="cards">
+<div class="card"><div class="lbl">Energie E</div><div class="v" id="e-e">0</div></div>
+<div class="card"><div class="lbl">Peak</div><div class="v" id="e-pk">0</div></div>
+<div class="card"><div class="lbl">Typ</div><div class="v">Zeitbegrenzt</div></div>
+</div>
+<canvas id="e-c" width="600" height="220"></canvas>
+</div>
+
+<div class="sec" id="leistungssignale">
+<h2>3. Leistungssignale</h2>
+<div class="eq">P = lim<sub>T→∞</sub> (1/T) ∫|x(t)|² dt < ∞</div>
+<div class="ctrl">
+<div class="ctrl-row">
+<label>Signal:</label>
+<select id="p-t"><option value="cos">Cosinus</option><option value="sq">Rechteck</option><option value="saw">Sägezahn</option><option value="dc">DC</option></select>
+<span></span>
+</div>
+<div class="ctrl-row">
+<label>A:</label>
+<input type="range" id="p-a" min="0.1" max="2" step="0.1" value="1">
+<span class="val" id="p-av">1.0</span>
+</div>
+<div class="ctrl-row">
+<label id="p-fl">Freq f:</label>
+<input type="range" id="p-f" min="0.5" max="3" step="0.1" value="1">
+<span class="val" id="p-fv">1.0</span>
+</div>
+</div>
+<div class="cards">
+<div class="card"><div class="lbl">Leistung P</div><div class="v" id="p-p">0</div></div>
+<div class="card"><div class="lbl">RMS</div><div class="v" id="p-r">0</div></div>
+<div class="card"><div class="lbl">E</div><div class="v">∞</div></div>
+</div>
+<canvas id="p-c" width="600" height="220"></canvas>
+</div>
+
+<div class="sec" id="parseval">
+<h2>4. Parseval's Theorem</h2>
+<div class="eq">E<sub>Zeit</sub> = ∫|x(t)|² dt = ∫|X(f)|² df = E<sub>Freq</sub></div>
+<div class="ctrl">
+<div class="ctrl-row">
+<label>Signal:</label>
+<select id="pv-t"><option value="rect">Rechteck→Sinc</option><option value="gauss">Gauß→Gauß</option><option value="exp">Exp→Lorentz</option></select>
+<span></span>
+</div>
+<div class="ctrl-row">
+<label>A:</label>
+<input type="range" id="pv-a" min="0.1" max="2" step="0.1" value="1">
+<span class="val" id="pv-av">1.0</span>
+</div>
+<div class="ctrl-row">
+<label>Breite:</label>
+<input type="range" id="pv-w" min="0.3" max="3" step="0.1" value="1">
+<span class="val" id="pv-wv">1.0</span>
+</div>
+</div>
+<div class="pv-eq">
+<div class="v" id="pv-et">0.00</div>
+<div class="eq">=</div>
+<div class="v" id="pv-ef">0.00</div>
+</div>
+<div class="pv-grid">
+<canvas id="pv-ct" width="300" height="200"></canvas>
+<canvas id="pv-cf" width="300" height="200"></canvas>
+</div>
+</div>
+</div>
+
+<div class="links">
+<h4>Verwandte Themen:</h4>
+<a href="elementarfunktionen/rechteckfunktion.html">Rechteckfunktion</a>
+<a href="dezibel/amplitude_leistung.html">Amplitude & Leistung (dB)</a>
+<a href="../03-digitale-verarbeitung/energie-leistung.html">Energie & Leistung (Diskret)</a>
+<a href="../index.html">← Zurück</a>
+</div>
+
+<script>
+const els=id=>document.getElementById(id);
+const draw=(ctx,w,h,fn,col='#e67e22')=>{
+const m={l:50,r:20,t:20,b:30},pw=w-m.l-m.r,ph=h-m.t-m.b,cy=h/2;
+ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafafa';ctx.fillRect(0,0,w,h);
+ctx.strokeStyle='#e0e0e0';ctx.lineWidth=1;
+for(let i=0;i<=4;i++){const y=m.t+(i/4)*ph;ctx.beginPath();ctx.moveTo(m.l,y);ctx.lineTo(w-m.r,y);ctx.stroke();}
+ctx.strokeStyle='#333';ctx.lineWidth=1.5;
+ctx.beginPath();ctx.moveTo(m.l,cy);ctx.lineTo(w-m.r,cy);ctx.stroke();
+ctx.beginPath();ctx.moveTo(m.l+pw/2,m.t);ctx.lineTo(m.l+pw/2,h-m.b);ctx.stroke();
+ctx.strokeStyle=col;ctx.lineWidth=2.5;ctx.beginPath();
+fn(ctx,m,pw,ph,cy);
+ctx.stroke();
+};
+
+let cs={t:'rect',a:1,p:2};
+const cSig=t=>{switch(cs.t){case 'rect':return Math.abs(t)<cs.p/2?cs.a:0;case 'exp':return t>=0?cs.a*Math.exp(-t/cs.p):0;case 'tri':return Math.abs(t)>cs.p/2?0:cs.a*(1-2*Math.abs(t)/cs.p);case 'cos':return cs.a*Math.cos(2*Math.PI*cs.p*t);case 'sq':const per=1/cs.p,ph=(t%per+per)%per;return ph<per/2?cs.a:-cs.a;case 'dc':return cs.a;}};
+const cCalc=()=>{let e=0,ps=0;for(let t=-10;t<=10;t+=0.01){const v=cSig(t);e+=v*v*0.01;ps+=v*v*0.01;}const p=ps/20,cls=['rect','exp','tri'].includes(cs.t)?'energy':'power';els('c-b').textContent=cls==='energy'?'ENERGIESIGNAL':'LEISTUNGSSIGNAL';els('c-b').className=`badge ${cls}`;els('c-e').textContent=cls==='power'?'∞':e.toFixed(2);els('c-p2').textContent=cls==='energy'?'≈0':p.toFixed(3);els('c-r').textContent=Math.sqrt(p).toFixed(3);};
+const cDraw=()=>{const cv=els('c-c'),ctx=cv.getContext('2d');draw(ctx,cv.width,cv.height,(ctx,m,pw,ph,cy)=>{const ys=ph*0.4/cs.a;for(let x=0;x<=pw;x++){const t=((x/pw)*10)-5,y=cy-cSig(t)*ys;x===0?ctx.moveTo(m.l+x,y):ctx.lineTo(m.l+x,y);}});};
+els('c-t').onchange=e=>{cs.t=e.target.value;els('c-pl').textContent=(cs.t==='cos'||cs.t==='sq'?'Freq:':'Breite:');cCalc();cDraw();};
+els('c-a').oninput=e=>{cs.a=+e.target.value;els('c-av').textContent=cs.a.toFixed(1);cCalc();cDraw();};
+els('c-p').oninput=e=>{cs.p=+e.target.value;els('c-pv').textContent=cs.p.toFixed(1);cCalc();cDraw();};
+
+let es={t:'rect',a:1,w:2};
+const eSig=t=>{switch(es.t){case 'rect':return Math.abs(t)<es.w/2?es.a:0;case 'tri':return Math.abs(t)>es.w/2?0:es.a*(1-2*Math.abs(t)/es.w);case 'exp':return t>=0?es.a*Math.exp(-t/es.w):0;case 'gauss':const s=es.w/4;return es.a*Math.exp(-(t*t)/(2*s*s));}};
+const eCalc=()=>{let e=0,pk=0;for(let t=-10;t<=10;t+=0.01){const v=eSig(t);e+=v*v*0.01;pk=Math.max(pk,Math.abs(v));}els('e-e').textContent=e.toFixed(2);els('e-pk').textContent=pk.toFixed(2);};
+const eDraw=()=>{const cv=els('e-c'),ctx=cv.getContext('2d');draw(ctx,cv.width,cv.height,(ctx,m,pw,ph,cy)=>{const ys=ph*0.4/es.a;for(let x=0;x<=pw;x++){const t=((x/pw)*10)-5,y=cy-eSig(t)*ys;x===0?ctx.moveTo(m.l+x,y):ctx.lineTo(m.l+x,y);}},'#27ae60');};
+els('e-t').onchange=e=>{es.t=e.target.value;eCalc();eDraw();};
+els('e-a').oninput=e=>{es.a=+e.target.value;els('e-av').textContent=es.a.toFixed(1);eCalc();eDraw();};
+els('e-w').oninput=e=>{es.w=+e.target.value;els('e-wv').textContent=es.w.toFixed(1);eCalc();eDraw();};
+
+let ps={t:'cos',a:1,f:1};
+const pSig=t=>{switch(ps.t){case 'cos':return ps.a*Math.cos(2*Math.PI*ps.f*t);case 'sq':const per=1/ps.f,ph=(t%per+per)%per;return ph<per/2?ps.a:-ps.a;case 'saw':const T=1/ps.f,p=(t%T+T)%T;return ps.a*(2*p/T-1);case 'dc':return ps.a;}};
+const pCalc=()=>{let s=0;const T=5;for(let t=-T/2;t<=T/2;t+=0.01){const v=pSig(t);s+=v*v*0.01;}const p=s/T;els('p-p').textContent=p.toFixed(3);els('p-r').textContent=Math.sqrt(p).toFixed(3);};
+const pDraw=()=>{const cv=els('p-c'),ctx=cv.getContext('2d');draw(ctx,cv.width,cv.height,(ctx,m,pw,ph,cy)=>{const ys=ph*0.4/ps.a;for(let x=0;x<=pw;x++){const t=((x/pw)*10)-5,y=cy-pSig(t)*ys;x===0?ctx.moveTo(m.l+x,y):ctx.lineTo(m.l+x,y);}},'#3498db');};
+els('p-t').onchange=e=>{ps.t=e.target.value;pCalc();pDraw();};
+els('p-a').oninput=e=>{ps.a=+e.target.value;els('p-av').textContent=ps.a.toFixed(1);pCalc();pDraw();};
+els('p-f').oninput=e=>{ps.f=+e.target.value;els('p-fv').textContent=ps.f.toFixed(1);pCalc();pDraw();};
+
+let pvs={t:'rect',a:1,w:1};
+const pvSig=t=>{switch(pvs.t){case 'rect':return Math.abs(t)<pvs.w/2?pvs.a:0;case 'gauss':const s=pvs.w/4;return pvs.a*Math.exp(-(t*t)/(2*s*s));case 'exp':return t>=0?pvs.a*Math.exp(-t/pvs.w):0;}};
+const pvSpec=f=>{const w=2*Math.PI*f;switch(pvs.t){case 'rect':const T=pvs.w;return Math.abs(f)<0.001?pvs.a*T:pvs.a*T*Math.sin(Math.PI*f*T)/(Math.PI*f*T);case 'gauss':const s=pvs.w/4;return pvs.a*s*Math.sqrt(2*Math.PI)*Math.exp(-2*Math.PI*Math.PI*f*f*s*s);case 'exp':const tau=pvs.w;return pvs.a*tau/Math.sqrt(1+(2*Math.PI*f*tau)*(2*Math.PI*f*tau));}};
+const pvCalc=()=>{let et=0,ef=0;for(let t=-10;t<=10;t+=0.01){const v=pvSig(t);et+=v*v*0.01;}for(let f=-10;f<=10;f+=0.01){const v=pvSpec(f);ef+=v*v*0.01;}els('pv-et').textContent=et.toFixed(3);els('pv-ef').textContent=ef.toFixed(3);};
+const pvDraw=()=>{
+const ct=els('pv-ct'),cf=els('pv-cf');
+[true,false].forEach(isT=>{
+const cv=isT?ct:cf,ctx=cv.getContext('2d');
+draw(ctx,cv.width,cv.height,(ctx,m,pw,ph,cy)=>{
+const fn=isT?pvSig:pvSpec;
+let data=[];
+for(let x=-5;x<=5;x+=0.02){const v=fn(x);data.push({x,v:v*v});}
+const mx=Math.max(...data.map(d=>d.v)),ys=ph*0.8/mx;
+ctx.fillStyle=isT?'rgba(243,156,18,0.5)':'rgba(52,152,219,0.5)';
+ctx.beginPath();
+data.forEach((d,i)=>{
+const px=m.l+((d.x+5)/10)*pw,y=cv.height-m.b-d.v*ys;
+if(i===0){ctx.moveTo(px,cv.height-m.b);ctx.lineTo(px,y);}else{ctx.lineTo(px,y);}
+});
+ctx.lineTo(cv.width-m.r,cv.height-m.b);
+ctx.closePath();
+ctx.fill();
+ctx.stroke();
+},isT?'#f39c12':'#3498db');
+});
+};
+els('pv-t').onchange=e=>{pvs.t=e.target.value;pvCalc();pvDraw();};
+els('pv-a').oninput=e=>{pvs.a=+e.target.value;els('pv-av').textContent=pvs.a.toFixed(1);pvCalc();pvDraw();};
+els('pv-w').oninput=e=>{pvs.w=+e.target.value;els('pv-wv').textContent=pvs.w.toFixed(1);pvCalc();pvDraw();};
+
+cCalc();cDraw();eCalc();eDraw();pCalc();pDraw();pvCalc();pvDraw();
+</script>
+</body>
+</html>
